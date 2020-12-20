@@ -1,2 +1,2 @@
 # amazebot
-A bot has to escpe from a simple maze.
+A bot has to escape from a simple maze.
