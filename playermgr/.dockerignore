@@ -1,0 +1,12 @@
+.nyc_coverage/
+coverage/
+doc/
+test/
+Dockerfile
+package*.json
+tes-results.xml
+jsdocconfig.json
+.eslintrc.js
+.gitignore
+.dockerignore
+.nyc_output

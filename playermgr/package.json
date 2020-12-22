@@ -1,0 +1,57 @@
+{
+  "name": "playermgr",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Player Manager",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js -p 8080",
+    "build": "npm i --no-optional --no-shrinkwrap --no-package-lock --only=production",
+    "clean": "npx rimraf .nyc_output doc/reference.md coverage doc/html test-results.xml",
+    "doc": "npx jsdoc --readme doc/static/intro.md -d doc/html -c jsdocconfig.json",
+    "docmd": "npx jsdoc2md --no-cache -f src/*.js > doc/reference.md",
+    "test": "npx mocha test --reporter mocha-junit-reporter",
+    "coverage": "npx nyc --reporter=text --reporter=html --reporter=lcov mocha",
+    "covhtml": "npx nyc --reporter=html mocha"
+  },
+  "author": "JC Menchi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "log4js": "^6.3.0",
+    "yargs": "^16.2.0"
+  },
+  "bundledDependencies": [
+    "express",
+    "log4js",
+    "yargs"
+  ],
+  "files": [
+    "main.js",
+    "log4js.json",
+    "src"
+  ],
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-fs": "^2.0.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^7.10.0",
+    "eslint-plugin-mocha": "^8.0.0",
+    "jsdoc": "^3.6.6",
+    "jsdoc-to-markdown": "^6.0.1",
+    "mocha": "^8.1.3",
+    "mocha-junit-reporter": "^2.0.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "doc",
+      "coverage"
+    ],
+    "report-dir": "coverage",
+    "source-map": true,
+    "produce-source-map": true
+  }
+}
