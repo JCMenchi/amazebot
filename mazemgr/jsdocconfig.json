@@ -1,0 +1,22 @@
+{
+    "plugins": [ "plugins/markdown" ],
+    "recurseDepth": 0,
+    "source": {
+        "include": [ "src" ],
+        "includePattern": ".+\\.js$"
+    },
+    "sourceType": "module",
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false,
+        "default": {
+            "staticFiles": {
+              "paths": ["./doc/static"]
+            }
+          }
+    }
+}

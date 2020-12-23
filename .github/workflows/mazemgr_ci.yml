@@ -1,0 +1,40 @@
+name: MazeMgrCI
+
+on: 
+  push:
+    paths:
+    - 'mazemgr/**'
+
+jobs:
+  build_mazemgr:
+    name: Build mazemgr
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - run: npm install
+      working-directory: ./mazemgr
+    - run: npm run build
+      working-directory: ./mazemgr
+    - run: npm test
+      working-directory: ./mazemgr
+    - run: npm run coverage
+      working-directory: ./mazemgr
+    - run: npm run doc
+      working-directory: ./mazemgr
+    - run: npm pack
+      working-directory: ./mazemgr
+    - name: Archive documentation artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: html doc
+        path: mazemgr/doc/html/**
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./mazemgr/coverage/**
