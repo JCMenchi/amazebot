@@ -1,0 +1,40 @@
+name: GameMgrCI
+
+on: 
+  push:
+    paths:
+    - 'gamemgr/**'
+
+jobs:
+  build_gamemgr:
+    name: Build gamemgr
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - run: npm install
+      working-directory: ./gamemgr
+    - run: npm run build
+      working-directory: ./gamemgr
+    - run: npm test
+      working-directory: ./gamemgr
+    - run: npm run coverage
+      working-directory: ./gamemgr
+    - run: npm run doc
+      working-directory: ./gamemgr
+    - run: npm pack
+      working-directory: ./gamemgr
+    - name: Archive documentation artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: html doc
+        path: gamemgr/doc/html/**
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./gamemgr/coverage/**
