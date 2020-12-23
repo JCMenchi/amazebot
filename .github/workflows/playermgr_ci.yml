@@ -1,0 +1,40 @@
+name: PlayerMgrCI
+
+on: 
+  push:
+    paths:
+    - 'playermgr/**'
+
+jobs:
+  build_playermgr:
+    name: Build playerMgr
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - run: npm install
+      working-directory: ./playermgr
+    - run: npm run build
+      working-directory: ./playermgr
+    - run: npm test
+      working-directory: ./playermgr
+    - run: npm run coverage
+      working-directory: ./playermgr
+    - run: npm run doc
+      working-directory: ./playermgr
+    - run: npm pack
+      working-directory: ./playermgr
+    - name: Archive documentation artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: html doc
+        path: playermgr/doc/html/**
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./playermgr/coverage/**
