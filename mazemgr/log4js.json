@@ -9,6 +9,14 @@
         },
         "mazemgr": {
             "appenders": [ "out" ],
+            "level": "DEBUG"
+        },
+        "metrics": {
+            "appenders": [ "out" ],
+            "level": "INFO"
+        },
+        "tracing": {
+            "appenders": [ "out" ],
             "level": "INFO"
         }
     }
