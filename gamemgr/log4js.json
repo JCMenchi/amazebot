@@ -1,15 +1,42 @@
 {
     "appenders": {
-        "out": { "type": "console" }
+        "out": {
+            "type": "console",
+            "layout": {
+                "type": "coloured"
+            }
+        }
     },
     "categories": {
         "default": {
-            "appenders": [ "out" ],
+            "appenders": [
+                "out"
+            ],
             "level": "INFO"
         },
         "gamemgr": {
-            "appenders": [ "out" ],
+            "appenders": [
+                "out"
+            ],
+            "level": "DEBUG"
+        },
+        "metrics": {
+            "appenders": [
+                "out"
+            ],
             "level": "INFO"
+        },
+        "tracing": {
+            "appenders": [
+                "out"
+            ],
+            "level": "INFO"
+        },
+        "gameworker": {
+            "appenders": [
+                "out"
+            ],
+            "level": "DEBUG"
         }
     }
 }

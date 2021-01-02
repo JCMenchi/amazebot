@@ -1,0 +1,43 @@
+
+### Get All Games
+GET http://127.0.0.1:8083/api/games HTTP/1.1
+content-type: application/json
+### Get Game 1
+GET http://127.0.0.1:8083/api/games/10 HTTP/1.1
+content-type: application/json
+### Get Unknown Game
+GET http://127.0.0.1:8083/api/games/1234567890 HTTP/1.1
+content-type: application/json
+### Create Game
+POST http://127.0.0.1:8083/api/games HTTP/1.1
+content-type: application/json
+
+{
+    "playerid": 1,
+    "botid": 1,
+    "mazeid": 1
+}
+### Create Game: error unknown maze
+POST http://127.0.0.1:8083/api/games HTTP/1.1
+content-type: application/json
+
+{
+    "playerid": 1,
+    "botid": 1,
+    "mazeid": 1234567889
+}
+### Create Game: error unknown player
+POST http://127.0.0.1:8083/api/games HTTP/1.1
+content-type: application/json
+
+{
+    "playerid": 123456789,
+    "botid": 1,
+    "mazeid": 1
+}
+### Info
+GET http://127.0.0.1:8083/info HTTP/1.1
+content-type: application/json
+### Start Game
+POST http://127.0.0.1:8083/api/games/1/start HTTP/1.1
+content-type: application/json

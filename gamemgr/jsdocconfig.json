@@ -2,7 +2,7 @@
     "plugins": [ "plugins/markdown" ],
     "recurseDepth": 0,
     "source": {
-        "include": [ "src" ],
+        "include": [ "src", "src/engine" ],
         "includePattern": ".+\\.js$"
     },
     "sourceType": "module",

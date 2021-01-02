@@ -1,6 +1,9 @@
 # Game Manager
 
-Backend service executing a game.
+Backend service used to execute a game.
+
+This service load the javascript bot code and run it in a wroker thread against a maze
+selected in mazemgr service.
 
 ## Build
 
