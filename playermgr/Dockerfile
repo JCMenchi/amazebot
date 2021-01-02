@@ -28,10 +28,10 @@ COPY --chown=node:node . /home/node/app/
 #=================================================================================================================
 # Setup Docker resources
 #
-EXPOSE 8080
+EXPOSE 8081
 USER node
 WORKDIR /home/node/app
 
 # Set the default command to run when starting the container
-CMD ["node", "main.js", "-p", "8080"]
+CMD ["node", "main.js", "-p", "8081"]
 #=================================================================================================================

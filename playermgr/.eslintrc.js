@@ -20,6 +20,7 @@ module.exports = {
         "mocha"
     ],
     "rules": {
-        "no-unused-vars": 0
+        "no-unused-vars": 0,
+        "semi": 2
     }
 };
