@@ -8,6 +8,7 @@ for d in ${SUBDIR}; do
     npm run build
     npm run test
     npm run coverage
-    docker build -t "$d":"$(node -p "require('./package.json').version")" .
     cd ..
 done
+
+docker-compose build

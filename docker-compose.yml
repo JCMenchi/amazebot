@@ -1,0 +1,46 @@
+version: '3'
+services:
+  playermgr:
+    image: playermgr:0.1.0
+    build:
+      context: ./playermgr
+    ports:
+      - "8081:8081"
+      - "9464:9464"
+    environment:
+      - JAEGER_AGENT_HOST=tracing
+      - LOG4JS_CONFIG=/home/node/app/log4js.json
+  mazemgr:
+    image: mazemgr:0.1.0
+    build:
+      context: ./mazemgr
+    ports:
+      - "8082:8082"
+      - "9465:9465"
+    environment:
+      - JAEGER_AGENT_HOST=tracing
+      - LOG4JS_CONFIG=/home/node/app/log4js.json
+  gamemgr:
+    image: gamemgr:0.1.0
+    build:
+      context: ./gamemgr
+    ports:
+      - "8083:8083"
+      - "9466:9466"
+    environment:
+      - JAEGER_AGENT_HOST=tracing
+      - LOG4JS_CONFIG=/home/node/app/log4js.json
+    command: ["node", "main.js", "-p", "8083", "-P", "http://playermgr:8081", "-M", "http://mazemgr:8082"]
+  tracing:
+    image: jaegertracing/all-in-one:1.21
+    ports:
+      - "9411:9411"
+      - "16686:16686"
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+  monitoring:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus.yml:/etc/prometheus/prometheus.yml

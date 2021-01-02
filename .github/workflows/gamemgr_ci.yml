@@ -17,6 +17,14 @@ jobs:
       with:
         node-version: '14.x'
     - run: npm install
+      working-directory: ./playermgr
+    - run: npm install
+      working-directory: ./mazemgr
+    - run: npm run start
+      working-directory: ./playermgr
+    - run: npm run start
+      working-directory: ./mazemgr
+    - run: npm install
       working-directory: ./gamemgr
     - run: npm run build
       working-directory: ./gamemgr
@@ -28,11 +36,6 @@ jobs:
       working-directory: ./gamemgr
     - run: npm pack
       working-directory: ./gamemgr
-    - name: Archive documentation artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: html doc
-        path: gamemgr/doc/html/**
     - name: Archive code coverage results
       uses: actions/upload-artifact@v2
       with:
