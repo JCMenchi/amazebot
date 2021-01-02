@@ -33,5 +33,5 @@ USER node
 WORKDIR /home/node/app
 
 # Set the default command to run when starting the container
-CMD ["node", "main.js", "-p", "8080"]
+CMD ["node", "main.js", "-p", "8083", "-P", "http://127.0.0.1:8081", "-M", "http://127.0.0.1:8082"]
 #=================================================================================================================

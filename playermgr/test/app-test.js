@@ -28,7 +28,7 @@ if (process.env.LOG4JS_CONFIG === undefined) {
 const { app, startServer } = require('../src/playermgr.js');
 
 
-describe('Backend REST API', function () {
+describe('Player Manager REST API', function () {
     let HTTPServer;
     
     before(() => {
@@ -45,6 +45,88 @@ describe('Backend REST API', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.all.keys(['state']);
+                    done();
+                });
+        });
+
+        it("should return player list", (done) => {
+            chai.request(app)
+                .get('/players')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    done();
+                });
+        });
+        it("should return player 2", (done) => {
+            chai.request(app)
+                .get('/players/2')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should return player 1 bot 1", (done) => {
+            chai.request(app)
+                .get('/players/1/bot/1')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+    });
+
+    describe('check error message', function () {
+        this.timeout(10000);
+        it("should check if player exists", (done) => {
+            chai.request(app)
+                .get('/players/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(1);
+                    done();
+                });
+        });
+        it("should check if bot is in bot list", (done) => {
+            chai.request(app)
+                .get('/players/1/bot/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(3);
+                    done();
+                });
+        });
+        it("should check if bot belongs to player", (done) => {
+            chai.request(app)
+                .get('/players/2/bot/1')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(3);
+                    done();
+                });
+        });
+        it("should check if bot exists for player", (done) => {
+            chai.request(app)
+                .get('/players/2/bot/3')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(3);
+                    done();
+                });
+        });
+        it("should check if player exist when requesting bot", (done) => {
+            chai.request(app)
+                .get('/players/4/bot/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(1);
                     done();
                 });
         });

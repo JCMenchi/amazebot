@@ -28,7 +28,7 @@ if (process.env.LOG4JS_CONFIG === undefined) {
 const { app, startServer } = require('../src/mazemgr.js');
 
 
-describe('Backend REST API', function () {
+describe('Maze Manager REST API', function () {
     let HTTPServer;
     
     before(() => {
@@ -36,7 +36,7 @@ describe('Backend REST API', function () {
         HTTPServer = startServer(8081);
     });
 
-    describe('navigation method', function () {
+    describe('get status', function () {
         this.timeout(10000);
         it("should return info", (done) => {
             chai.request(app)
@@ -45,6 +45,37 @@ describe('Backend REST API', function () {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.all.keys(['state']);
+                    done();
+                });
+        });
+        it("should return maze list", (done) => {
+            chai.request(app)
+                .get('/mazes')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    done();
+                });
+        });
+        it("should return maze 2", (done) => {
+            chai.request(app)
+                .get('/mazes/2')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+    });
+
+    describe('check error', function () {
+        this.timeout(10000);
+        it("should check if maze exist", (done) => {
+            chai.request(app)
+                .get('/mazes/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
                     done();
                 });
         });

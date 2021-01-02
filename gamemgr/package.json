@@ -5,20 +5,33 @@
   "description": "Game Manager",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js -p 8080",
+    "start": "node main.js",
     "build": "npm i --no-optional --no-shrinkwrap --no-package-lock --only=production",
     "clean": "npx rimraf .nyc_output doc/reference.md coverage doc/html test-results.xml",
     "doc": "npx jsdoc --readme doc/static/intro.md -d doc/html -c jsdocconfig.json",
     "docmd": "npx jsdoc2md --no-cache -f src/*.js > doc/reference.md",
     "test": "npx mocha test --reporter mocha-junit-reporter",
-    "coverage": "npx nyc --reporter=text --reporter=html --reporter=lcov mocha",
-    "covhtml": "npx nyc --reporter=html mocha"
+    "coverage": "npx nyc --reporter=text --reporter=html --reporter=lcov mocha"
   },
   "author": "JC Menchi",
   "license": "MIT",
   "dependencies": {
+    "@opentelemetry/exporter-prometheus": "^0.14.0",
+    "@opentelemetry/metrics": "^0.14.0",
+    "@opentelemetry/core": "^0.14.0",
+    "@opentelemetry/exporter-jaeger": "^0.14.0",
+    "@opentelemetry/node": "^0.14.0",
+    "@opentelemetry/plugin-express": "^0.11.0",
+    "@opentelemetry/plugin-http": "^0.14.0",
+    "@opentelemetry/plugin-https": "^0.14.0",
+    "@opentelemetry/tracing": "^0.14.0",
+    "axios": "0.21.1",
     "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
     "log4js": "^6.3.0",
+    "pg": "^8.5.1",
+    "swagger-jsdoc": "^6.0.0",
+    "swagger-ui-express": "^4.1.6",
     "yargs": "^16.2.0"
   },
   "bundledDependencies": [

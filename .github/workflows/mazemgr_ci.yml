@@ -28,11 +28,6 @@ jobs:
       working-directory: ./mazemgr
     - run: npm pack
       working-directory: ./mazemgr
-    - name: Archive documentation artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: html doc
-        path: mazemgr/doc/html/**
     - name: Archive code coverage results
       uses: actions/upload-artifact@v2
       with:

@@ -28,11 +28,6 @@ jobs:
       working-directory: ./playermgr
     - run: npm pack
       working-directory: ./playermgr
-    - name: Archive documentation artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: html doc
-        path: playermgr/doc/html/**
     - name: Archive code coverage results
       uses: actions/upload-artifact@v2
       with:

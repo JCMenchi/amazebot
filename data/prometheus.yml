@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 1m
+  scrape_timeout: 10s
+  evaluation_interval: 1m
+
+scrape_configs:
+- job_name: playermgr
+  metrics_path: /metrics
+  static_configs:
+    - targets:
+      - playermgr:9464
+- job_name: mazemgr
+  metrics_path: /metrics
+  static_configs:
+    - targets:
+      - mazemgr:9465
+- job_name: gamemgr
+  metrics_path: /metrics
+  static_configs:
+    - targets:
+      - gamemgr:9466
