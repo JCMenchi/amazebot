@@ -20,7 +20,7 @@ const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
  * the jaeger agent is expected to use port 9411.
  * 
  */
-const tracerProvider = new NodeTracerProvider({ logLevel: LogLevel.ERROR });
+const tracerProvider = new NodeTracerProvider();
 
 tracerProvider.addSpanProcessor(
   new SimpleSpanProcessor(

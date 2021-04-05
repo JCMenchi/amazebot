@@ -35,13 +35,13 @@ const parsed = require('yargs')
     .option('P', {
       alias: 'playermgrurl',
       describe: 'Player Manager URL',
-      default: 'http://127.0.0.1:8081',
+      default: 'http://127.0.0.1:8081/api',
       type: 'string'
     })
     .option('M', {
       alias: 'mazemgrurl',
       describe: 'Maze Manager URL',
-      default: 'http://127.0.0.1:8082',
+      default: 'http://127.0.0.1:8082/api',
       type: 'string'
     })
     .demandCommand(0)
@@ -52,7 +52,7 @@ const parsed = require('yargs')
 // Configure tracing, load this code to setup connection with jaegertracing service.
 require('./src/tracing');
 
-// Configure Plaeyr Manager and Maze Manager Service
+// Configure Player Manager and Maze Manager Service
 const { initService } = require('./src/service');
 initService(parsed.playermgrurl, parsed.mazemgrurl);
 

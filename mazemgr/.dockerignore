@@ -4,7 +4,7 @@ doc/
 test/
 Dockerfile
 package*.json
-tes-results.xml
+test-results.xml
 jsdocconfig.json
 .eslintrc.js
 .gitignore

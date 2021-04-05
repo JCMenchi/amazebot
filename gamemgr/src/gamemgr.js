@@ -41,9 +41,11 @@ const swaggerSpec = swaggerJSDoc(options);
  * Create express application.
  */
 const express = require('express');
+const helmet = require("helmet");
 const http = require('http');
 const app = express();
 
+app.use(helmet());
 app.set('etag', false);
 app.set('x-powered-by', false);
 
