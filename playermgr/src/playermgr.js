@@ -43,7 +43,7 @@ const swaggerSpec = swaggerJSDoc(options);
  * Create express application.
  */
 const express = require('express');
-const helmet = require("helmet");
+const helmet = require('helmet');
 const http = require('http');
 const app = express();
 
@@ -96,9 +96,7 @@ app.use(function (req, _res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    const thePort = port || 8081;
-
-    const HTTPServer = http.createServer(app).listen(thePort, () => {
+    const HTTPServer = http.createServer(app).listen(port, () => {
         logger.info('Player Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

@@ -111,9 +111,7 @@ app.use(function (req, res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    const thePort = port;
-
-    const HTTPServer = http.createServer(app).listen(thePort, '0.0.0.0', () => {
+    const HTTPServer = http.createServer(app).listen(port, () => {
         logger.info('Game Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

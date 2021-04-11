@@ -93,9 +93,8 @@ app.use(function (req, _res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    const thePort = port || 8081;
-
-    const HTTPServer = http.createServer(app).listen(thePort, '0.0.0.0', () => {
+    
+    const HTTPServer = http.createServer(app).listen(port, '0.0.0.0', () => {
         logger.info('Maze Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

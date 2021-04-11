@@ -28,7 +28,7 @@ const prometheusExporter = new PrometheusExporter(
     startServer: true,
     port: prometheusPort,
     logger: logger,
-    preventServerStart: process.env.npm_lifecycle_event === 'test' || process.env.npm_lifecycle_event === 'coverage'
+    preventServerStart: process.env.NODE_ENV === 'test' || process.env.npm_lifecycle_event === 'test' || process.env.npm_lifecycle_event === 'coverage'
   },
   () => {
     logger.info(

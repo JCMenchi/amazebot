@@ -1,4 +1,5 @@
 /* jshint esversion: 6 */
+process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
 chai.use(require('chai-fs'));
@@ -33,7 +34,7 @@ describe('Maze Manager REST API', function () {
     
     before(() => {
         // start server
-        HTTPServer = startServer(8081);
+        HTTPServer = startServer(0);
     });
 
     describe('get status', function () {
@@ -50,7 +51,7 @@ describe('Maze Manager REST API', function () {
         });
         it("should return maze list", (done) => {
             chai.request(app)
-                .get('/mazes')
+                .get('/api/mazes')
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
@@ -59,7 +60,7 @@ describe('Maze Manager REST API', function () {
         });
         it("should return maze 2", (done) => {
             chai.request(app)
-                .get('/mazes/2')
+                .get('/api/mazes/2')
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -72,7 +73,7 @@ describe('Maze Manager REST API', function () {
         this.timeout(10000);
         it("should check if maze exist", (done) => {
             chai.request(app)
-                .get('/mazes/5')
+                .get('/api/mazes/5')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');

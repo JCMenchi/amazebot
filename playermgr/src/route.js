@@ -157,16 +157,25 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
             if (bots[botid]) {
                 res.json(bots[botid]);
             } else {
+                // bot is in list but does not exists any more
+                // cleanup and return an error
+                players[playerid].bots = players[playerid].bots.filter(item => item !== botid);
                 res.status(404);
-                res.json({error: 2, message: `Bot id ${botid} for player ${playerid} not found.`});
+                res.json({error: 1, message: `Bot id ${botid} of player ${playerid} does not exist any more.`});
             }
         } else {
-            res.status(404);
-            res.json({error: 3, message: `Bot id ${botid} does not belongs to player ${playerid}.`});
+            // check if bot exists at all
+            if (bots[botid]) {
+                res.status(404);
+                res.json({error: 2, message: `Bot id ${botid} does not belong to player ${playerid}.`});
+            } else {
+                res.status(404);
+                res.json({error: 3, message: `Bot id ${botid} does not exist.`});
+            }
         }
     } else {
         res.status(404);
-        res.json({error: 1, message: `Player id ${playerid} not found.`});
+        res.json({error: 4, message: `Player id ${playerid} not found.`});
     }
     next();
 });
