@@ -31,6 +31,9 @@ spec:
     metadata:
       labels:
         app: mazemgr
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9465'
     spec:
       containers:
         - name: mazemgr

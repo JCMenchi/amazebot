@@ -31,6 +31,9 @@ spec:
     metadata:
       labels:
         app: gamemgr
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9466'
     spec:
       containers:
         - name: gamemgr
