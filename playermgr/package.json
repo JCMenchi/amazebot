@@ -26,6 +26,7 @@
     "@opentelemetry/plugin-https": "^0.18.2",
     "@opentelemetry/tracing": "^0.18.2",
     "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
     "helmet": "^4.4.1",
     "log4js": "^6.3.0",
     "pg": "^8.5.1",

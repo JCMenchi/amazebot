@@ -1,0 +1,29 @@
+@baseurl = http://localhost:8081
+
+
+###
+GET {{baseurl}}/api/players HTTP/1.1
+
+###
+GET {{baseurl}}/api/players/1 HTTP/1.1
+
+###
+GET {{baseurl}}/api/players/1/bot/1 HTTP/1.1
+
+###
+POST {{baseurl}}/api/players HTTP/1.1
+content-type: application/json
+
+{
+    "name": "jack"
+}
+
+###
+POST {{baseurl}}/api/bots HTTP/1.1
+content-type: application/json
+
+{
+    "playerid": 1,
+    "name": "bot1",
+    "url": "data/bot1.json"
+}

@@ -42,5 +42,12 @@ const parsed = require('yargs')
 const tracing = require('./src/tracing');
 
 // Start server
-const { startServer } = require('./src/playermgr');
+const { startServer, app } = require('./src/playermgr');
+const { FileRepository } = require('./src/file_repository');
+const { DBRepository } = require('./src/database');
+
+const fr = new FileRepository();
+const db = new DBRepository('playeruser', 'playeruser');
+
+app.set('repository', db);
 startServer(parsed.port);

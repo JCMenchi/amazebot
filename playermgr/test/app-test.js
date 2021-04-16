@@ -27,6 +27,9 @@ if (process.env.LOG4JS_CONFIG === undefined) {
 }
 
 const { app, startServer } = require('../src/playermgr.js');
+const { FileRepository } = require('../src/file_repository.js');
+const fr = new FileRepository();
+app.set('repository', fr);
 
 describe('Player Manager REST API', function () {
     let HTTPServer;
@@ -86,7 +89,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(1);
+                    res.body.error.should.eql(102);
                     done();
                 });
         });
@@ -96,7 +99,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(3);
+                    res.body.error.should.eql(103);
                     done();
                 });
         });
@@ -106,7 +109,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(2);
+                    res.body.error.should.eql(103);
                     done();
                 });
         });
@@ -115,7 +118,7 @@ describe('Player Manager REST API', function () {
                 .get('/api/players/2/bot/4')
                 .end((err, res) => {
                     res.should.have.status(404);
-                    res.body.error.should.eql(1);
+                    res.body.error.should.eql(103);
                     done();
                 });
         });
@@ -124,7 +127,7 @@ describe('Player Manager REST API', function () {
                 .get('/api/players/4/bot/5')
                 .end((err, res) => {
                     res.should.have.status(404);
-                    res.body.error.should.eql(4);
+                    res.body.error.should.eql(103);
                     done();
                 });
         });
