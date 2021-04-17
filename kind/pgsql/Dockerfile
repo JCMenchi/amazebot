@@ -7,13 +7,13 @@
 
 
 # Start from simple alpine container
-FROM alpine
+FROM alpine:3.13
 
 #=================================================================================================================
 # Install packages
 #
 #
-RUN apk update && apk add bash && apk add curl && apk add postgresql
+RUN apk add --no-cache bash && apk add --no-cache curl && apk add --no-cache postgresql && rm -rf /var/cache/apk/*
 RUN mkdir /run/postgresql && chown postgres /run/postgresql
 #
 #=================================================================================================================
