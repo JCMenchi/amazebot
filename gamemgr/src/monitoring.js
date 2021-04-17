@@ -27,7 +27,6 @@ const prometheusExporter = new PrometheusExporter(
   {
     startServer: true,
     port: prometheusPort,
-    logger: logger,
     preventServerStart: process.env.NODE_ENV === 'test' || process.env.npm_lifecycle_event === 'test' || process.env.npm_lifecycle_event === 'coverage'
   },
   () => {
@@ -38,14 +37,12 @@ const prometheusExporter = new PrometheusExporter(
 );
 
 const meter = new MeterProvider({
-  prometheusExporter,
-  interval: 1000,
-  logger: logger
+  exporter: prometheusExporter,
+  interval: 1000
 }).getMeter('game-manager');
 
 const requestCount = meter.createCounter("mazebot_requests_total", {
-  description: "Count all incoming requests",
-  logger: logger
+  description: "Count all incoming requests"
 });
 
 const boundInstruments = new Map();

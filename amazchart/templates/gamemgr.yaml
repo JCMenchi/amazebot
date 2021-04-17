@@ -45,8 +45,8 @@ spec:
             - containerPort: 9466
               name: metrics
           env:
-            - name: JAEGER_AGENT_HOST
-              value: "tracing"
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              value: "http://jaeger.tracing:14268/api/traces?format=jaeger.thrift"
             - name: LOG4JS_CONFIG
               value: "/home/node/app/log4js.json"
           command: ["node"]

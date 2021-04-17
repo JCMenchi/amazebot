@@ -19,6 +19,8 @@
     "@opentelemetry/core": "^0.18.2",
     "@opentelemetry/exporter-jaeger": "^0.18.2",
     "@opentelemetry/exporter-prometheus": "^0.18.2",
+    "@opentelemetry/instrumentation-express": "^0.15.0",
+    "@opentelemetry/instrumentation-http": "^0.18.2",
     "@opentelemetry/metrics": "^0.18.2",
     "@opentelemetry/node": "^0.18.2",
     "@opentelemetry/plugin-express": "^0.14.0",

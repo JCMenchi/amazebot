@@ -15,6 +15,7 @@ for d in ${SUBDIR}; do
     docker build -t "${d}":"${container_label}" .
     docker tag "${d}":"${container_label}" ${DOCKER_REGISTRY}"${d}":"${container_label}"
     docker push ${DOCKER_REGISTRY}"${d}":"${container_label}"
+    npm install
     cd ..
 done
 

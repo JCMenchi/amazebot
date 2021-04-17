@@ -1,5 +1,8 @@
 @baseurl = http://localhost:8081
+@monitoringurl = http://localhost:9464/metrics
 
+###
+GET {{{{monitoringurl}}}} HTTP/1.1
 
 ###
 GET {{baseurl}}/api/players HTTP/1.1
