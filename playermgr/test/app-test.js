@@ -93,40 +93,12 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
-        it("should tell that bot does not exist and not in player list", (done) => {
+        it("should tell that bot does not exist.", (done) => {
             chai.request(app)
                 .get('/api/players/1/bot/5')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(103);
-                    done();
-                });
-        });
-        it("should tell that bot exists even it is not in player list", (done) => {
-            chai.request(app)
-                .get('/api/players/2/bot/1')
-                .end((err, res) => {
-                    res.should.have.status(404);
-                    res.body.should.be.a('object');
-                    res.body.error.should.eql(103);
-                    done();
-                });
-        });
-        it("should check if bot exists when it is player", (done) => {
-            chai.request(app)
-                .get('/api/players/2/bot/4')
-                .end((err, res) => {
-                    res.should.have.status(404);
-                    res.body.error.should.eql(103);
-                    done();
-                });
-        });
-        it("should check if player exist when requesting bot", (done) => {
-            chai.request(app)
-                .get('/api/players/4/bot/5')
-                .end((err, res) => {
-                    res.should.have.status(404);
                     res.body.error.should.eql(103);
                     done();
                 });

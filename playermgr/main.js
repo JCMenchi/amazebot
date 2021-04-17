@@ -33,6 +33,11 @@ const parsed = require('yargs')
         default: 8081,
         type: 'number'
     })
+    .option('t', {
+      alias: 'test',
+      describe: 'use inmemory db for test',
+      type: 'boolean'
+    })
     .demandCommand(0)
     .version().alias('v', 'version')
     .help().alias('h', 'help')
@@ -46,8 +51,13 @@ const { startServer, app } = require('./src/playermgr');
 const { FileRepository } = require('./src/file_repository');
 const { DBRepository } = require('./src/database');
 
-const fr = new FileRepository();
-const db = new DBRepository('playeruser', 'playeruser');
+let db;
+if (parsed.test) {
+  logger.info('Run in test mode.');
+  db = new FileRepository();
+} else {
+  db = new DBRepository('playeruser', 'playeruser');
+}
 
 app.set('repository', db);
 startServer(parsed.port);
