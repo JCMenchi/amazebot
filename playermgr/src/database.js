@@ -31,6 +31,7 @@ const PLAYERDB_SCHEMA = `
         url varchar(1024),
         player_id integer,
         PRIMARY KEY (bid),
+        CONSTRAINT bot_uname UNIQUE (name, player_id),
         CONSTRAINT fk_pid FOREIGN KEY(player_id) 
 	               REFERENCES player(pid)
                    ON DELETE CASCADE
@@ -154,6 +155,21 @@ class DBRepository {
         });
     }
 
+    deletePlayer(playerid, cb) {
+        this.pool.query('DELETE FROM player WHERE pid = $1 RETURNING *;', [playerid], (err, res) => {
+            if (err) {
+                console.log(err.stack);
+                cb(null, `Database error: ${err.message}`);
+            } else {
+                if (res.rowCount === 1) {
+                    cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
+                } else {
+                    cb(null, `Player ${playerid} does not exist.`);
+                }
+            }
+        });
+    }
+
     addBot(playerid, name, url, cb) {
         this.pool.query('INSERT INTO bot (name, url, player_id) VALUES ($1, $2, $3) RETURNING *;', [name, url, playerid], (err, res) => {
             if (err) {
@@ -172,6 +188,24 @@ class DBRepository {
     getBot(playerid, botid, cb) {
 
         this.pool.query('SELECT * FROM bot WHERE bid = $1 AND player_id = $2', [botid, playerid], (err, res) => {
+            if (err) {
+                console.log(err.stack);
+                cb(null, `Database error: ${err.message}`);
+            } else {
+                if (res.rowCount === 1) {
+                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
+                } else {
+                    cb(null, 'Bot not found.');
+                }
+            }
+        });
+
+        return null;
+    }
+
+    deleteBot(playerid, botid, cb) {
+
+        this.pool.query('DELETE FROM bot WHERE bid = $1 AND player_id = $2 RETURNING *;', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `Database error: ${err.message}`);
