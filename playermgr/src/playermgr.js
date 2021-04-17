@@ -93,10 +93,7 @@ app.use('/api', router);
 /* add swagger endpoint */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use(function (req, res, next) {
-    res.status(404).send('');
-});
-
+// show performance measurement
 app.use(function (req, _res, _next) {
     logger.debug('End Call ' + req.method + ' ' + req.path);
     performance.mark('End ' + req.method + ' ' + req.path);
