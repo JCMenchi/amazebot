@@ -338,68 +338,6 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
 
 /**
  * @swagger
- * /api/bots:
- *   post:
- *     summary: Create bot.
- *     description: Create bot.
- *     requestBody:
- *       description: Bot info.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - playerid
- *             properties:
- *               playerid:
- *                 type: integer
- *                 description: The player ID.
- *                 example: 1
- *               name:
- *                 type: string
- *                 description: The bot name.
- *                 example: John
- *               url:
- *                 type: string
- *                 description: The bot url.
- *     responses:
- *       201:
- *         description: new bot created.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   description: The bot ID.
- *                   example: 1
- *                 name:
- *                   type: string
- *                   description: bot name.
- *       404:
- *         description: name already used.
- */
- router.post('/bots', function (req, res, next) {
-    const playerid = req.fields.playerid;
-    const url = req.fields.url;
-    const name = req.fields.name;
-
-    const repository = req.app.settings.repository;
-    repository.addBot(playerid, name, url, (bot, err) => {
-        if (err) {
-            returnError(404, 105, err, res, next);
-        } else {
-            res.status(201).json(bot);
-            next();
-        }
-    });
-});
-
-/**
- * @swagger
  * /api/players/{playerid}/bot:
  *   post:
  *     summary: Create bot.

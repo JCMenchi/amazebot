@@ -79,6 +79,44 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        it("should be able to add player foo", (done) => {
+            chai.request(app)
+                .post('/api/players')
+                .send({name: 'foo'})
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should be able to add bot to player 2", (done) => {
+            chai.request(app)
+                .post('/api/players/2/bot')
+                .send({name: 'bar', url: '/data/bar.js'})
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should be able to delete player 2", (done) => {
+            chai.request(app)
+                .delete('/api/players/2')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should be able to delete bot 1 of player 1", (done) => {
+            chai.request(app)
+                .delete('/api/players/1/bot/1')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
     });
 
     describe('check error message', function () {
@@ -100,6 +138,36 @@ describe('Player Manager REST API', function () {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
                     res.body.error.should.eql(103);
+                    done();
+                });
+        });
+        it("should tell that player to be deleted does not exist.", (done) => {
+            chai.request(app)
+                .delete('/api/players/1234')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(102);
+                    done();
+                });
+        });
+        it("should tell that bot to be deleted does not exist.", (done) => {
+            chai.request(app)
+                .delete('/api/players/1/bot/12')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(103);
+                    done();
+                });
+        });
+        it("should tell that player does not exists when adding bot", (done) => {
+            chai.request(app)
+                .post('/api/players/234/bot')
+                .send({name: 'bar', url: '/data/bar.js'})
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
                     done();
                 });
         });

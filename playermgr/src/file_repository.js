@@ -10,6 +10,7 @@ class FileRepository {
 
     constructor() {
         this.playersid = 1;
+        this.botid = 1;
         this.players = {};
         this.bots = {};
         this.loadData('./data/data.json');
@@ -24,6 +25,7 @@ class FileRepository {
                 this.players = conf.players;
                 this.bots = conf.bots;
                 this.playersid = 10;
+                this.botid = 10;
             } catch (error) {
                 logger.error(`Cannot read sample config: ${dataFile}: ${error.message}`);
             }
@@ -51,6 +53,21 @@ class FileRepository {
         cb(this.players[this.playerid]);
     }
 
+    deletePlayer(playerid, cb) {
+        if (this.players[playerid]) {
+            const p = this.players[playerid];
+            delete this.players[playerid];
+            // update bot list
+            for(const b of p.bots) {
+                if (this.bots[b]) {
+                    delete this.bots[b];
+                }
+            }
+            cb(p);
+        }
+        cb(null, `Player ${playerid} does not exist.`);
+    }
+
     getBot(playerid, botid, cb) {
 
         if (this.players[playerid]) {
@@ -64,6 +81,39 @@ class FileRepository {
         cb(null, `Bot ${botid} does not exist for player ${playerid}.`);
     }
 
+    addBot(playerid, name, url, cb) {
+        if (this.players[playerid]) {
+            this.botid = this.botid + 1;
+            this.bots[this.botid] = {
+                id: this.botid,
+                name: name,
+                url: url
+            };
+            this.players[playerid].bots.push(this.botid);
+            cb(this.bots[this.botid]);
+        }
+
+        cb(null, `Cannot add bot; player ${playerid} does not exist.`);
+    }
+
+    deleteBot(playerid, botid, cb) {
+
+        if (this.players[playerid]) {
+            if (this.players[playerid].bots.includes(botid)) {
+                if (this.bots[botid]) {
+                    const b = this.bots[botid];
+                    delete this.bots[botid];
+                    this.players[playerid].bots = this.players[playerid].bots.filter(i => i !== botid);
+                    cb(b);
+                } else {
+                    // cleanup bot list
+                    this.players[playerid].bots = this.players[playerid].bots.filter(i => i !== botid);
+                }
+            }
+        }
+
+        cb(null, `Bot ${botid} does not exist for player ${playerid}.`);
+    }
 }
 
 module.exports = { FileRepository };

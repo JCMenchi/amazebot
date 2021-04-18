@@ -51,13 +51,13 @@ const { startServer, app } = require('./src/playermgr');
 const { FileRepository } = require('./src/file_repository');
 const { DBRepository } = require('./src/database');
 
-let db;
 if (parsed.test) {
   logger.info('Run in test mode.');
-  db = new FileRepository();
+  const fr = new FileRepository();
+  app.set('repository', fr);
 } else {
-  db = new DBRepository('playeruser', 'playeruser');
+  const db = new DBRepository('playeruser', 'playeruser');
+  app.set('repository', db);
 }
 
-app.set('repository', db);
 startServer(parsed.port);
