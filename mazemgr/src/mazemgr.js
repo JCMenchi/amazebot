@@ -43,9 +43,11 @@ const swaggerSpec = swaggerJSDoc(options);
  * Create express application.
  */
 const express = require('express');
+const helmet = require("helmet");
 const http = require('http');
 const app = express();
 
+app.use(helmet());
 app.set('etag', false);
 app.set('x-powered-by', false);
 
@@ -73,7 +75,7 @@ app.get('/info', function (_req, res, next) {
 
 /* add route */
 const { router } = require('./route.js');
-app.use('/', router);
+app.use('/api', router);
 
 /* add swagger endpoint */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -91,9 +93,8 @@ app.use(function (req, _res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    const thePort = port || 8081;
-
-    const HTTPServer = http.createServer(app).listen(thePort, '0.0.0.0', () => {
+    
+    const HTTPServer = http.createServer(app).listen(port, '0.0.0.0', () => {
         logger.info('Maze Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

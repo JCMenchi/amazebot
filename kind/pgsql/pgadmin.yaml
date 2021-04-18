@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgui
+  labels:
+    app: pgui
+spec:
+  type: ClusterIP
+  selector:
+    app: pgui
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgui
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /pgadmin
+            pathType: Prefix
+            backend:
+              service:
+                name: pgui
+                port:
+                  name: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgui
+  labels:
+    app: pgui
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: pgui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pgui
+    spec:
+      containers:
+        - name: pgui
+          image: dpage/pgadmin4:5.1
+          imagePullPolicy: Always
+          ports:
+            - name: web
+              containerPort: 8080
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: sheldon@foo.org
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: cooper
+            - name: PGADMIN_LISTEN_PORT
+              value: "8080"
+            - name: SCRIPT_NAME
+              value: "/pgadmin"
+          volumeMounts:
+            - name: pgadmin-persistent-storage
+              mountPath: /var/lib/pgadmin
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1000M
+            limits:
+              cpu: 2000m
+              memory: 2000M
+      volumes:
+        - name: pgadmin-persistent-storage
+          persistentVolumeClaim:
+            claimName: pgadmin-local-claim

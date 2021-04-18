@@ -1,10 +1,11 @@
 .nyc_coverage/
+.vscode/
 coverage/
 doc/
 test/
 Dockerfile
 package*.json
-tes-results.xml
+test-results.xml
 jsdocconfig.json
 .eslintrc.js
 .gitignore

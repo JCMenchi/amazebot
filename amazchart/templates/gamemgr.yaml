@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gamemgr
+  labels:
+    app: gamemgr
+spec:
+  ports:
+    - port: 80
+      targetPort: 8083
+      name: gamemgr
+    - port: 9466
+      targetPort: 9466
+      name: metrics
+  selector:
+    app: gamemgr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gamemgr
+  labels:
+    app: gamemgr
+spec:
+  selector:
+    matchLabels:
+      app: gamemgr
+  replicas: {{.Values.replicaCount}}
+  template:
+    metadata:
+      labels:
+        app: gamemgr
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9466'
+    spec:
+      containers:
+        - name: gamemgr
+          image: "{{.Values.image.registry}}gamemgr:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - containerPort: 8083
+              name: http
+            - containerPort: 9466
+              name: metrics
+          env:
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              value: "http://jaeger.tracing:14268/api/traces?format=jaeger.thrift"
+            - name: LOG4JS_CONFIG
+              value: "/home/node/app/log4js.json"
+          command: ["node"]
+          args: ["main.js", "-p", "8083", "-P", "http://playermgr", "-M", "http://mazemgr"]
+          resources:
+            requests:
+              cpu: 500m
+              memory: 5M
+            limits:
+              cpu: 1000m
+              memory: 100M
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gamemgr
+  labels:
+    app: gamemgr
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/games
+            pathType: Prefix
+            backend:
+              service:
+                name: gamemgr
+                port:
+                  number: 80

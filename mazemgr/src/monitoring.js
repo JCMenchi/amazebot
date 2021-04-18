@@ -22,8 +22,7 @@ const exporter = new PrometheusExporter(
   {
     startServer: true,
     port: prometheusPort,
-    logger: logger,
-    preventServerStart: process.env.npm_lifecycle_event === 'test' || process.env.npm_lifecycle_event === 'coverage'
+    preventServerStart: process.env.NODE_ENV === 'test'
   },
   () => {
     logger.info(
@@ -33,20 +32,19 @@ const exporter = new PrometheusExporter(
 );
 
 const meter = new MeterProvider({
-  exporter,
-  interval: 1000,
-  logger: logger
+  exporter: exporter,
+  interval: 1000
 }).getMeter('maze-manager');
 
 const requestCount = meter.createCounter("requests", {
-  description: "Count all incoming requests",
-  logger: logger
+  description: "Count all incoming requests"
 });
 
 const boundInstruments = new Map();
 
 function countAllRequests() {
   return (req, res, next) => {
+    /* istanbul ignore else */
     if (!boundInstruments.has(req.path)) {
       const labels = { route: req.path, method: req.method };
       const boundCounter = requestCount.bind(labels);

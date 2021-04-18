@@ -1,4 +1,5 @@
 /* jshint esversion: 6 */
+process.env.NODE_ENV = 'test';
 
 const chai = require('chai');
 chai.use(require('chai-fs'));
@@ -32,9 +33,9 @@ describe('Game Manager REST API', function () {
     let HTTPServer;
     
     before(() => {
-        initService('http://127.0.0.1:8081', 'http://127.0.0.1:8082');
+        initService('http://127.0.0.1:8081/api', 'http://127.0.0.1:8082/api');
         // start server
-        HTTPServer = startServer(8083);
+        HTTPServer = startServer(0);
     });
 
     describe('get status', function () {

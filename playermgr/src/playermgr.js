@@ -24,17 +24,17 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Player Manager',
-    version: '0.1.0',
-  },
+    openapi: '3.0.0',
+    info: {
+        title: 'Player Manager',
+        version: '0.1.0',
+    },
 };
 
 const options = {
-  swaggerDefinition,
-  // Paths to files containing OpenAPI definitions
-  apis: ['./src/*.js'],
+    swaggerDefinition,
+    // Paths to files containing OpenAPI definitions
+    apis: ['./src/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -43,17 +43,29 @@ const swaggerSpec = swaggerJSDoc(options);
  * Create express application.
  */
 const express = require('express');
+const helmet = require('helmet');
 const http = require('http');
 const app = express();
+const path = require('path');
 
+app.use(helmet());
 app.set('etag', false);
 app.set('x-powered-by', false);
+
+// init HTML FORM processing
+const formidable = require('express-formidable');
+app.use(formidable({
+    encoding: 'utf-8',
+    uploadDir: path.join(__dirname, '/uploads'),
+    multiples: true,
+    keepExtensions: true
+}));
 
 const { countAllRequests } = require("./monitoring");
 app.use(countAllRequests());
 
 // serve bots definition
-app.use('/data/', express.static('./data/', {fallthrough: false}));
+app.use('/data/', express.static('./data/', { fallthrough: false }));
 
 // this middleware is called first to setup performnace mark
 app.use(function (req, res, next) {
@@ -76,11 +88,12 @@ app.get('/info', function (_req, res, next) {
 
 /* add route */
 const { router } = require('./route.js');
-app.use('/', router);
+app.use('/api', router);
 
 /* add swagger endpoint */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// show performance measurement
 app.use(function (req, _res, _next) {
     logger.debug('End Call ' + req.method + ' ' + req.path);
     performance.mark('End ' + req.method + ' ' + req.path);
@@ -94,9 +107,7 @@ app.use(function (req, _res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    const thePort = port || 8081;
-
-    const HTTPServer = http.createServer(app).listen(thePort, '0.0.0.0', () => {
+    const HTTPServer = http.createServer(app).listen(port, () => {
         logger.info('Player Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

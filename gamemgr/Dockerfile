@@ -14,7 +14,7 @@ FROM node:14-alpine
 # Install packages
 #
 #
-#RUN apk update && apk add bash
+RUN apk add --no-cache bash=5.0.11-r1 curl=7.67.0-r3 && rm -rf /var/cache/apk/*
 #
 
 #=================================================================================================================
@@ -33,5 +33,5 @@ USER node
 WORKDIR /home/node/app
 
 # Set the default command to run when starting the container
-CMD ["node", "main.js", "-p", "8083", "-P", "http://127.0.0.1:8081", "-M", "http://127.0.0.1:8082"]
+CMD ["node", "main.js", "-p", "8083", "-P", "http://127.0.0.1:8081/api", "-M", "http://127.0.0.1:8082/api"]
 #=================================================================================================================

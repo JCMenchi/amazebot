@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: playermgr
+  labels:
+    app: playermgr
+spec:
+  ports:
+    - port: 80
+      targetPort: 8081
+      name: playermgr
+    - port: 9464
+      targetPort: 9464
+      name: metrics
+  selector:
+    app: playermgr
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playermgr
+  labels:
+    app: playermgr
+spec:
+  selector:
+    matchLabels:
+      app: playermgr
+  replicas: {{.Values.replicaCount}}
+  template:
+    metadata:
+      labels:
+        app: playermgr
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9464'
+    spec:
+      containers:
+        - name: playermgr
+          image: "{{.Values.image.registry}}playermgr:{{.Values.image.tag}}"
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          ports:
+            - containerPort: 8081
+              name: http
+            - containerPort: 9464
+              name: metrics
+          env:
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              value: "http://jaeger.tracing:14268/api/traces?format=jaeger.thrift"
+            - name: LOG4JS_CONFIG
+              value: "/home/node/app/log4js.json"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 5M
+            limits:
+              cpu: 1000m
+              memory: 100M
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: playermgr
+  labels:
+    app: playermgr
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/players
+            pathType: Prefix
+            backend:
+              service:
+                name: playermgr
+                port:
+                  number: 80

@@ -5,12 +5,17 @@
         "1": {
             "id": 1,
             "name": "Joe",
-            "bots": [1, 2, 3]
+            "bots": [1, 2]
         },
         "2": {
             "id": 2,
             "name": "Jack",
             "bots": [2, 4]
+        },
+        "3": {
+            "id": 3,
+            "name": "William",
+            "bots": [3]
         }
     },
     "bots": {

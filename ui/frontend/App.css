@@ -1,0 +1,9 @@
+a.activePage {
+  background-color: rgb(45, 116, 110);
+  font-weight: bold;
+}
+
+a.activePage:hover {
+  background-color: rgb(36, 95, 90);
+  font-weight: bold;
+}
