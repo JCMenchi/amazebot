@@ -42,6 +42,8 @@ const PLAYERDB_SCHEMA = `
                                              ('creation_date', '${new Date().toISOString()}');
 `;
 
+const PLAYER_FIELDS = ['name'];
+const BOT_FIELDS = ['name', 'url'];
 
 class DBRepository {
 
@@ -113,7 +115,7 @@ class DBRepository {
         this.pool.query('SELECT * FROM player', [], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `getPlayers: database error: ${err.message}`);
             } else {
                 const players = [];
                 for(const rec of res.rows) {
@@ -129,7 +131,7 @@ class DBRepository {
         this.pool.query('SELECT * FROM player WHERE pid = $1', [playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `getPlayer: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
@@ -144,7 +146,7 @@ class DBRepository {
         this.pool.query('INSERT INTO player (name) VALUES ($1) RETURNING *;', [name], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `addPlayer: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
@@ -155,11 +157,44 @@ class DBRepository {
         });
     }
 
+    updatePlayer(playerid, fields, cb) {
+        const params = [ playerid ];
+        let query = 'UPDATE player SET';
+        let idx = 2;
+        for(const k in fields) {
+            if (PLAYER_FIELDS.includes(k)) {
+                query = query + ' ' + k + '=$' + idx + ',';
+                idx = idx + 1;
+                params.push(fields[k]);
+            }
+        }
+        // remove last comma
+        query = query.substring(0, query.length - 1);
+
+        query = query + ' WHERE pid = $1 RETURNING *;';
+        if (params.length > 1) {
+            this.pool.query(query, params, (err, res) => {
+                if (err) {
+                    console.log(err.stack);
+                    cb(null, `updatePlayer: database error: ${err.message}`);
+                } else {
+                    if (res.rowCount === 1) {
+                        cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
+                    } else {
+                        cb(null, `Player ${playerid} does not exist.`);
+                    }
+                }
+            });
+        } else {
+            cb(null, `updatePlayer: nothing to update.`);
+        }
+    }
+
     deletePlayer(playerid, cb) {
         this.pool.query('DELETE FROM player WHERE pid = $1 RETURNING *;', [playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `deletePlayer: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
@@ -174,7 +209,7 @@ class DBRepository {
         this.pool.query('INSERT INTO bot (name, url, player_id) VALUES ($1, $2, $3) RETURNING *;', [name, url, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `addBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
@@ -190,7 +225,7 @@ class DBRepository {
         this.pool.query('SELECT * FROM bot WHERE bid = $1 AND player_id = $2', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `getBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
@@ -203,12 +238,45 @@ class DBRepository {
         return null;
     }
 
+    updateBot(playerid, botid, fields, cb) {
+        const params = [ playerid, botid ];
+        let query = 'UPDATE bot SET';
+        let idx = 3;
+        for(const k in fields) {
+            if (BOT_FIELDS.includes(k)) {
+                query = query + ' ' + k + '=$' + idx + ',';
+                idx = idx + 1;
+                params.push(fields[k]);
+            }
+        }
+        // remove last comma
+        query = query.substring(0, query.length - 1);
+
+        query = query + ' WHERE player_id = $1 AND bid = $2 RETURNING *;';
+        if (params.length > 1) {
+            this.pool.query(query, params, (err, res) => {
+                if (err) {
+                    console.log(err.stack);
+                    cb(null, `updateBot: database error: ${err.message}`);
+                } else {
+                    if (res.rowCount === 1) {
+                        cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], url: res.rows[0]['url']});
+                    } else {
+                        cb(null, `Bot not found for player ${playerid} does not exist.`);
+                    }
+                }
+            });
+        } else {
+            cb(null, `updateBot: nothing to update.`);
+        }
+    }
+
     deleteBot(playerid, botid, cb) {
 
         this.pool.query('DELETE FROM bot WHERE bid = $1 AND player_id = $2 RETURNING *;', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
-                cb(null, `Database error: ${err.message}`);
+                cb(null, `deleteBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
                     cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});

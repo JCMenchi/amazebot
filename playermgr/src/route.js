@@ -58,6 +58,7 @@ const logger = log4js.getLogger('playermgr');
 router.get('/players', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.getPlayers((players, err) => {
+        /* istanbul ignore if */
         if (err) {
             returnError(404, 101, err, res, next);
         } else {
@@ -126,6 +127,65 @@ router.get('/players/:playerid', function (req, res, next) {
 /**
  * @swagger
  * /api/players/{playerid}:
+ *   patch:
+ *     summary: Update choosen player.
+ *     description: Update choosen player.
+ *     parameters:
+ *       - in: path
+ *         name: playerid
+ *         required: true
+ *         description: Numeric ID of the player to update.
+ *         schema:
+ *           type: integer
+ *     content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: new name.
+ *                 example: John
+ *     responses:
+ *       200:
+ *         description: player.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: The player ID.
+ *                   example: 1
+ *                 name:
+ *                   type: string
+ *                   description: Player name.
+ *                   example: John
+ *       404:
+ *         description: player id not found.
+ */
+router.patch('/players/:playerid', function (req, res, next) {
+    const playerid = req.params.playerid;
+    logger.debug(`Update player= ${playerid}`);
+
+    const repository = req.app.settings.repository;
+    repository.updatePlayer(playerid, req.fields, (player, err) => {
+        if (err) {
+            returnError(404, 103, err, res, next);
+        } else {
+            res.json(player);
+            next();
+        }
+    });
+
+});
+
+/**
+ * @swagger
+ * /api/players/{playerid}:
  *   delete:
  *     summary: Delete player.
  *     description: Delete player.
@@ -161,7 +221,7 @@ router.delete('/players/:playerid', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.deletePlayer(playerid, (player, err) => {
         if (err) {
-            returnError(404, 102, err, res, next);
+            returnError(404, 104, err, res, next);
         } else {
             res.json(player);
             next();
@@ -220,13 +280,77 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.getBot(playerid, botid, (bot, err) => {
         if (err) {
-            returnError(404, 103, err, res, next);
+            returnError(404, 105, err, res, next);
         } else {
             res.json(bot);
             next();
         }
     });
     
+});
+
+/**
+ * @swagger
+ * /players/:playerid/bot/:botid:
+ *   patch:
+ *     summary: Update choosen bot.
+ *     description: Update choosen bot.
+ *     parameters:
+ *       - in: path
+ *         name: playerid
+ *         required: true
+ *         description: Numeric ID of the player to update.
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: botid
+ *         required: true
+ *         description: Numeric ID of the bot to retrieve.
+ *         schema:
+ *           type: integer
+ *     content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: new name.
+ *                 example: bot3
+ *     responses:
+ *       200:
+ *         description: player.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: The player ID.
+ *                   example: 1
+ *                 name:
+ *                   type: string
+ *                   description: Player name.
+ *                   example: John
+ *       404:
+ *         description: bot id not found.
+ */
+ router.patch('/players/:playerid/bot/:botid', function (req, res, next) {
+    const playerid = req.params.playerid;
+    const botid = Number(req.params.botid);
+    logger.debug(`Get Bot player=${playerid} bot=${botid}`);
+
+    const repository = req.app.settings.repository;
+    repository.updateBot(playerid, botid, req.fields, (player, err) => {
+        if (err) {
+            returnError(404, 106, err, res, next);
+        } else {
+            res.json(player);
+            next();
+        }
+    });
+
 });
 
 /**
@@ -274,7 +398,7 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.deleteBot(playerid, botid, (bot, err) => {
         if (err) {
-            returnError(404, 103, err, res, next);
+            returnError(404, 107, err, res, next);
         } else {
             res.json(bot);
             next();
@@ -328,7 +452,7 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.addPlayer(name, (player, err) => {
         if (err) {
-            returnError(404, 104, err, res, next);
+            returnError(404, 108, err, res, next);
         } else {
             res.status(201).json({id: player.id, name: player.name});
             next();
@@ -385,7 +509,7 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
     const repository = req.app.settings.repository;
     repository.addBot(playerid, name, url, (bot, err) => {
         if (err) {
-            returnError(404, 105, err, res, next);
+            returnError(404, 109, err, res, next);
         } else {
             res.status(201).json(bot);
             next();

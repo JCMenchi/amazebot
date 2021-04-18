@@ -89,12 +89,32 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        it("should be able to update player 1", (done) => {
+            chai.request(app)
+                .patch('/api/players/1')
+                .send({name: 'foo'})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
         it("should be able to add bot to player 2", (done) => {
             chai.request(app)
                 .post('/api/players/2/bot')
                 .send({name: 'bar', url: '/data/bar.js'})
                 .end((err, res) => {
                     res.should.have.status(201);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should be able to update bot 2 of player 1", (done) => {
+            chai.request(app)
+                .patch('/api/players/1/bot/2')
+                .send({name: 'bar'})
+                .end((err, res) => {
+                    res.should.have.status(200);
                     res.body.should.be.a('object');
                     done();
                 });
@@ -117,6 +137,7 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        
     });
 
     describe('check error message', function () {
@@ -131,9 +152,29 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        it("cannot add player with existing name.", (done) => {
+            chai.request(app)
+                .post('/api/players')
+                .send({name: 'William'})
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
         it("should tell that bot does not exist.", (done) => {
             chai.request(app)
                 .get('/api/players/1/bot/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(105);
+                    done();
+                });
+        });
+        it("should tell that player to be patched does not exist.", (done) => {
+            chai.request(app)
+                .patch('/api/players/1234')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
@@ -147,7 +188,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(102);
+                    res.body.error.should.eql(104);
                     done();
                 });
         });
@@ -157,7 +198,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(103);
+                    res.body.error.should.eql(107);
                     done();
                 });
         });
@@ -168,6 +209,26 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should tell that player of bot to be patched does not exist.", (done) => {
+            chai.request(app)
+                .patch('/api/players/1234/bot/1234')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(106);
+                    done();
+                });
+        });
+        it("should tell that bot to be patched does not exist.", (done) => {
+            chai.request(app)
+                .patch('/api/players/1/bot/1234')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(106);
                     done();
                 });
         });

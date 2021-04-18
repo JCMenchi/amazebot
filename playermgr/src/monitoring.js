@@ -61,6 +61,7 @@ const boundInstruments = new Map();
  */
 function countAllRequests() {
   return (req, res, next) => {
+    /* istanbul ignore else */
     if (!boundInstruments.has(req.path)) {
       const labels = { route: req.path, method: req.method };
       const boundCounter = requestCount.bind(labels);

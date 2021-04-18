@@ -17,6 +17,7 @@ class FileRepository {
     }
 
     loadData(dataFile) {
+        /* istanbul ignore else */
         if (fs.existsSync(dataFile)) {
             logger.info(`Read sample config: ${dataFile}`);
             try {
@@ -27,6 +28,7 @@ class FileRepository {
                 this.playersid = 10;
                 this.botid = 10;
             } catch (error) {
+                /* istanbul ignore next */
                 logger.error(`Cannot read sample config: ${dataFile}: ${error.message}`);
             }
         }
@@ -44,6 +46,13 @@ class FileRepository {
     }
 
     addPlayer(name, cb) {
+        // check if name exists
+        const p = Object.values(this.players).filter(i => i.name === name);
+        if (p.length > 0) {
+            cb(null, 'Player with same nam exists.');
+            return;
+        }
+        // create player
         this.playersid = this.playersid + 1;
         this.players[this.playerid] = {
             id: this.playerid,
@@ -51,6 +60,19 @@ class FileRepository {
         };
 
         cb(this.players[this.playerid]);
+    }
+
+    updatePlayer(playerid, fields, cb) {
+        if (this.players[playerid]) {
+            for(const k in fields) {
+                /* istanbul ignore else */
+                if (Object.keys(this.players[playerid]).includes(k)) {
+                    this.players[playerid][k] = fields[k];
+                }
+            }
+            cb(this.players[playerid]);
+        }
+        cb(null, `Player ${playerid} does not exist.`);
     }
 
     deletePlayer(playerid, cb) {
@@ -70,8 +92,10 @@ class FileRepository {
 
     getBot(playerid, botid, cb) {
 
+        /* istanbul ignore else */
         if (this.players[playerid]) {
             if (this.players[playerid].bots.includes(botid)) {
+                /* istanbul ignore else */
                 if (this.bots[botid]) {
                     cb(this.bots[botid]);
                 }
@@ -96,10 +120,28 @@ class FileRepository {
         cb(null, `Cannot add bot; player ${playerid} does not exist.`);
     }
 
-    deleteBot(playerid, botid, cb) {
+    updateBot(playerid, botid, fields, cb) {
+        if (this.players[playerid]) {
+            /* istanbul ignore else */
+            if (this.players[playerid].bots.includes(botid)) {
+                const bot = this.bots[botid];
+                for(const k in fields) {
+                    /* istanbul ignore else */
+                    if (Object.keys(bot).includes(k)) {
+                        bot[k] = fields[k];
+                    }
+                }
+                cb(bot);
+            }
+        }
+        cb(null, `Bot ${botid} of player ${playerid} does not exist.`);
+    }
 
+    deleteBot(playerid, botid, cb) {
+        /* istanbul ignore else */
         if (this.players[playerid]) {
             if (this.players[playerid].bots.includes(botid)) {
+                /* istanbul ignore else */
                 if (this.bots[botid]) {
                     const b = this.bots[botid];
                     delete this.bots[botid];

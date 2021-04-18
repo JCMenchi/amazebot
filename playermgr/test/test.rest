@@ -8,7 +8,15 @@ GET {{{{monitoringurl}}}} HTTP/1.1
 GET {{baseurl}}/api/players HTTP/1.1
 
 ###
-GET {{baseurl}}/api/players/1 HTTP/1.1
+GET {{baseurl}}/api/players/56 HTTP/1.1
+
+###
+PATCH {{baseurl}}/api/players/56 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "foo"
+}
 
 ###
 GET {{baseurl}}/api/players/1/bot/1 HTTP/1.1
@@ -22,11 +30,18 @@ content-type: application/json
 }
 
 ###
-POST {{baseurl}}/api/bots HTTP/1.1
+POST {{baseurl}}/api/players/56/bot HTTP/1.1
 content-type: application/json
 
 {
-    "playerid": 1,
     "name": "bot1",
     "url": "data/bot1.json"
+}
+
+###
+PATCH {{baseurl}}/api/players/56/bot/11 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "bar"
 }
