@@ -27,7 +27,7 @@ const prometheusExporter = new PrometheusExporter(
   {
     startServer: true,
     port: prometheusPort,
-    preventServerStart: process.env.NODE_ENV === 'test' || process.env.npm_lifecycle_event === 'test' || process.env.npm_lifecycle_event === 'coverage'
+    preventServerStart: process.env.NODE_ENV === 'test'
   },
   () => {
     logger.info(
@@ -54,6 +54,7 @@ const boundInstruments = new Map();
  */
 function countAllRequests() {
   return (req, _res, next) => {
+    /* istanbul ignore else */
     if (!boundInstruments.has(req.path)) {
       const labels = { route: req.path, method: req.method };
       const boundCounter = requestCount.bind(labels);
