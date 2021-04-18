@@ -54,6 +54,12 @@ const logger = log4js.getLogger('playermgr');
  *                     type: string
  *                     description: Player name.
  *                     example: John
+ *                   bots:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                     description: Player bot list
+ *                     example: [1, 2]
  */
 router.get('/players', function (req, res, next) {
     const repository = req.app.settings.repository;
@@ -105,6 +111,8 @@ router.get('/players', function (req, res, next) {
  *                   type: array
  *                   items: 
  *                     type: integer
+ *                   description: Player bot list
+ *                   example: [1, 2]
  *       404:
  *         description: player id not found.
  */
@@ -137,7 +145,10 @@ router.get('/players/:playerid', function (req, res, next) {
  *         description: Numeric ID of the player to update.
  *         schema:
  *           type: integer
- *     content:
+ *     requestBody:
+ *       description: Player info.
+ *       required: true
+ *       content:
  *         application/json:
  *           schema:
  *             type: object
@@ -291,7 +302,7 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
 
 /**
  * @swagger
- * /players/:playerid/bot/:botid:
+ * /api/players/{playerid}/bot/{botid}:
  *   patch:
  *     summary: Update choosen bot.
  *     description: Update choosen bot.
@@ -299,16 +310,19 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
  *       - in: path
  *         name: playerid
  *         required: true
- *         description: Numeric ID of the player to update.
+ *         description: Numeric ID of the player owning the bot.
  *         schema:
  *           type: integer
  *       - in: path
  *         name: botid
  *         required: true
- *         description: Numeric ID of the bot to retrieve.
+ *         description: Numeric ID of the bot to update.
  *         schema:
  *           type: integer
- *     content:
+ *     requestBody:
+ *       description: Bot info.
+ *       required: true
+ *       content:
  *         application/json:
  *           schema:
  *             type: object
@@ -319,7 +333,7 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
  *                 example: bot3
  *     responses:
  *       200:
- *         description: player.
+ *         description: bot.
  *         content:
  *           application/json:
  *             schema:
@@ -327,12 +341,16 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
  *               properties:
  *                 id:
  *                   type: integer
- *                   description: The player ID.
+ *                   description: The bot ID.
  *                   example: 1
  *                 name:
  *                   type: string
- *                   description: Player name.
- *                   example: John
+ *                   description: Bot name.
+ *                   example: bot1
+ *                 url:
+ *                   type: string
+ *                   description: URL to get bot code
+ *                   example: bots/bot1.js
  *       404:
  *         description: bot id not found.
  */
@@ -388,7 +406,7 @@ router.get('/players/:playerid/bot/:botid', function (req, res, next) {
  *                   type: string
  *                   description: player name.
  *       404:
- *         description: name already used.
+ *         description: bot does not exist.
  */
 router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
     const playerid = req.params.playerid;
@@ -466,6 +484,13 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
  *   post:
  *     summary: Create bot.
  *     description: Create bot.
+ *     parameters:
+ *       - in: path
+ *         name: playerid
+ *         required: true
+ *         description: Numeric ID of the player.
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       description: Bot info.
  *       required: true
@@ -479,10 +504,11 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
  *               name:
  *                 type: string
  *                 description: The bot name.
- *                 example: John
+ *                 example: Bot1
  *               url:
  *                 type: string
  *                 description: The bot url.
+ *                 example: data/bot1.js
  *     responses:
  *       201:
  *         description: new bot created.
