@@ -33,12 +33,12 @@ export default function PlayerManager(props) {
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
         playerService
-            .get("/api/players")
+            .get("api/players")
             .then((response) => {
                 setPlayers(response.data);
             })
             .catch((error) => {
-                setErrorMessage(error.response.data);
+                setErrorMessage(error.response.statusText);
             });
     }, []);
 

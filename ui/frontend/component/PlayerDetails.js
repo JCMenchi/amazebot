@@ -25,12 +25,12 @@ export default function PlayerDetails(props) {
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
         playerService
-        .get("/api/players/" + playerId)
+        .get("api/players/" + playerId)
         .then((response) => {
             setPlayer(response.data);
         })
         .catch((error) => {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.statusText);
         });
     }, [playerId]);
 
