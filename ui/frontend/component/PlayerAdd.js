@@ -67,7 +67,7 @@ export default function PlayerAddDialog(props) {
                             <Field
                                 component={TextField}
                                 name="name"
-                                type="string"
+                                type="text"
                                 label={t('Name')}
                             />
                             {isSubmitting && <LinearProgress />}

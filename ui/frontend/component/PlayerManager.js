@@ -12,7 +12,6 @@ import LOGGER from '../utils/uilogger';
 /**
  * Player Manager Component
  * 
- * @param {Object} props 
  */
 export default function PlayerManager(props) {
 
@@ -25,8 +24,13 @@ export default function PlayerManager(props) {
     // We are passing an empty array as the default value.
     const [players, setPlayers] = useState([]);
 
-    const [errorMessage, setErrorMessage] = useState('Please select a player.');
+    // message to display when nothing is selected or after an error
+    const [errorMessage, setErrorMessage] = useState(t('Please select a player.'));
 
+    // is Add Player dialog open
+    const [openAddDialog, setOpenAddDialog] = React.useState(false);
+   
+    // current player
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const handleListItemClick = (event, index) => {
@@ -39,8 +43,7 @@ export default function PlayerManager(props) {
         loadPlayer();
     }, []);
 
-    const [openAddDialog, setOpenAddDialog] = React.useState(false);
-   
+    
     const loadPlayer = (id) => {
         playerService
         .get("api/players")
@@ -57,8 +60,9 @@ export default function PlayerManager(props) {
         });
     }
 
+    // Add player dialog management
     const handleAddPlayer = (event) => {
-        LOGGER.info('Open add player dialog');
+        // show dialog
         setOpenAddDialog(true);
     }
 
@@ -67,7 +71,7 @@ export default function PlayerManager(props) {
         setOpenAddDialog(false);
         if (value.error) {
             setErrorMessage(value.message);
-        } else {
+        } else if (value.id) {
             loadPlayer(value.id);
         }
     };

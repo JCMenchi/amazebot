@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Fab, Grid, Paper } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -10,15 +10,12 @@ import LOGGER from '../utils/uilogger';
 /**
  * Player Detail Component
  * 
- * @param {Object} props 
  */
 export default function PlayerDetails(props) {
 
     // for I18N
     const { t } = useTranslation();
-    // router navigation
-    const history = useHistory();
-
+    
     const { playerId } = useParams();
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -52,7 +49,7 @@ export default function PlayerDetails(props) {
     }
 
     return (
-        <Paper elevation={4} variant='outlined' style={{ padding: 4 }}>
+        <Paper elevation={4} variant='outlined' style={{padding: 4}}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
 
             { errorMessage === ''
@@ -69,9 +66,7 @@ export default function PlayerDetails(props) {
                         <DeleteIcon />
                     </Fab>
                 </Grid>
-
             }
-
         </Paper>
     );
 }
