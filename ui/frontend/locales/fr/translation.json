@@ -8,6 +8,9 @@
     "Create new player": "Create new player",
     "Name": "Nom",
     "Create": "Créer",
-    "Cancel": "Annuler"
+    "Cancel": "Annuler",
+    "Create new maze": "Create new maze",
+    "Please select a maze.": "Please select a maze.",
+    "Description": "Description"
 }
    

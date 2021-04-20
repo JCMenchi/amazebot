@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Grid, Paper } from '@material-ui/core';
+import { Fab, Grid, Paper } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import mazeService from '../utils/player_service';
+import LOGGER from '../utils/uilogger';
 
 /**
  * Player Detail Component
  * 
- * @param {Object} props 
  */
 export default function MazeDetails(props) {
 
@@ -34,6 +35,19 @@ export default function MazeDetails(props) {
             });
     }, [mazeId]);
 
+    const handleDelete = (event, maze_id) => {
+        LOGGER.info(`Delete maze ${maze_id}`);
+        playerService
+            .delete("api/mazes/" + maze_id)
+            .then((response) => {
+                LOGGER.info(`Maze ${maze_id} deleted.`);
+                props.reload();
+            })
+            .catch((error) => {
+                LOGGER.error(`Error while deleting player ${maze_id}: ${error}`);
+            });
+    }
+
     return (
         <Paper elevation={4} variant='outlined' style={{padding: 4}}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
@@ -41,20 +55,24 @@ export default function MazeDetails(props) {
             { errorMessage === ''
                 && <Grid container spacing={1} direction='column' alignItems='flex-start'>
                     <Grid item>
-                        Name: {maze.name}
+                        Id: {maze.id}
+                    </Grid>
+                    <Grid item>
+                        {t('Name')}: {maze.name}
                     </Grid>
                     <Grid item>
                         Description: {maze.description}
                     </Grid>
-                    <Grid item>
-                        Id: {maze.id}
-                    </Grid>
+
                     {maze.configuration && maze.configuration.map(item => (
                         <Grid item>
                             {item}
                         </Grid>
                     ))}
-
+                    <Fab size="small" color="primary" aria-label="delete"
+                        onClick={(event) => handleDelete(event, maze.id)}>
+                        <DeleteIcon />
+                    </Fab>
                 </Grid>
             }
         </Paper>
