@@ -80,6 +80,18 @@ app.use(function (req, res, next) {
  *   get:
  *     summary: Return info about player service.
  *     description: Return info about player service.
+ *     responses:
+ *       200:
+ *         description: service state information.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: service state.
+ *                   example: UP
  */
 app.get('/info', function (_req, res, next) {
     res.json({ state: 'UP' });

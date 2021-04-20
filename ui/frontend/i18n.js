@@ -24,6 +24,9 @@ i18n
     debug: process.env.NODE_ENV !== 'production',
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
+    },
+    backend: {
+      loadPath: '/amazeui/locales/{{lng}}/{{ns}}.json'
     }
   });
 

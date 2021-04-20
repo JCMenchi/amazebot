@@ -30,7 +30,7 @@ export default function GameDetails(props) {
             setGame(response.data);
         })
         .catch((error) => {
-            setErrorMessage(error.response.data);
+            setErrorMessage(error.response.statusText);
         });
     }, [gameId]);
 

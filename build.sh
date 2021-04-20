@@ -2,7 +2,7 @@
 
 DOCKER_REGISTRY=localhost:5000/
 
-SUBDIR="mazemgr playermgr gamemgr"
+SUBDIR="mazemgr playermgr gamemgr ui"
 
 for d in ${SUBDIR}; do
     cd "$d" || exit

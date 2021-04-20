@@ -30,7 +30,7 @@ export default function MazeDetails(props) {
                 setMaze(response.data);
             })
             .catch((error) => {
-                setErrorMessage(error.response.data);
+                setErrorMessage(error.response.statusText);
             });
     }, [mazeId]);
 

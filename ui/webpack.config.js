@@ -1,6 +1,8 @@
 const path = require("path");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: './frontend/index.js',
@@ -32,15 +34,21 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
-    path: path.resolve(__dirname, "dist/"),
-    publicPath: "/",
-    filename: "bundle.js"
+    path: path.resolve(__dirname, "amazeui/"),
+    publicPath: "/amazeui/",
+    filename: "[name].bundle.js"
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      minSize: 600*1024,
+    },
   },
   devServer: {
-    contentBase: path.join(__dirname, "public/"),
+    contentBase: path.join(__dirname, "frontend/"),
     historyApiFallback: true,
     port: 3000,
-    publicPath: "http://localhost:3000/",
+    publicPath: "http://localhost:3000/amazeui",
     hot: true,
     proxy: {
       '/api/players': 'http://localhost/',
@@ -51,6 +59,23 @@ module.exports = {
   plugins: [
     new webpack.ProgressPlugin(),
     new CleanWebpackPlugin({verbose:true}), 
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      minify: false,
+      title: 'aMazeUI',
+      template: './frontend/index.tpl',
+      meta: {
+        'viewport': 'initial-scale=1, width=device-width',
+        'mobile-web-app-capable': 'yes'
+      },
+      base: '/amazeui',
+      favicon: 'frontend/favicon.ico'
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: "frontend/manifest.json" },
+        { from: "frontend/locales", to: "locales" }
+      ]
+    })
   ]
 };

@@ -212,7 +212,7 @@ class DBRepository {
                 cb(null, `addBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
+                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], player_id: res.rows[0]['player_id'], bid: res.rows[0]['bid']});
                 } else {
                     cb(null, 'Cannot create bot.');
                 }
@@ -228,7 +228,7 @@ class DBRepository {
                 cb(null, `getBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
+                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], player_id: res.rows[0]['player_id']});
                 } else {
                     cb(null, 'Bot not found.');
                 }
@@ -260,7 +260,7 @@ class DBRepository {
                     cb(null, `updateBot: database error: ${err.message}`);
                 } else {
                     if (res.rowCount === 1) {
-                        cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], url: res.rows[0]['url']});
+                        cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], url: res.rows[0]['url'], player_id: res.rows[0]['player_id']});
                     } else {
                         cb(null, `Bot not found for player ${playerid} does not exist.`);
                     }
@@ -279,7 +279,7 @@ class DBRepository {
                 cb(null, `deleteBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], pid: res.rows[0]['pid'], bid: res.rows[0]['bid']});
+                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], player_id: res.rows[0]['player_id']});
                 } else {
                     cb(null, 'Bot not found.');
                 }

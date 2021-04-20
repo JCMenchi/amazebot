@@ -38,7 +38,7 @@ export default function MazeManager(props) {
                 setMazes(response.data);
             })
             .catch((error) => {
-                setErrorMessage(error.response.data);
+                setErrorMessage(error.response.statusText);
             });
     }, []);
 
