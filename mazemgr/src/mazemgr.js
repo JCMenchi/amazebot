@@ -43,13 +43,23 @@ const swaggerSpec = swaggerJSDoc(options);
  * Create express application.
  */
 const express = require('express');
-const helmet = require("helmet");
+const helmet = require('helmet');
 const http = require('http');
 const app = express();
+const path = require('path');
 
 app.use(helmet());
 app.set('etag', false);
 app.set('x-powered-by', false);
+
+// init HTML FORM processing
+const formidable = require('express-formidable');
+app.use(formidable({
+    encoding: 'utf-8',
+    uploadDir: path.join(__dirname, '/uploads'),
+    multiples: true,
+    keepExtensions: true
+}));
 
 const { countAllRequests } = require("./monitoring");
 app.use(countAllRequests());
@@ -67,7 +77,19 @@ app.use(function (req, res, next) {
  *   get:
  *     summary: Return info about maze service.
  *     description: Return info about maze service.
- */
+ *     responses:
+ *       200:
+ *         description: service state information.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   description: service state.
+ *                   example: UP
+*/
 app.get('/info', function (_req, res, next) {
     res.json({ state: 'UP' });
     next();
@@ -80,6 +102,7 @@ app.use('/api', router);
 /* add swagger endpoint */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// show performance measurement
 app.use(function (req, _res, _next) {
     logger.debug('End Call ' + req.method + ' ' + req.path);
     performance.mark('End ' + req.method + ' ' + req.path);
@@ -93,8 +116,7 @@ app.use(function (req, _res, _next) {
  * @return {http.Server}
  */
 function startServer(port) {
-    
-    const HTTPServer = http.createServer(app).listen(port, '0.0.0.0', () => {
+    const HTTPServer = http.createServer(app).listen(port, () => {
         logger.info('Maze Manager listening at http://%s:%s', HTTPServer.address().address, HTTPServer.address().port);
     });
 

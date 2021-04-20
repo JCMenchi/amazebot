@@ -1,0 +1,32 @@
+@baseurl = http://localhost:8082
+@monitoringurl = http://localhost:9465/metrics
+
+###
+GET {{{{monitoringurl}}}} HTTP/1.1
+
+###
+GET {{baseurl}}/api/mazes HTTP/1.1
+
+###
+DELETE {{baseurl}}/api/mazes/5 HTTP/1.1
+
+###
+PATCH {{baseurl}}/api/mazes/4 HTTP/1.1
+content-type: application/json
+
+{
+    "description": "desc foo",
+    "configuration": "the conf",
+    "solution": "the sol"
+}
+
+###
+POST {{baseurl}}/api/mazes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "maze2",
+    "description": "second maze",
+    "configuration": "conf",
+    "solution": "sol"
+}

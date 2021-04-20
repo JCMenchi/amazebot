@@ -27,7 +27,9 @@ if (process.env.LOG4JS_CONFIG === undefined) {
 }
 
 const { app, startServer } = require('../src/mazemgr.js');
-
+const { FileRepository } = require('../src/file_repository.js');
+const fr = new FileRepository();
+app.set('repository', fr);
 
 describe('Maze Manager REST API', function () {
     let HTTPServer;
