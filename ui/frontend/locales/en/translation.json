@@ -3,6 +3,11 @@
     "about": "About",
     "player": "player",
     "maze": "maze",
-    "game": "game"
+    "game": "game",
+
+    "Create new player": "Create new player",
+    "Name": "Name",
+    "Create": "Create",
+    "Cancel": "Cancel"
 }
    

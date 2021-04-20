@@ -11,7 +11,8 @@
     "doc": "jsdoc -R README.md -P package.json -d doc -r -c jsdoc.config.json frontend",
     "test": "jest --passWithNoTests",
     "test:watch": "npm test -- --watch",
-    "coverage": "jest --passWithNoTests --coverage"
+    "coverage": "jest --passWithNoTests --coverage",
+    "build:analyze": "npx webpack --profile --mode production --json > stats.json && npx webpack-bundle-analyzer stats.json"
   },
   "author": "",
   "license": "ISC",
@@ -58,10 +59,10 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "ag-grid-community": "^25.1.0",
-    "ag-grid-react": "^25.1.0",
     "axios": "^0.21.1",
     "fontsource-roboto": "^4.0.0",
+    "formik": "^2.2.6",
+    "formik-material-ui": "^3.0.1",
     "i18next": "^20.1.0",
     "i18next-browser-languagedetector": "^6.1.0",
     "i18next-http-backend": "^1.2.1",

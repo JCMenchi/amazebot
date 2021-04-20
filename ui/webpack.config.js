@@ -36,7 +36,13 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "amazeui/"),
     publicPath: "/amazeui/",
-    filename: "bundle.js"
+    filename: "[name].bundle.js"
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      minSize: 600*1024,
+    },
   },
   devServer: {
     contentBase: path.join(__dirname, "frontend/"),

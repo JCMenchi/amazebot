@@ -3,6 +3,11 @@
     "about": "A Propos",
     "player": "joueur",
     "maze": "labyrinthe",
-    "game": "partie"
+    "game": "partie",
+
+    "Create new player": "Create new player",
+    "Name": "Nom",
+    "Create": "Créer",
+    "Cancel": "Annuler"
 }
    
