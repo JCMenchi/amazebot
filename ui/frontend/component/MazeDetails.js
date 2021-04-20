@@ -37,7 +37,7 @@ export default function MazeDetails(props) {
 
     const handleDelete = (event, maze_id) => {
         LOGGER.info(`Delete maze ${maze_id}`);
-        playerService
+        mazeService
             .delete("api/mazes/" + maze_id)
             .then((response) => {
                 LOGGER.info(`Maze ${maze_id} deleted.`);
@@ -49,7 +49,7 @@ export default function MazeDetails(props) {
     }
 
     return (
-        <Paper elevation={4} variant='outlined' style={{padding: 4}}>
+        <Paper elevation={4} variant='outlined' style={{ padding: 4 }}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
 
             { errorMessage === ''
@@ -61,14 +61,19 @@ export default function MazeDetails(props) {
                         {t('Name')}: {maze.name}
                     </Grid>
                     <Grid item>
-                        Description: {maze.description}
+                        {t('Description')}: {maze.description}
                     </Grid>
 
-                    {maze.configuration && maze.configuration.map(item => (
+                    {maze.configuration && Array.isArray(maze.configuration) && maze.configuration.map(item => (
                         <Grid item>
                             {item}
                         </Grid>
                     ))}
+                    {maze.configuration && !Array.isArray(maze.configuration) &&
+                        <Grid item>
+                            {t('Configuration')}: {maze.configuration}
+                        </Grid>
+                    }
                     <Fab size="small" color="primary" aria-label="delete"
                         onClick={(event) => handleDelete(event, maze.id)}>
                         <DeleteIcon />
