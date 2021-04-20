@@ -63,7 +63,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       minify: false,
       title: 'aMazeUI',
-      template: './frontend/index.html',
+      template: './frontend/index.tpl',
       meta: {
         'viewport': 'initial-scale=1, width=device-width',
         'mobile-web-app-capable': 'yes'
