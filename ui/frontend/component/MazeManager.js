@@ -39,7 +39,7 @@ export default function MazeManager(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadMaze();
+        loadMaze(-1);
     }, []);
 
     const loadMaze = (id) => {
@@ -47,10 +47,13 @@ export default function MazeManager(props) {
         .get("api/mazes")
         .then((response) => {
             setMazes(response.data);
-            if (id) {
-                history.push(`/mazes/${id}`);
-            } else {
-                history.push('/mazes');
+            // if id is -1, it is the useEffect loading do not modify history
+            if (id !== -1) { 
+                if (id) {
+                    history.push(`/mazes/${id}`);
+                } else {
+                    history.push('/mazes');
+                }
             }
         })
         .catch((error) => {
