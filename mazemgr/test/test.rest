@@ -8,7 +8,7 @@ GET {{{{monitoringurl}}}} HTTP/1.1
 GET {{baseurl}}/api/mazes HTTP/1.1
 
 ###
-DELETE {{baseurl}}/api/mazes/5 HTTP/1.1
+DELETE {{baseurl}}/api/mazes/2 HTTP/1.1
 
 ###
 PATCH {{baseurl}}/api/mazes/4 HTTP/1.1
@@ -16,8 +16,6 @@ content-type: application/json
 
 {
     "description": "desc foo",
-    "configuration": "the conf",
-    "solution": "the sol"
 }
 
 ###
@@ -25,8 +23,98 @@ POST {{baseurl}}/api/mazes HTTP/1.1
 content-type: application/json
 
 {
-    "name": "maze2",
-    "description": "second maze",
-    "configuration": "conf",
-    "solution": "sol"
+    "name": "VeryBasic",
+    "description": "Very Basic 4x4",
+    "configuration": { "maze": [
+                "+0+1+2+3+",
+                "0 | | | |",
+                "+-+-+-+-+",
+                "x     | |",
+                "+-+-+ +-+",
+                "2 | |   X",
+                "+-+-+-+-+",
+                "3 | | | |",
+                "+-+-+-+-+"
+            ],
+            "entry": {"r": 1, "c": -1},
+            "exit": {"r": 1, "c": 4}
+    },
+    "solution": { "maze": [
+                "+-+-+-+-+",
+                "| | | | |",
+                "+-+-+-+-+",
+                "xbbbbb| |",
+                "+-+-+b+-+",
+                "| | |bbbX",
+                "+-+-+-+-+",
+                "| | | | |",
+                "+-+-+-+-+"
+            ]
+    }
+}
+
+###
+POST {{baseurl}}/api/mazes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Medium",
+    "description": "Medium 8x8",
+    "configuration": { "maze": [
+                "+0+1+2+3+4+5+6+7+",
+                "0 | |   | | | | |",
+                "+-+-+ +-+-+-+ +-+",
+                "x     |       | |",
+                "+-+ + +-+-+ + +-+",
+                "2   |   |   |   |",
+                "+ +-+ + + +-+-+-+",
+                "3     |     | | |",
+                "+-+ +-+-+-+-+-+-+",
+                "4     |       | |",
+                "+-+ + +-+-+ + +-+",
+                "5   |   |   |   X",
+                "+ +-+ + + +-+-+-+",
+                "6     |     | | |",
+                "+-+-+-+-+-+-+-+-+",
+                "7   |   |   |   |",
+                "+ +-+ + + +-+-+-+"
+            ],
+            "entry": {"r": 1, "c": -1},
+            "exit": {"r": 5, "c": 8}
+    }
+}
+
+###
+POST {{baseurl}}/api/mazes HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Basic",
+    "description": "Basic 4x4",
+    "configuration": { "maze": [
+                "+-+-+-+-+",
+                "| | | | |",
+                "+-+-+ +-+",
+                "x     | |",
+                "+-+ + +-+",
+                "|   |   X",
+                "+ +-+-+-+",
+                "|   | | |",
+                "+-+-+-+-+"
+            ],
+            "entry": {"r": 1, "c": -1},
+            "exit": {"r": 2, "c": 4}
+    },
+    "solution": { "maze":[
+                "+-+-+-+-+",
+                "| | | | |",
+                "+-+-+ +-+",
+                "xbbbbb| |",
+                "+-+ +b+-+",
+                "|   |bbbX",
+                "+ +-+-+-+",
+                "|   | | |",
+                "+-+-+-+-+"
+            ]
+    }
 }

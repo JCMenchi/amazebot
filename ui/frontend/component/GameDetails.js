@@ -35,7 +35,7 @@ export default function GameDetails(props) {
     }, [gameId]);
 
     return (
-        <Paper elevation={4} variant='outlined' style={{padding: 4}}>
+        <Paper elevation={4} variant='outlined' style={{padding: 4, position: 'relative'}}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
 
             { errorMessage === '' 

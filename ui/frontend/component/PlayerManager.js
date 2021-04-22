@@ -58,7 +58,12 @@ export default function PlayerManager(props) {
             }
         })
         .catch((error) => {
-            setErrorMessage(error.response.statusText);
+            if (error.response.data) {
+                // data is an object like { error: 101, message: 'error message'}
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage(error.response.statusText);
+            }
         });
     }
 

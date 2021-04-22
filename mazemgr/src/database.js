@@ -20,8 +20,8 @@ const MAZEDB_SCHEMA = `
         mid integer NOT NULL DEFAULT nextval('maze_serial_id'),
         name varchar(64) UNIQUE NOT NULL,
         description varchar(1024),
-        configuration varchar(1024),
-        solution varchar(1024),
+        configuration json,
+        solution json,
         PRIMARY KEY (mid)
     );
 

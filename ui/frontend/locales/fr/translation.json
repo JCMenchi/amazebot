@@ -11,6 +11,9 @@
     "Cancel": "Annuler",
     "Create new maze": "Create new maze",
     "Please select a maze.": "Please select a maze.",
-    "Description": "Description"
+    "Description": "Description",
+    "Bots": "Bots",
+    "Create new bot": "Create new bot",
+    "URL": "URL"
 }
    
