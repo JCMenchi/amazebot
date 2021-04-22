@@ -463,7 +463,7 @@ router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
  *       404:
  *         description: name already used.
  */
- router.post('/players', function (req, res, next) {
+router.post('/players', function (req, res, next) {
 
     const name = req.fields.name;
 

@@ -33,6 +33,11 @@ const parsed = require('yargs')
         default: 8082,
         type: 'number'
     })
+    .option('t', {
+      alias: 'test',
+      describe: 'use in memory db for test',
+      type: 'boolean'
+    })
     .demandCommand(0)
     .version().alias('v', 'version')
     .help().alias('h', 'help')
@@ -42,6 +47,19 @@ const parsed = require('yargs')
 const tracing = require('./src/tracing');
 
 // Start server
-const { startServer } = require('./src/mazemgr');
+const { startServer, app } = require('./src/mazemgr');
+
+if (parsed.test) {
+  logger.info('Run in test mode.');
+  // use in memory data loaded from data/data.json for test
+  const { FileRepository } = require('./src/file_repository');
+  const fr = new FileRepository();
+  app.set('repository', fr);
+} else {
+  // in normal mode use a pgsql database
+  const { DBRepository } = require('./src/database');
+  const db = new DBRepository('mazeuser', 'mazeuser');
+  app.set('repository', db);
+}
 
 startServer(parsed.port);

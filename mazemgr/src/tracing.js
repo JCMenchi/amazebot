@@ -10,10 +10,10 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('tracing');
 
 // initialize tracing
-const { NodeTracerProvider } = require("@opentelemetry/node");
+const { NodeTracerProvider } = require('@opentelemetry/node');
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { SimpleSpanProcessor, ConsoleSpanExporter } = require("@opentelemetry/tracing");
-const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
+const { SimpleSpanProcessor, ConsoleSpanExporter } = require('@opentelemetry/tracing');
+const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
 
 const provider = new NodeTracerProvider();
 
@@ -28,7 +28,7 @@ registerInstrumentations({
     new ExpressInstrumentation(),
     new HttpInstrumentation({
         requestHook: (span, request) => {
-          span.setAttribute("custom request hook attribute", "request");
+          span.setAttribute('custom request hook attribute', 'request');
         },
     }),
   ],
@@ -39,9 +39,9 @@ provider.register();
 provider.addSpanProcessor(
   new SimpleSpanProcessor(
     new JaegerExporter({
-      serviceName: "maze-manager",
+      serviceName: 'maze-manager',
     })
   )
 );
 
-logger.info("tracing initialized");
+logger.info('tracing initialized');

@@ -93,14 +93,15 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  * Last middleware.
  * Used to measure performance or log call to unknown URL
  */
-app.use(function (req, res, _next) {
-    performance.mark('End ' + req.method + ' ' + req.path);
-    if (res.headersSent) {
+app.use(function (req, res, next) {
+    if (res.writableEnded) {
         logger.debug('End Call ' + req.method + ' ' + req.path);
+        performance.mark('End ' + req.method + ' ' + req.path);
         performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
+        next();
     } else {
-        logger.error('Unknown URL ' + req.method + ' ' + req.path);
-        res.status(405).json({error: 11, message: 'Cannot interpert URL.' });
+        logger.error(`Unknown request ${req.method}:${req.path}`);
+        next('unknown request.'); // send error
     }
 });
 

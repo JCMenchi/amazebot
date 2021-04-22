@@ -127,14 +127,36 @@ class DBRepository {
         
     }
 
+    /*
+    SELECT PLAYER.PID,
+	PLAYER.NAME,
+	BOT.BID,
+	BOT.NAME
+FROM PLAYER
+LEFT JOIN BOT 
+    ON BOT.PLAYER_ID = PLAYER.PID 
+WHERE PLAYER.PID = 49;
+    */
     getPlayer(playerid, cb) {
-        this.pool.query('SELECT * FROM player WHERE pid = $1', [playerid], (err, res) => {
+        this.pool.query('SELECT player.pid as pid, player.name as name, bot.bid as bid, bot.name as botname FROM player LEFT JOIN bot ON player.pid = bot.player_id WHERE player.pid = $1;',
+                        [playerid], 
+                        (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `getPlayer: database error: ${err.message}`);
             } else {
-                if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['pid'], name: res.rows[0]['name']});
+                if (res.rowCount > 0) {
+                    const player = {
+                        id: res.rows[0]['pid'],
+                        name: res.rows[0]['name'],
+                        bots: []
+                    };
+                    for(const rec of res.rows) {
+                        if (rec['bid'] !== null) {
+                            player.bots.push({id: rec['bid'], name: rec['botname']});
+                        }
+                    }
+                    cb(player);
                 } else {
                     cb(null, 'Player not found.');
                 }
@@ -228,7 +250,16 @@ class DBRepository {
                 cb(null, `getBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], player_id: res.rows[0]['player_id']});
+                    const rec = res.rows[0];
+                    const b = {
+                        id: rec['bid'], 
+                        name: rec['name'], 
+                        player_id: rec['player_id']
+                    };
+                    if (rec['url']) {
+                        b.url = rec['url'];
+                    }
+                    cb(b);
                 } else {
                     cb(null, 'Bot not found.');
                 }

@@ -4,90 +4,78 @@ import { useParams } from 'react-router-dom';
 import { Fab, Grid, Paper } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import mazeService from '../utils/player_service';
+import playerService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
 /**
- * Maze Detail Component
+ * Player Detail Component
  * 
  */
-export default function MazeDetails(props) {
+export default function BotDetails(props) {
 
     // for I18N
     const { t } = useTranslation();
 
-    const { mazeId } = useParams();
+    const { botId } = useParams();
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [maze, setMaze] = useState({});
+    const [bot, setBot] = useState({});
 
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        setErrorMessage('');
-        mazeService
-            .get("/api/mazes/" + mazeId)
+        playerService
+            .get("/api/players/" + props.playerid + "/bot/" + botId)
             .then((response) => {
-                setMaze(response.data);
+                setBot(response.data);
             })
             .catch((error) => {
-                if (error.response) {
-                    setErrorMessage(error.response.statusText);
-                } else {
-                    setErrorMessage(error.message);
-                }
+                setErrorMessage(error.response.statusText);
             });
-    }, [mazeId]);
+    }, [botId]);
 
-    const handleDelete = (event, maze_id) => {
-        LOGGER.info(`Delete maze ${maze_id}`);
-        mazeService
-            .delete("api/mazes/" + maze_id)
+    const handleDelete = (event, bot_id) => {
+        LOGGER.info(`Delete bot ${bot_id}`);
+        playerService
+            .delete("api/players/" + props.playerid + "/bot/" + bot_id)
             .then((response) => {
-                LOGGER.info(`Maze ${maze_id} deleted.`);
+                LOGGER.info(`Bot ${bot_id} deleted.`);
                 props.reload();
             })
             .catch((error) => {
                 if (error.response) {
                     if (error.response.data) {
                         // data is an object like { error: 101, message: 'error message'}
-                        LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.data.message}`);
+                        LOGGER.error(`Error while deleting bot ${bot_id}: ${error.response.data.message}`);
                     } else {
-                        LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.statusText}`);
+                        LOGGER.error(`Error while deleting bot ${bot_id}: ${error.response.statusText}`);
                     }
                 } else {
-                    LOGGER.error(`Error while deleting maze ${maze_id}: ${error.message}`);
+                    LOGGER.error(`Error while deleting bot ${bot_id}: ${error.message}`);
                 }
             });
     }
 
     return (
-        <Paper elevation={4} variant='outlined' style={{ padding: 4, position: 'relative' }}>
+        <Paper elevation={4} variant='outlined' style={{ padding: 4, paddingRight: 60, paddingBottom: 30, position: 'relative' }}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
 
             { errorMessage === ''
                 && <Grid container spacing={1} direction='column' alignItems='flex-start'>
                     <Grid item>
-                        Id: {maze.id}
+                        Id: {bot.id}
                     </Grid>
                     <Grid item>
-                        {t('Name')}: {maze.name}
+                        {t('Name')}: {bot.name}
                     </Grid>
                     <Grid item>
-                        {t('Description')}: {maze.description}
+                        {t('URL')}: {bot.url}
                     </Grid>
-
-                    {maze.configuration && maze.configuration.maze && maze.configuration.maze.map(item => (
-                        <Grid item>
-                            {item}
-                        </Grid>
-                    ))}
-                    
                 </Grid>
             }
             <Fab size="small" style={{ position: 'absolute' }} color="primary" className="fabright" aria-label="delete"
-                onClick={(event) => handleDelete(event, maze.id)}>
+                onClick={(event) => handleDelete(event, bot.id)}>
                 <DeleteIcon />
             </Fab>
         </Paper>

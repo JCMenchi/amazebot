@@ -40,7 +40,7 @@ export default function PlayerManager(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadPlayer();
+        loadPlayer(-1);
     }, []);
 
     
@@ -49,14 +49,21 @@ export default function PlayerManager(props) {
         .get("api/players")
         .then((response) => {
             setPlayers(response.data);
-            if (id) {
-                history.push(`/players/${id}`);
-            } else {
-                history.push('/players');
+            if (id !== -1) { 
+                if (id) {
+                    history.push(`/players/${id}`);
+                } else {
+                    history.push('/players');
+                }
             }
         })
         .catch((error) => {
-            setErrorMessage(error.response.statusText);
+            if (error.response.data) {
+                // data is an object like { error: 101, message: 'error message'}
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage(error.response.statusText);
+            }
         });
     }
 

@@ -36,8 +36,8 @@ const meter = new MeterProvider({
   interval: 1000
 }).getMeter('maze-manager');
 
-const requestCount = meter.createCounter("requests", {
-  description: "Count all incoming requests"
+const requestCount = meter.createCounter('requests', {
+  description: 'Count all incoming requests'
 });
 
 const boundInstruments = new Map();

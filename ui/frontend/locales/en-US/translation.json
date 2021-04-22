@@ -5,9 +5,16 @@
     "maze": "maze",
     "game": "game",
 
+    "Please select a player.": "Please select a player.",
     "Create new player": "Create new player",
     "Name": "Name",
     "Create": "Create",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Create new maze": "Create new maze",
+    "Please select a maze.": "Please select a maze.",
+    "Description": "Description",
+    "Bots": "Bots",
+    "Create new bot": "Create new bot",
+    "URL": "URL"
 }
    

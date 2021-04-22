@@ -46,7 +46,9 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname, "frontend/"),
-    historyApiFallback: true,
+    historyApiFallback: {
+      index: '/amazeui/index.html'
+    },
     port: 3000,
     publicPath: "http://localhost:3000/amazeui",
     hot: true,
