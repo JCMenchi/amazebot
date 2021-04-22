@@ -104,7 +104,7 @@ describe('Game Manager REST API', function () {
             chai.request(app)
                 .get('/foo/bar/5')
                 .end((err, res) => {
-                    res.should.have.status(405);
+                    res.should.have.status(500);
                     res.body.should.be.a('object');
                     done();
                 });
