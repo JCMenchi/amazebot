@@ -102,11 +102,17 @@ app.use('/api', router);
 /* add swagger endpoint */
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// show performance measurement
-app.use(function (req, _res, _next) {
-    logger.debug('End Call ' + req.method + ' ' + req.path);
-    performance.mark('End ' + req.method + ' ' + req.path);
-    performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
+// show performance measurement and log error if nothing has been sent
+app.use(function (req, res, next) {
+    if (res.writableEnded) {
+        logger.debug('End Call ' + req.method + ' ' + req.path);
+        performance.mark('End ' + req.method + ' ' + req.path);
+        performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
+        next();
+    } else {
+        logger.error(`Unknown request ${req.method}:${req.path}`);
+        next('unknown request.'); // send error
+    }
 });
 
 /**
