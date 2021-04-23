@@ -11,30 +11,6 @@ const fs = require('fs');
 
 const { getBot, getBotCode, getMaze } = require('./service');
 
-const games = loadData('./data/data.json');
-
-/**
- * Temporary function to initialize service from JSON data file.
- * 
- * @param {string} filename - data file name
- * @return {*}
- */
-function loadData(filename) {
-    if (fs.existsSync(filename)) {
-        logger.info('Read sample config: ./data/data.json');
-        try {
-            const readdata = fs.readFileSync('./data/data.json', 'utf8');
-            const conf = JSON.parse(readdata);
-            return conf.games;
-        } catch (error) {
-            logger.error(`Cannot read sample config: ./data/data.json: ${error.message}`);
-        }
-    }
-    return {};
-}
-
-let gameid = 10;
-
 /**
  * Return error message to client.
  * 
@@ -83,17 +59,26 @@ function returnError(httpCode, code, message, res, next) {
  *                     description: game state.
  *                     example: init
  */
-router.get('/games', function (_req, res, next) {
-    const gameList = [];
-    for (const g in games) {
-        gameList.push({
-            id: games[g].id,
-            state: games[g].state,
-            steps: games[g].steps
-        });
-    }
-    res.json(gameList);
-    next();
+router.get('/games', function (req, res, next) {
+
+    const repository = req.app.settings.repository;
+    repository.getGames((games, err) => {
+        /* istanbul ignore if */
+        if (err) {
+            returnError(404, 301, err, res, next);
+        } else {
+            const gameList = [];
+            for (const g in games) {
+                gameList.push({
+                    id: games[g].id,
+                    state: games[g].state,
+                    steps: games[g].steps
+                });
+            }
+            res.json(gameList);
+            next();
+        }
+    });
 });
 
 /**
@@ -129,16 +114,18 @@ router.get('/games', function (_req, res, next) {
  *         description: game id not found.
  */
 router.get('/games/:gameid', function (req, res, next) {
+    
     const gameid = req.params.gameid;
-    logger.debug(`Get game= ${gameid}`);
-    if (games[gameid]) {
-        res.json(games[gameid]);
-        next();
-    } else {
-        returnError(404, 301, `game id ${gameid} not found.`, res, next);
-    }
+    const repository = req.app.settings.repository;
+    repository.getGame(gameid, (game, err) => {
+        if (err) {
+            returnError(404, 302, err, res, next);
+        } else {
+            res.json(game);
+            next();
+        }
+    });
 });
-
 
 /**
  * @swagger
@@ -219,6 +206,7 @@ router.post('/games', function (req, res, next) {
     const playerid = req.fields.playerid;
     const botid = req.fields.botid;
     const mazeid = req.fields.mazeid;
+    const repository = req.app.settings.repository;
 
     // get bot
     getBot(playerid, botid)
@@ -227,27 +215,26 @@ router.post('/games', function (req, res, next) {
             const theBot = result.data;
             getMaze(mazeid)
                 .then((result) => {
-                    games[gameid] = {
-                        id: gameid,
-                        player: playerid,
-                        bot: botid,
-                        maze: mazeid,
-                        state: 'init',
-                        steps: 0,
-                        mazeConfiguration: result.data.configuration,
-                        botURL: theBot.url
-                    };
-                    res.status(201).json({id: gameid, state: 'init'});
-                    gameid = gameid + 1;
-                    next();
+
+                    repository.addGame(playerid, botid, mazeid, result.data.configuration, theBot.url,
+                        (game, err) => {
+                            /* istanbul ignore if */
+                            if (err) {
+                                // cannot create game
+                                returnError(404, 303, `Cannot create game.`, res, next);
+                            } else {
+                                res.status(201).json(game);
+                                next();
+                            }
+                        });
+
                 }).catch((error) => {
                     // cannot reach maze service
-                    returnError(404, 311, `Cannot find maze ${mazeid}.`, res, next);
+                    returnError(404, 304, `Cannot find maze ${mazeid}.`, res, next);
                 });
-
         }).catch((error) => {
             // cannot reach player service
-            returnError(404, 312, `Cannot find player ${playerid} or bot ${botid}.`, res, next);
+            returnError(404, 305, `Cannot find player ${playerid} or bot ${botid}.`, res, next);
         });
 
 });
@@ -287,19 +274,67 @@ router.post('/games', function (req, res, next) {
 router.post('/games/:gameid/start', function (req, res, next) {
     const gameid = req.params.gameid;
     logger.debug(`Get game= ${gameid}`);
-    if (games[gameid]) {
-        if (games[gameid].state !== 'init') {
-            returnError(404, 321, `game id ${gameid} already executed.`, res, next);
+
+    const repository = req.app.settings.repository;
+    repository.getGame(gameid, (game, err) => {
+        if (err) {
+            returnError(404, 306, err, res, next);
         } else {
-            games[gameid].state = 'running';
-            games[gameid].botURL = getBotCode(games[gameid].botURL);
-            require('./engine')(games[gameid]);
-            res.json({id: gameid, state: games[gameid].state});
+            if (game.state !== 'init') {
+                returnError(404, 307, `game id ${gameid} already executed.`, res, next);
+            } else {
+                game.state = 'running';
+                game.botURL = getBotCode(game.botURL);
+                require('./engine')(game);
+                res.json({ id: gameid, state: game.state });
+                next();
+            }
+        }
+    });
+});
+
+/**
+ * @swagger
+ * /api/games/{gameid}:
+ *   delete:
+ *     summary: Delete game.
+ *     description: Delete game.
+ *     parameters:
+ *       - in: path
+ *         name: gameid
+ *         required: true
+ *         description: Numeric ID of the game to delete.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: game deleted.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: The game ID.
+ *                   example: 1
+ *       404:
+ *         description: game not found.
+ */
+ router.delete('/games/:gameid', function (req, res, next) {
+    const gameid = req.params.gameid;
+    logger.debug(`Delete game= ${gameid}`);
+
+    const repository = req.app.settings.repository;
+    repository.deleteGame(gameid, (game, err) => {
+        if (err) {
+            returnError(404, 308, err, res, next);
+        } else {
+            res.json(game);
             next();
         }
-    } else {
-        returnError(404, 322, `game id ${gameid} not found.`, res, next);
-    }
+    });
+
 });
 
 module.exports = {

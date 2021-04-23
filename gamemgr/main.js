@@ -19,6 +19,7 @@ if (process.env.LOG4JS_CONFIG === undefined) {
     });
   }
 }
+const logger = log4js.getLogger('gamemgr');
 
 /*
  * Declare command line option.
@@ -44,6 +45,11 @@ const parsed = require('yargs')
       default: 'http://127.0.0.1:8082/api',
       type: 'string'
     })
+    .option('t', {
+      alias: 'test',
+      describe: 'use in memory db for test',
+      type: 'boolean'
+    })
     .demandCommand(0)
     .version().alias('v', 'version')
     .help().alias('h', 'help')
@@ -57,5 +63,19 @@ const { initService } = require('./src/service');
 initService(parsed.playermgrurl, parsed.mazemgrurl);
 
 // Start server
-const { startServer } = require('./src/gamemgr');
+const { startServer, app } = require('./src/gamemgr');
+
+if (parsed.test) {
+  logger.info('Run in test mode.');
+  // use in memory data loaded from data/data.json for test
+  const { FileRepository } = require('./src/file_repository');
+  const fr = new FileRepository();
+  app.set('repository', fr);
+} else {
+  // in normal mode use a pgsql database
+  const { DBRepository } = require('./src/database');
+  const db = new DBRepository('gameuser', 'gameuser');
+  app.set('repository', db);
+}
+
 startServer(parsed.port);

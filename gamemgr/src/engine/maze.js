@@ -148,6 +148,7 @@ class Maze {
      * @param {string[]} def 
      * @private
      */
+    /* istanbul ignore next */
     loadFromStringArray(def) {
         this.nbRow = (def.length - 1) / 2;
         this.nbColumn = (def[0].length - 1) / 2;
@@ -258,6 +259,7 @@ class Maze {
      * 
      * @private
      */
+    /* istanbul ignore next */
     showBot() {
         this.logfile.write(`=== STEP ${this.steps} ====\n`);
         for (let i = 0; i < this.nbRow; i++) {

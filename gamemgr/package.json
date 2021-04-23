@@ -5,7 +5,7 @@
   "description": "Game Manager",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
+    "start": "node main.js -t",
     "build": "npm i --no-optional --no-shrinkwrap --no-package-lock --only=production",
     "clean": "npx rimraf .nyc_output doc/reference.md coverage doc/html test-results.xml",
     "doc": "npx jsdoc --readme doc/static/intro.md -d doc/html -c jsdocconfig.json",

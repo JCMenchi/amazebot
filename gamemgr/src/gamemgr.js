@@ -94,6 +94,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  * Used to measure performance or log call to unknown URL
  */
 app.use(function (req, res, next) {
+    /* istanbul ignore else */
     if (res.writableEnded) {
         logger.debug('End Call ' + req.method + ' ' + req.path);
         performance.mark('End ' + req.method + ' ' + req.path);
