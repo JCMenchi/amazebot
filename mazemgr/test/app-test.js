@@ -69,13 +69,71 @@ describe('Maze Manager REST API', function () {
                     done();
                 });
         });
+        it("should be able to add maze foo", (done) => {
+            chai.request(app)
+                .post('/api/mazes')
+                .send({name: 'foo', description: 'from unit test'})
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should be able to update maze 1", (done) => {
+            chai.request(app)
+                .patch('/api/mazes/1')
+                .send({name: 'bar'})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("can delete maze 3", (done) => {
+            chai.request(app)
+                .delete('/api/mazes/3')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
     });
 
     describe('check error', function () {
-        this.timeout(10000);
+        this.timeout(2000);
         it("should check if maze exist", (done) => {
             chai.request(app)
                 .get('/api/mazes/5')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("cannot add maze with existing name.", (done) => {
+            chai.request(app)
+                .post('/api/mazes')
+                .send({name: 'Basic'})
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should tell that maze to update does not exist.", (done) => {
+            chai.request(app)
+                .patch('/api/mazes/1234')
+                .send({name: 'bar'})
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should tell that maze to delete does not exist.", (done) => {
+            chai.request(app)
+                .delete('/api/mazes/1234')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
