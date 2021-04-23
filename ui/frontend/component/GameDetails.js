@@ -41,11 +41,27 @@ export default function GameDetails(props) {
             { errorMessage === '' 
                 && <Grid container spacing={1} direction='column' alignItems='flex-start'>
                     <Grid item>
-                        Name: {game.name}
-                    </Grid>
-                    <Grid item>
                         Id: {game.id}
                     </Grid>
+                    <Grid item>
+                        PlayerId: {game.playerid}
+                    </Grid>
+                    <Grid item>
+                        BotId: {game.botid}
+                    </Grid>
+                    <Grid item>
+                        Bot URL: {game.botURL}
+                    </Grid>
+                    <Grid item>
+                        MazeId: {game.mazeid}
+                    </Grid>
+                    <Grid item>
+                        State: {game.state}
+                    </Grid>
+                    <Grid item>
+                        Steps: {game.steps}
+                    </Grid>
+
                 </Grid>
             }
         </Paper>

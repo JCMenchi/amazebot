@@ -111,7 +111,7 @@ class DBRepository {
                 for(const rec of res.rows) {
                     games.push({
                         id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        gameid: rec.gameid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration
                     });
                 }
@@ -130,7 +130,7 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        gameid: rec.gameid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, 'Game not found.');
@@ -153,7 +153,7 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        gameid: rec.gameid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, 'Cannot create game.');
@@ -186,7 +186,7 @@ class DBRepository {
                     if (res.rowCount === 1) {
                         const rec = res.rows[0];
                         cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                            gameid: rec.gameid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                            mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                             mazeConfiguration: rec.maze_configuration});
                     } else {
                         cb(null, `Game ${gameid} does not exist.`);
@@ -207,7 +207,7 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        gameid: rec.gameid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, `Game ${gameid} does not exist.`);

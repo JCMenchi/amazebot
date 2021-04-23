@@ -60,7 +60,7 @@ export default function GameManager(props) {
                     <main style={{ marginLeft: 4, flexGrow: 1 }}>
                         <Switch>
                             <Route path={`${props.match.url}/:gameId`} component={GameDetails} />
-                            <Route exact path={props.match.url} render={() => <h3>Please select a player.</h3>} />
+                            <Route exact path={props.match.url} render={() => <h3>Please select a game.</h3>} />
                         </Switch>
                     </main>
                 </div>

@@ -186,7 +186,7 @@ describe('Game Manager REST API', function () {
     });
 
     describe('test engine', function () {
-        this.timeout(20000);
+        this.timeout(2000);
         it("can run a game", (done) => {
             const game = {
                 id: 1,
