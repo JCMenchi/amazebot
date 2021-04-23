@@ -107,6 +107,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // show performance measurement and log error if nothing has been sent
 app.use(function (req, res, next) {
+    /* istanbul ignore else */
     if (res.writableEnded) {
         logger.debug('End Call ' + req.method + ' ' + req.path);
         performance.mark('End ' + req.method + ' ' + req.path);

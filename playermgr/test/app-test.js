@@ -141,7 +141,7 @@ describe('Player Manager REST API', function () {
     });
 
     describe('check error message', function () {
-        this.timeout(10000);
+        this.timeout(2000);
         it("should check if player exists", (done) => {
             chai.request(app)
                 .get('/api/players/5')
