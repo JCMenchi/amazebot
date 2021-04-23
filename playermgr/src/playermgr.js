@@ -65,7 +65,7 @@ const { countAllRequests } = require("./monitoring");
 app.use(countAllRequests());
 
 // serve bots definition
-app.use('/data/', express.static('./data/', { fallthrough: false }));
+app.use('/api/data/', express.static('./data/', { fallthrough: false }));
 
 // this middleware is called first to setup performnace mark
 app.use(function (req, res, next) {
