@@ -42,21 +42,35 @@ class FileRepository {
         }
     }
 
-    addGame(playerid, botid, mazeid, mazeConf, botURL, cb) {
+    addGame(playerid, botid, gameid, gameConf, botURL, cb) {
         // create Game
         this.gameid = this.gameid + 1;
         this.games[this.gameid] = {
             id: this.gameid,
             player: playerid,
             bot: botid,
-            maze: mazeid,
+            game: gameid,
             state: 'init',
             steps: 0,
-            mazeConfiguration: mazeConf,
+            gameConfiguration: gameConf,
             botURL: botURL
         };
         
         cb(this.games[this.gameid]);
+    }
+
+    updateGame(gameid, fields, cb) {
+        if (this.games[gameid]) {
+            for(const k in fields) {
+                /* istanbul ignore else */
+                if (Object.keys(this.games[gameid]).includes(k)) {
+                    this.games[gameid][k] = fields[k];
+                }
+            }
+            cb(this.games[gameid]);
+        } else {
+            cb(null, `Game ${gameid} does not exist.`);
+        }
     }
 
     deleteGame(gameid, cb) {

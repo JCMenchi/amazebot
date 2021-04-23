@@ -38,4 +38,13 @@ content-type: application/json
 }
 
 ###
+PATCH {{baseurl}}/api/games/2 HTTP/1.1
+content-type: application/json
+
+{
+    "state": "init",
+    "steps": 11
+}
+
+###
 POST {{baseurl}}/api/games/2/start HTTP/1.1

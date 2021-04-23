@@ -75,6 +75,16 @@ describe('Game Manager REST API', function () {
                     done();
                 });
         });
+        it("should be able to update game 2", (done) => {
+            chai.request(app)
+                .patch('/api/games/2')
+                .send({state: 'success'})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
         it("can run a game", (done) => {
             chai.request(app)
                 .post('/api/games/1/start')
@@ -119,6 +129,16 @@ describe('Game Manager REST API', function () {
         it("do run a game twice", (done) => {
             chai.request(app)
                 .post('/api/games/3/start')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should tell if game to be updated exists", (done) => {
+            chai.request(app)
+                .patch('/api/games/234')
+                .send({name: 'success'})
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');

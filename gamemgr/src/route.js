@@ -337,6 +337,64 @@ router.post('/games/:gameid/start', function (req, res, next) {
 
 });
 
+/**
+ * @swagger
+ * /api/games/{gameid}:
+ *   patch:
+ *     summary: Update choosen game.
+ *     description: Update choosen game.
+ *     parameters:
+ *       - in: path
+ *         name: gameid
+ *         required: true
+ *         description: Numeric ID of the game to update.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       description: Game info.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - state
+ *             properties:
+ *               state:
+ *                 type: string
+ *                 description: new state.
+ *                 example: success
+ *     responses:
+ *       200:
+ *         description: game.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: The game ID.
+ *                   example: 1
+ *       404:
+ *         description: game id not found.
+ */
+router.patch('/games/:gameid', function (req, res, next) {
+    const gameid = req.params.gameid;
+    logger.debug(`Update game= ${gameid}`);
+
+    const repository = req.app.settings.repository;
+    repository.updateGame(gameid, req.fields, (game, err) => {
+        if (err) {
+            returnError(404, 204, err, res, next);
+        } else {
+            res.json(game);
+            next();
+        }
+    });
+
+});
+
 module.exports = {
     router
 };
