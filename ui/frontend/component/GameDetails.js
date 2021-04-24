@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Grid, Paper } from '@material-ui/core';
+import { Fab, Grid, Paper } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-import playerService from '../utils/player_service';
+
+import gameService from '../utils/player_service';
+import LOGGER from '../utils/uilogger';
 
 /**
  * Game Detail Component
  * 
- * @param {Object} props 
  */
 export default function GameDetails(props) {
 
@@ -24,18 +26,45 @@ export default function GameDetails(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        playerService
+        setErrorMessage('');
+        gameService
         .get("/api/games/" + gameId)
         .then((response) => {
             setGame(response.data);
         })
         .catch((error) => {
-            setErrorMessage(error.response.statusText);
+            if (error.response) {
+                setErrorMessage(error.response.statusText);
+            } else {
+                setErrorMessage(error.message);
+            }
         });
     }, [gameId]);
 
+    const handleDelete = (event, game_id) => {
+        LOGGER.info(`Delete game ${game_id}`);
+        gameService
+            .delete("api/games/" + game_id)
+            .then((response) => {
+                LOGGER.info(`Game ${game_id} deleted.`);
+                props.reload();
+            })
+            .catch((error) => {
+                if (error.response) {
+                    if (error.response.data) {
+                        // data is an object like { error: 101, message: 'error message'}
+                        LOGGER.error(`Error while deleting game ${game_id}: ${error.response.data.message}`);
+                    } else {
+                        LOGGER.error(`Error while deleting game ${game_id}: ${error.response.statusText}`);
+                    }
+                } else {
+                    LOGGER.error(`Error while deleting game ${game_id}: ${error.message}`);
+                }
+            });
+    }
+
     return (
-        <Paper elevation={4} variant='outlined' style={{padding: 4, position: 'relative'}}>
+        <Paper elevation={4} variant='outlined' style={{ padding: 4, position: 'relative' }}>
             { errorMessage !== '' && <h3>{errorMessage}</h3>}
 
             { errorMessage === '' 
@@ -64,6 +93,10 @@ export default function GameDetails(props) {
 
                 </Grid>
             }
+            <Fab size="small" style={{ position: 'absolute' }} color="primary" className="fabright" aria-label="delete"
+                onClick={(event) => handleDelete(event, game.id)}>
+                <DeleteIcon />
+            </Fab>
         </Paper>
     );
 }

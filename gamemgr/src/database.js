@@ -139,9 +139,9 @@ class DBRepository {
         });
     }
 
-    addGame(playerid, botid, gameid, gameConf, botURL, cb) {
-        const params = [playerid, botid, gameid, botURL, gameConf];
-        const field_names = 'playerid, botid, gameid, boturl, maze_configuration';
+    addGame(playerid, botid, mazeid, gameConf, botURL, cb) {
+        const params = [playerid, botid, mazeid, botURL, gameConf];
+        const field_names = 'playerid, botid, mazeid, boturl, maze_configuration';
         const field_index = '$1, $2, $3, $4, $5';
         const query = 'INSERT INTO game (' + field_names + ') VALUES (' + field_index + ') RETURNING *;';
 
