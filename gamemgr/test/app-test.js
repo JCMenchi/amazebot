@@ -216,7 +216,7 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, (code, result) => {
+            rungame(game, fr, (code, result) => {
                 expect(code).to.equal(0);
                 done();
             });
@@ -251,7 +251,7 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, (code, result) => {
+            rungame(game, fr, (code, result) => {
                 expect(code).to.equal(102);
                 done();
             });
@@ -285,7 +285,7 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, (code, result) => {
+            rungame(game, fr, (code, result) => {
                 expect(code).to.equal(101);
                 done();
             });

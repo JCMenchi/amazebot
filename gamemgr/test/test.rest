@@ -32,9 +32,9 @@ POST {{baseurl}}/api/games HTTP/1.1
 content-type: application/json
 
 {
-    "playerid": 1,
-    "botid": 1,
-    "mazeid": 2
+    "playerid": 87,
+    "botid": 29,
+    "mazeid": 3
 }
 
 ###

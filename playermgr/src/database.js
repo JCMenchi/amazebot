@@ -244,7 +244,7 @@ WHERE PLAYER.PID = 49;
 
     getBot(playerid, botid, cb) {
 
-        this.pool.query('SELECT * FROM bot WHERE bid = $1 AND player_id = $2', [botid, playerid], (err, res) => {
+        this.pool.query('SELECT bot.bid, bot.name as name, bot.url as url, player_id, player.name as player_name FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `getBot: database error: ${err.message}`);
@@ -254,7 +254,8 @@ WHERE PLAYER.PID = 49;
                     const b = {
                         id: rec['bid'], 
                         name: rec['name'], 
-                        player_id: rec['player_id']
+                        player_id: rec['player_id'],
+                        player_name: rec['player_name']
                     };
                     if (rec['url']) {
                         b.url = rec['url'];

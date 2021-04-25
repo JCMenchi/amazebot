@@ -99,7 +99,13 @@ class FileRepository {
             if (this.players[playerid].bots.includes(botid)) {
                 /* istanbul ignore else */
                 if (this.bots[botid]) {
-                    cb(this.bots[botid]);
+                    const botinfo = {
+                        id: botid,
+                        name: this.bots[botid].name,
+                        player_id: playerid,
+                        player_name: this.players[playerid].name
+                    };
+                    cb(botinfo);
                 } else {
                     cb(null, `Bot ${botid} does not exist.`);
                 }

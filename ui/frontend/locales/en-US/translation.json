@@ -20,6 +20,13 @@
     "Create new game": "Create new game",
     "playerid": "playerid",
     "botid": "botid",
-    "mazeid": "mazeid"
+    "mazeid": "mazeid",
+    "Game Id": "Game Id",
+    "Player": "Player",
+    "Bot": "Bot",
+    "Bot URL": "Bot URL",
+    "Maze": "Maze",
+    "State": "State",
+    "Steps": "Steps"
 }
    

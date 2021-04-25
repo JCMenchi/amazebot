@@ -7,7 +7,7 @@ const fs = require('fs');
  Service worker cannot be tested by mocha
 */
 
-module.exports = (game, endcb) => {
+module.exports = (game, repository, endcb) => {
     /* istanbul ignore else */
     if (!endcb && worker.isMainThread) {
         // run in asynchroneous mode when no callback is defined
@@ -33,14 +33,18 @@ module.exports = (game, endcb) => {
             /* istanbul ignore next */
             logger.info(`Worker #${wrk.threadId} message: ${JSON.stringify(value)}`);
             // copy execution result
+            const gameinfo = {};
+
             /* istanbul ignore next */
             if (value.state) {
-                game.state = value.state;
+                gameinfo.state = value.state;
             }
             /* istanbul ignore next */
             if (value.steps) {
-                game.steps = value.steps;
+                gameinfo.steps = value.steps;
             }
+            
+            repository.updateGame(game.id, gameinfo, (result, message) => {});
         });
 
         wrk.on('error', (err) => {

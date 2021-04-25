@@ -133,6 +133,7 @@ class Maze {
         this.nbColumn = 0;
         this.rooms = [];
         this.steps = 0;
+        
         /** @type {'success'|'failure'} */
         this.state = 'failure';
         this.logfile = fs.createWriteStream(logfilename);

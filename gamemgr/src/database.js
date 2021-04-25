@@ -19,8 +19,11 @@ const GAMEDB_SCHEMA = `
     (
         gid integer NOT NULL DEFAULT nextval('game_serial_id'),
         playerid integer NOT NULL,
+        playername varchar(256),
         botid integer NOT NULL,
-        gameid integer NOT NULL,
+        botname varchar(256),
+        mazeid integer NOT NULL,
+        mazename varchar(256),
         state varchar(64) NOT NULL DEFAULT 'init',
         steps integer DEFAULT 0,
         boturl varchar(1024) NOT NULL,
@@ -33,7 +36,8 @@ const GAMEDB_SCHEMA = `
                                              ('creation_date', '${new Date().toISOString()}');
 `;
 
-const GAME_FIELDS = ['playerid', 'botid', 'gameid', 'state', 'steps', 'boturl', 'maze_configuration'];
+const GAME_FIELDS = ['playerid', 'botid', 'mazeid', 'playername', 'botname', 'mazename', 
+                     'state', 'steps', 'boturl', 'maze_configuration'];
 
 class DBRepository {
 
@@ -111,7 +115,8 @@ class DBRepository {
                 for(const rec of res.rows) {
                     games.push({
                         id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
+                        mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration
                     });
                 }
@@ -130,7 +135,8 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
+                        mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, 'Game not found.');
@@ -139,10 +145,10 @@ class DBRepository {
         });
     }
 
-    addGame(playerid, botid, mazeid, gameConf, botURL, cb) {
-        const params = [playerid, botid, mazeid, botURL, gameConf];
-        const field_names = 'playerid, botid, mazeid, boturl, maze_configuration';
-        const field_index = '$1, $2, $3, $4, $5';
+    addGame(playerid, botid, mazeid, playername, botname, mazename, gameConf, botURL, cb) {
+        const params = [playerid, botid, mazeid, playername, botname, mazename, botURL, gameConf];
+        const field_names = 'playerid, botid, mazeid, playername, botname, mazename, boturl, maze_configuration';
+        const field_index = '$1, $2, $3, $4, $5, $6, $7, $8';
         const query = 'INSERT INTO game (' + field_names + ') VALUES (' + field_index + ') RETURNING *;';
 
         this.pool.query(query, params, (err, res) => {
@@ -153,7 +159,8 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
+                        mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, 'Cannot create game.');
@@ -186,7 +193,8 @@ class DBRepository {
                     if (res.rowCount === 1) {
                         const rec = res.rows[0];
                         cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                            mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                            mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
+                            mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                             mazeConfiguration: rec.maze_configuration});
                     } else {
                         cb(null, `Game ${gameid} does not exist.`);
@@ -207,7 +215,8 @@ class DBRepository {
                 if (res.rowCount === 1) {
                     const rec = res.rows[0];
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
-                        mazeid: rec.mazeid, state: rec.state, steps: rec.steps, botURL: rec.boturl,
+                        mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
+                        mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
                         mazeConfiguration: rec.maze_configuration});
                 } else {
                     cb(null, `Game ${gameid} does not exist.`);

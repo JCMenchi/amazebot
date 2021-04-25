@@ -42,7 +42,7 @@ class FileRepository {
         }
     }
 
-    addGame(playerid, botid, mazeid, mazeConf, botURL, cb) {
+    addGame(playerid, botid, mazeid, playername, botname, mazename, mazeConf, botURL, cb) {
         // create Game
         this.gameid = this.gameid + 1;
         this.games[this.gameid] = {
@@ -50,6 +50,9 @@ class FileRepository {
             playerid: playerid,
             botid: botid,
             mazeid: mazeid,
+            playername: playername,
+            botname: botname,
+            mazename: mazename,
             state: 'init',
             steps: 0,
             mazeConfiguration: mazeConf,

@@ -213,10 +213,12 @@ router.post('/games', function (req, res, next) {
         .then((result) => {
             // bot exists look for maze
             const theBot = result.data;
+            const botname = result.data.name;
+            const playername = result.data.player_name;
             getMaze(mazeid)
                 .then((result) => {
 
-                    repository.addGame(playerid, botid, mazeid, result.data.configuration, theBot.url,
+                    repository.addGame(playerid, botid, mazeid, playername, botname, result.data.name, result.data.configuration, theBot.url,
                         (game, err) => {
                             /* istanbul ignore if */
                             if (err) {
@@ -284,10 +286,18 @@ router.post('/games/:gameid/start', function (req, res, next) {
                 returnError(404, 307, `game id ${gameid} already executed.`, res, next);
             } else {
                 game.state = 'running';
-                game.botURL = getBotCode(game.botURL);
-                require('./engine')(game);
-                res.json({ id: gameid, state: game.state });
-                next();
+                
+                repository.updateGame(game.id, { state: game.state }, (game, err) => {
+                    if (err) {
+                        returnError(404, 306, err, res, next);
+                    } else {
+                        game.botURL = getBotCode(game.botURL);
+                        require('./engine')(game, repository);
+                        res.json({ id: gameid, state: game.state });
+                        next();
+                    }
+                });
+                
             }
         }
     });
