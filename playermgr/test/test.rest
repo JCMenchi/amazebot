@@ -2,13 +2,13 @@
 @monitoringurl = http://localhost:9464/metrics
 
 ###
-GET {{{{monitoringurl}}}} HTTP/1.1
+GET {{monitoringurl}} HTTP/1.1
 
 ###
 GET {{baseurl}}/api/players HTTP/1.1
 
 ###
-GET {{baseurl}}/api/players/80 HTTP/1.1
+GET {{baseurl}}/api/players/87 HTTP/1.1
 
 ###
 DELETE {{baseurl}}/api/players/85 HTTP/1.1
@@ -22,7 +22,7 @@ content-type: application/json
 }
 
 ###
-GET {{baseurl}}/api/players/1/bot/1 HTTP/1.1
+GET {{baseurl}}/api/players/87/bot/28 HTTP/1.1
 
 ### 
 

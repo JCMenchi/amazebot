@@ -41,8 +41,9 @@ class FileRepository {
     getPlayer(playerid, cb) {
         if (this.players[playerid]) {
             cb(this.players[playerid]);
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
         }
-        cb(null, `Player ${playerid} does not exist.`);
     }
 
     addPlayer(name, cb) {
@@ -71,8 +72,9 @@ class FileRepository {
                 }
             }
             cb(this.players[playerid]);
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
         }
-        cb(null, `Player ${playerid} does not exist.`);
     }
 
     deletePlayer(playerid, cb) {
@@ -86,23 +88,33 @@ class FileRepository {
                 }
             }
             cb(p);
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
         }
-        cb(null, `Player ${playerid} does not exist.`);
     }
 
     getBot(playerid, botid, cb) {
-
         /* istanbul ignore else */
         if (this.players[playerid]) {
             if (this.players[playerid].bots.includes(botid)) {
                 /* istanbul ignore else */
                 if (this.bots[botid]) {
-                    cb(this.bots[botid]);
+                    const botinfo = {
+                        id: botid,
+                        name: this.bots[botid].name,
+                        player_id: playerid,
+                        player_name: this.players[playerid].name
+                    };
+                    cb(botinfo);
+                } else {
+                    cb(null, `Bot ${botid} does not exist.`);
                 }
+            } else {
+                cb(null, `Bot ${botid} does not belong to player ${playerid}.`);
             }
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
         }
-
-        cb(null, `Bot ${botid} does not exist for player ${playerid}.`);
     }
 
     addBot(playerid, name, url, cb) {
@@ -115,9 +127,9 @@ class FileRepository {
             };
             this.players[playerid].bots.push(this.botid);
             cb(this.bots[this.botid]);
+        } else {
+            cb(null, `Cannot add bot; player ${playerid} does not exist.`);
         }
-
-        cb(null, `Cannot add bot; player ${playerid} does not exist.`);
     }
 
     updateBot(playerid, botid, fields, cb) {
@@ -132,9 +144,12 @@ class FileRepository {
                     }
                 }
                 cb(bot);
+            } else {
+                cb(null, `Bot ${botid} does not belong to player ${playerid}.`);
             }
+        } else {
+            cb(null, `Bot ${botid} of player ${playerid} does not exist.`);
         }
-        cb(null, `Bot ${botid} of player ${playerid} does not exist.`);
     }
 
     deleteBot(playerid, botid, cb) {
@@ -151,10 +166,12 @@ class FileRepository {
                     // cleanup bot list
                     this.players[playerid].bots = this.players[playerid].bots.filter(i => i !== botid);
                 }
+            } else {
+                cb(null, `Bot ${botid} does not belong to player ${playerid}.`);
             }
+        } else {
+            cb(null, `Bot ${botid} does not exist for player ${playerid}.`);
         }
-
-        cb(null, `Bot ${botid} does not exist for player ${playerid}.`);
     }
 }
 

@@ -37,13 +37,14 @@ class FileRepository {
     getMaze(mazeid, cb) {
         if (this.mazes[mazeid]) {
             cb(this.mazes[mazeid]);
+        } else {
+            cb(null, `Maze ${mazeid} does not exist.`);
         }
-        cb(null, `Maze ${mazeid} does not exist.`);
     }
 
-    addMaze(name, cb) {
+    addMaze(fields, cb) {
         // check if name exists
-        const p = Object.values(this.mazes).filter(i => i.name === name);
+        const p = Object.values(this.mazes).filter(i => i.name === fields.name);
         if (p.length > 0) {
             cb(null, 'Maze with same name exists.');
             return;
@@ -51,9 +52,12 @@ class FileRepository {
         // create Maze
         this.mazeid = this.mazeid + 1;
         this.mazes[this.mazeid] = {
-            id: this.mazeid,
-            name: name
+            id: this.mazeid
         };
+
+        for(const k in fields) {
+            this.mazes[this.mazeid][k] = fields[k];
+        }
 
         cb(this.mazes[this.mazeid]);
     }
@@ -67,8 +71,9 @@ class FileRepository {
                 }
             }
             cb(this.mazes[mazeid]);
+        } else {
+            cb(null, `Maze ${mazeid} does not exist.`);
         }
-        cb(null, `Maze ${mazeid} does not exist.`);
     }
 
     deleteMaze(mazeid, cb) {
@@ -76,8 +81,9 @@ class FileRepository {
             const m = this.mazes[mazeid];
             delete this.mazes[mazeid];
             cb(m);
+        } else {
+            cb(null, `Maze ${mazeid} does not exist.`);
         }
-        cb(null, `Maze ${mazeid} does not exist.`);
     }
 }
 

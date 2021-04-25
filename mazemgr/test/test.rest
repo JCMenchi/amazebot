@@ -2,10 +2,13 @@
 @monitoringurl = http://localhost:9465/metrics
 
 ###
-GET {{{{monitoringurl}}}} HTTP/1.1
+GET {{monitoringurl}} HTTP/1.1
 
 ###
 GET {{baseurl}}/api/mazes HTTP/1.1
+
+###
+GET {{baseurl}}/api/mazes/2 HTTP/1.1
 
 ###
 DELETE {{baseurl}}/api/mazes/2 HTTP/1.1
@@ -15,7 +18,7 @@ PATCH {{baseurl}}/api/mazes/4 HTTP/1.1
 content-type: application/json
 
 {
-    "description": "desc foo",
+    "description": "desc foo"
 }
 
 ###

@@ -25,9 +25,16 @@ if (process.env.LOG4JS_CONFIG === undefined) {
         });
     }
 }
+const logger = log4js.getLogger('unittest');
 
+const rungame = require('../src/engine');
 const { app, startServer } = require('../src/gamemgr');
 const { initService } = require('../src/service');
+
+const { FileRepository } = require('../src/file_repository.js');
+const { expect } = require('chai');
+const fr = new FileRepository();
+app.set('repository', fr);
 
 describe('Game Manager REST API', function () {
     let HTTPServer;
@@ -39,7 +46,7 @@ describe('Game Manager REST API', function () {
     });
 
     describe('get status', function () {
-        this.timeout(10000);
+        this.timeout(2000);
         it("should return info", (done) => {
             chai.request(app)
                 .get('/info')
@@ -68,6 +75,16 @@ describe('Game Manager REST API', function () {
                     done();
                 });
         });
+        it("should be able to update game 2", (done) => {
+            chai.request(app)
+                .patch('/api/games/2')
+                .send({state: 'success'})
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
         it("can run a game", (done) => {
             chai.request(app)
                 .post('/api/games/1/start')
@@ -87,24 +104,24 @@ describe('Game Manager REST API', function () {
                     done();
                 });
         });
-    });
-
-    describe('check error', function () {
-        this.timeout(10000);
-        it("should check if game exist", (done) => {
+        it("can delete a game", (done) => {
             chai.request(app)
-                .get('/api/games/5')
+                .delete('/api/games/4')
                 .end((err, res) => {
-                    res.should.have.status(404);
+                    res.should.have.status(200);
                     res.body.should.be.a('object');
                     done();
                 });
         });
-        it("should check if URL is valid", (done) => {
+    });
+
+    describe('check error', function () {
+        this.timeout(2000);
+        it("should check if game exist", (done) => {
             chai.request(app)
-                .get('/foo/bar/5')
+                .get('/api/games/5345')
                 .end((err, res) => {
-                    res.should.have.status(500);
+                    res.should.have.status(404);
                     res.body.should.be.a('object');
                     done();
                 });
@@ -112,6 +129,16 @@ describe('Game Manager REST API', function () {
         it("do run a game twice", (done) => {
             chai.request(app)
                 .post('/api/games/3/start')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should tell if game to be updated exists", (done) => {
+            chai.request(app)
+                .patch('/api/games/234')
+                .send({name: 'success'})
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
@@ -146,6 +173,122 @@ describe('Game Manager REST API', function () {
                     res.body.should.be.a('object');
                     done();
                 });
+        });
+        it("should check if game to be deleted exists", (done) => {
+            chai.request(app)
+                .delete('/api/games/3456')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+    });
+
+    describe('test engine', function () {
+        this.timeout(2000);
+        it("can run a game", (done) => {
+            const game = {
+                id: 1,
+                player: 1,
+                bot: 1,
+                botURL: 'http://localhost:8081/api/data/bots/bot1.js',
+                mazeConfiguration: {
+                    maze: [
+                        "+0+1+2+3+",
+                        "0 | | | |",
+                        "+-+-+-+-+",
+                        "x     | |",
+                        "+-+-+ +-+",
+                        "2 | |   X",
+                        "+-+-+-+-+",
+                        "3 | | | |",
+                        "+-+-+-+-+"
+                    ],
+                    entry: {
+                        r: 1,
+                        c: -1
+                    },
+                    exit: {
+                        r: 1,
+                        c: 4
+                    }
+                }
+            };
+
+            rungame(game, fr, (code, result) => {
+                expect(code).to.equal(0);
+                done();
+            });
+        });
+
+        it("check if bot exist before running", (done) => {
+            const game = {
+                id: 1,
+                player: 1,
+                bot: 1,
+                botURL: 'http://localhost:8081/api/data/bots/bot1234.js',
+                mazeConfiguration: {
+                    maze: [
+                        "+0+1+2+3+",
+                        "0 | | | |",
+                        "+-+-+-+-+",
+                        "x     | |",
+                        "+-+-+ +-+",
+                        "2 | |   X",
+                        "+-+-+-+-+",
+                        "3 | | | |",
+                        "+-+-+-+-+"
+                    ],
+                    entry: {
+                        r: 1,
+                        c: -1
+                    },
+                    exit: {
+                        r: 1,
+                        c: 4
+                    }
+                }
+            };
+
+            rungame(game, fr, (code, result) => {
+                expect(code).to.equal(102);
+                done();
+            });
+        });
+        it("check if bot code can be executed before running", (done) => {
+            const game = {
+                id: 1,
+                player: 1,
+                bot: 1,
+                botURL: 'http://localhost:8081/api/players',
+                mazeConfiguration: {
+                    maze: [
+                        "+0+1+2+3+",
+                        "0 | | | |",
+                        "+-+-+-+-+",
+                        "x     | |",
+                        "+-+-+ +-+",
+                        "2 | |   X",
+                        "+-+-+-+-+",
+                        "3 | | | |",
+                        "+-+-+-+-+"
+                    ],
+                    entry: {
+                        r: 1,
+                        c: -1
+                    },
+                    exit: {
+                        r: 1,
+                        c: 4
+                    }
+                }
+            };
+
+            rungame(game, fr, (code, result) => {
+                expect(code).to.equal(101);
+                done();
+            });
         });
     });
 

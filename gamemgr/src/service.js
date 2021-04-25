@@ -29,6 +29,7 @@ function initService(playermgrurl, mazemgrurl) {
         logger.trace(`Result of PlayerManager(${response.config.url}): ${JSON.stringify(response.data)}`);
         return response;
     }, function (error) {
+        /* istanbul ignore next */
         if (error.isAxiosError) {
             logger.error(`Error from PlayerManager(${error.config.url}): ${JSON.stringify(error.toJSON())}`);
         }
@@ -43,6 +44,7 @@ function initService(playermgrurl, mazemgrurl) {
         logger.trace(`Result of MazeManager(${response.config.url}): ${JSON.stringify(response.data)}`);
         return response;
     }, function (error) {
+        /* istanbul ignore next */
         if (error.isAxiosError) {
             logger.error(`Error from MazeManager(${error.config.url}): ${JSON.stringify(error.toJSON())}`);
         }
@@ -85,6 +87,7 @@ function getMaze(mazeid) {
  * @memberof ExtService
  */
 function getBotCode(boturl) {
+    /* istanbul ignore if */
     if (boturl.startsWith('http')) {
         return boturl;
     } else {

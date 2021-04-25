@@ -65,7 +65,7 @@ const { countAllRequests } = require("./monitoring");
 app.use(countAllRequests());
 
 // serve bots definition
-app.use('/data/', express.static('./data/', { fallthrough: false }));
+app.use('/api/data/', express.static('./data/', { fallthrough: false }));
 
 // this middleware is called first to setup performnace mark
 app.use(function (req, res, next) {
@@ -107,6 +107,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // show performance measurement and log error if nothing has been sent
 app.use(function (req, res, next) {
+    /* istanbul ignore else */
     if (res.writableEnded) {
         logger.debug('End Call ' + req.method + ' ' + req.path);
         performance.mark('End ' + req.method + ' ' + req.path);

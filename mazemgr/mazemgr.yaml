@@ -2,55 +2,53 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gamemgr
+  name: mazemgr
   labels:
-    app: gamemgr
+    app: mazemgr
 spec:
   ports:
     - port: 80
-      targetPort: 8083
-      name: gamemgr
-    - port: 9466
-      targetPort: 9466
+      targetPort: 8082
+      name: mazemgr
+    - port: 9465
+      targetPort: 9465
       name: metrics
   selector:
-    app: gamemgr
+    app: mazemgr
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gamemgr
+  name: mazemgr
   labels:
-    app: gamemgr
+    app: mazemgr
 spec:
   selector:
     matchLabels:
-      app: gamemgr
-  replicas: {{.Values.replicaCount}}
+      app: mazemgr
+  replicas: 1
   template:
     metadata:
       labels:
-        app: gamemgr
+        app: mazemgr
       annotations:
         prometheus.io/scrape: 'true'
-        prometheus.io/port: '9466'
+        prometheus.io/port: '9465'
     spec:
       containers:
-        - name: gamemgr
-          image: "{{.Values.image.registry}}gamemgr:{{.Values.image.tag}}"
-          imagePullPolicy: {{.Values.image.pullPolicy}}
+        - name: mazemgr
+          image: "localhost:5000/mazemgr:0.1.0"
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8083
+            - containerPort: 8082
               name: http
-            - containerPort: 9466
+            - containerPort: 9465
               name: metrics
           env:
             - name: OTEL_EXPORTER_JAEGER_ENDPOINT
               value: "http://jaeger.tracing:14268/api/traces?format=jaeger.thrift"
             - name: LOG4JS_CONFIG
               value: "/home/node/app/log4js.json"
-          command: ["node"]
-          args: ["main.js", "-p", "8083", "-P", "http://playermgr/api", "-M", "http://mazemgr/api"]
           resources:
             requests:
               cpu: 500m
@@ -62,17 +60,17 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gamemgr
+  name: mazemgr
   labels:
-    app: gamemgr
+    app: mazemgr
 spec:
   rules:
     - http:
         paths:
-          - path: /api/games
+          - path: /api/mazes
             pathType: Prefix
             backend:
               service:
-                name: gamemgr
+                name: mazemgr
                 port:
                   number: 80

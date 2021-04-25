@@ -26,7 +26,7 @@ spec:
   selector:
     matchLabels:
       app: gamemgr
-  replicas: {{.Values.replicaCount}}
+  replicas: 1
   template:
     metadata:
       labels:
@@ -37,8 +37,8 @@ spec:
     spec:
       containers:
         - name: gamemgr
-          image: "{{.Values.image.registry}}gamemgr:{{.Values.image.tag}}"
-          imagePullPolicy: {{.Values.image.pullPolicy}}
+          image: "localhost:5000/gamemgr:0.1.0"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
               name: http

@@ -15,6 +15,18 @@
     "Description": "Description",
     "Bots": "Bots",
     "Create new bot": "Create new bot",
-    "URL": "URL"
+    "URL": "URL",
+    "Please select a game.": "Please select a game",
+    "Create new game": "Create new game",
+    "playerid": "playerid",
+    "botid": "botid",
+    "mazeid": "mazeid",
+    "Game Id": "Game Id",
+    "Player": "Player",
+    "Bot": "Bot",
+    "Bot URL": "Bot URL",
+    "Maze": "Maze",
+    "State": "State",
+    "Steps": "Steps"
 }
    
