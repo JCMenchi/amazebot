@@ -26,23 +26,22 @@ if (process.env.LOG4JS_CONFIG === undefined) {
     }
 }
 
-const { app, startServer } = require('../src/mazemgr.js');
-const { FileRepository } = require('../src/file_repository.js');
-const fr = new FileRepository();
-app.set('repository', fr);
+const MazeManager = require('../src/mazemgr.js');
+const mazemgr = new MazeManager(true, false, true);
+mazemgr.init();
 
 describe('Maze Manager REST API', function () {
     let HTTPServer;
     
     before(() => {
         // start server
-        HTTPServer = startServer(0);
+        HTTPServer = mazemgr.startServer(0);
     });
 
     describe('get status', function () {
         this.timeout(10000);
         it("should return info", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .get('/info')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -52,7 +51,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should return maze list", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .get('/api/mazes')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -61,7 +60,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should return maze 2", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .get('/api/mazes/2')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -70,7 +69,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should be able to add maze foo", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .post('/api/mazes')
                 .send({name: 'foo', description: 'from unit test'})
                 .end((err, res) => {
@@ -80,7 +79,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should be able to update maze 1", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .patch('/api/mazes/1')
                 .send({name: 'bar'})
                 .end((err, res) => {
@@ -90,7 +89,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("can delete maze 3", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .delete('/api/mazes/3')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -103,7 +102,7 @@ describe('Maze Manager REST API', function () {
     describe('check error', function () {
         this.timeout(2000);
         it("should check if maze exist", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .get('/api/mazes/5')
                 .end((err, res) => {
                     res.should.have.status(404);
@@ -112,7 +111,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("cannot add maze with existing name.", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .post('/api/mazes')
                 .send({name: 'Basic'})
                 .end((err, res) => {
@@ -122,7 +121,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should tell that maze to update does not exist.", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .patch('/api/mazes/1234')
                 .send({name: 'bar'})
                 .end((err, res) => {
@@ -132,7 +131,7 @@ describe('Maze Manager REST API', function () {
                 });
         });
         it("should tell that maze to delete does not exist.", (done) => {
-            chai.request(app)
+            chai.request(mazemgr.app)
                 .delete('/api/mazes/1234')
                 .end((err, res) => {
                     res.should.have.status(404);

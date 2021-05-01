@@ -33,6 +33,7 @@ module.exports = (game, repository, endcb) => {
             /* istanbul ignore next */
             logger.info(`Worker #${wrk.threadId} message: ${JSON.stringify(value)}`);
             // copy execution result
+            /* istanbul ignore next */
             const gameinfo = {};
 
             /* istanbul ignore next */
@@ -43,7 +44,7 @@ module.exports = (game, repository, endcb) => {
             if (value.steps) {
                 gameinfo.steps = value.steps;
             }
-            
+            /* istanbul ignore next */
             repository.updateGame(game.id, gameinfo, (result, message) => {});
         });
 

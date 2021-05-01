@@ -50,32 +50,31 @@ const parsed = require('yargs')
       describe: 'use in memory db for test',
       type: 'boolean'
     })
+    .option('s', {
+      alias: 'secure',
+      describe: 'use keycloak',
+      type: 'boolean'
+    })
+    .option('d', {
+      alias: 'showdoc',
+      describe: 'show swagger doc on /docs',
+      type: 'boolean'
+    })
     .demandCommand(0)
     .version().alias('v', 'version')
     .help().alias('h', 'help')
     .argv;
 
 // Configure tracing, load this code to setup connection with jaegertracing service.
-require('./src/tracing');
+const tracing = require('./src/tracing');
 
 // Configure Player Manager and Maze Manager Service
 const { initService } = require('./src/service');
 initService(parsed.playermgrurl, parsed.mazemgrurl);
 
-// Start server
-const { startServer, app } = require('./src/gamemgr');
-
-if (parsed.test) {
-  logger.info('Run in test mode.');
-  // use in memory data loaded from data/data.json for test
-  const { FileRepository } = require('./src/file_repository');
-  const fr = new FileRepository();
-  app.set('repository', fr);
-} else {
-  // in normal mode use a pgsql database
-  const { DBRepository } = require('./src/database');
-  const db = new DBRepository('gameuser', 'gameuser');
-  app.set('repository', db);
-}
-
-startServer(parsed.port);
+// initialize server
+const GameManager = require('./src/gamemgr');
+const gamemgr = new GameManager(parsed.showdoc, parsed.secure, parsed.test);
+gamemgr.init();
+// start server
+gamemgr.startServer(parsed.port);
