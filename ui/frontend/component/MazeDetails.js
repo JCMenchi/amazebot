@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useKeycloak } from '@react-keycloak/web';
 import { useParams } from 'react-router-dom';
 import { Fab, Grid, Paper } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import axios from 'axios';
 
 import mazeService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
@@ -15,6 +17,8 @@ export default function MazeDetails(props) {
 
     // for I18N
     const { t } = useTranslation();
+
+    const { keycloak, initialized } = useKeycloak();
 
     const { mazeId } = useParams();
 
@@ -42,6 +46,7 @@ export default function MazeDetails(props) {
 
     const handleDelete = (event, maze_id) => {
         LOGGER.info(`Delete maze ${maze_id}`);
+
         mazeService
             .delete("api/mazes/" + maze_id)
             .then((response) => {
@@ -51,12 +56,15 @@ export default function MazeDetails(props) {
             .catch((error) => {
                 if (error.response) {
                     if (error.response.data) {
+                        setErrorMessage(error.response.statusText);
                         // data is an object like { error: 101, message: 'error message'}
                         LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.data.message}`);
                     } else {
+                        setErrorMessage(error.response.statusText);
                         LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.statusText}`);
                     }
                 } else {
+                    setErrorMessage(error.message);
                     LOGGER.error(`Error while deleting maze ${maze_id}: ${error.message}`);
                 }
             });
@@ -83,7 +91,7 @@ export default function MazeDetails(props) {
                             {item}
                         </Grid>
                     ))}
-                    
+
                 </Grid>
             }
             <Fab size="small" style={{ position: 'absolute' }} color="primary" className="fabright" aria-label="delete"
