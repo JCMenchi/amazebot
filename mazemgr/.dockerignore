@@ -10,3 +10,4 @@ jsdocconfig.json
 .gitignore
 .dockerignore
 .nyc_output
+mazemgr.yaml

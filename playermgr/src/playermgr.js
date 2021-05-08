@@ -109,14 +109,16 @@ module.exports = class PlayerManager {
         // show performance measurement and log error if nothing has been sent
         this.app.use(function (req, res, next) {
             /* istanbul ignore else */
-            if (req.app.settings.performance && res.writableEnded) {
-                logger.debug('End Call ' + req.method + ' ' + req.path);
-                req.app.settings.performance.mark('End ' + req.method + ' ' + req.path);
-                req.app.settings.performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
-                next();
-            } else {
-                logger.error(`Unknown request ${req.method}:${req.path}`);
-                next('unknown request.'); // send error
+            if (this.showPerf) {
+                if (req.app.settings.performance && res.writableEnded) {
+                    logger.debug('End Call ' + req.method + ' ' + req.path);
+                    req.app.settings.performance.mark('End ' + req.method + ' ' + req.path);
+                    req.app.settings.performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
+                    next();
+                } else {
+                    logger.error(`Unknown request ${req.method}:${req.path}`);
+                    next('unknown request.'); // send error
+                }
             }
         });
     }
@@ -128,6 +130,22 @@ module.exports = class PlayerManager {
     initSecurity() {
         
         this.keycloak = new Keycloak({});
+
+        this.keycloak.authenticated = (req) => {
+            logger.info('keycloak authenticated');
+        };
+
+        this.keycloak.deauthenticated = (req) => {
+            logger.info('keycloak deauthenticated');
+        };
+
+        this.keycloak.accessDenied = (req, res) => {
+            logger.info('keycloak accessDenied');
+            res.status(403).json({
+                error: 403,
+                message: 'access denied'
+            });
+        };
 
         this.app.use(this.keycloak.middleware({
             logout: '/logout',
@@ -159,7 +177,7 @@ module.exports = class PlayerManager {
          * Initialize performance measurement.
          */
         const { performance, PerformanceObserver } = require('perf_hooks');
-        
+
         // Listen to Performance measurement
         this.obs = new PerformanceObserver((list, _observer) => {
             for (let e of list.getEntries()) {

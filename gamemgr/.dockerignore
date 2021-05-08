@@ -1,4 +1,5 @@
 .nyc_coverage/
+.vscode/
 coverage/
 doc/
 test/
@@ -11,3 +12,5 @@ jsdocconfig.json
 .dockerignore
 .nyc_output
 data/log
+gamemgr.yaml
+testclient.http

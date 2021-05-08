@@ -74,7 +74,7 @@ module.exports = (keycloak) => {
      *                     description: game state.
      *                     example: init
      */
-    router.get('/games', function (req, res, next) {
+    router.get('/games', protect_middleware('game.view'), function (req, res, next) {
 
         const repository = req.app.settings.repository;
         repository.getGames((games, err) => {
@@ -128,7 +128,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: game id not found.
      */
-    router.get('/games/:gameid', function (req, res, next) {
+    router.get('/games/:gameid', protect_middleware('game.view'), function (req, res, next) {
 
         const gameid = req.params.gameid;
         const repository = req.app.settings.repository;
@@ -216,7 +216,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: player, bot or maze id not found.
      */
-    router.post('/games', function (req, res, next) {
+    router.post('/games', protect_middleware('game.edit'), function (req, res, next) {
 
         const playerid = req.fields.playerid;
         const botid = req.fields.botid;
@@ -288,7 +288,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: game id not found or game already executed.
      */
-    router.post('/games/:gameid/start', function (req, res, next) {
+    router.post('/games/:gameid/start', protect_middleware('game.edit'), function (req, res, next) {
         const gameid = req.params.gameid;
         logger.debug(`Get game= ${gameid}`);
 
@@ -347,7 +347,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: game not found.
      */
-    router.delete('/games/:gameid', protect_middleware('game.admin'), function (req, res, next) {
+    router.delete('/games/:gameid', protect_middleware('game.admin'), protect_middleware('game.admin'), function (req, res, next) {
         const gameid = req.params.gameid;
         logger.debug(`Delete game= ${gameid}`);
 
@@ -405,7 +405,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: game id not found.
      */
-    router.patch('/games/:gameid', function (req, res, next) {
+    router.patch('/games/:gameid', protect_middleware('game.edit'), function (req, res, next) {
         const gameid = req.params.gameid;
         logger.debug(`Update game= ${gameid}`);
 

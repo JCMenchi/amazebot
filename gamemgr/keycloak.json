@@ -1,0 +1,14 @@
+{
+  "realm": "amazebot",
+  "bearer-only": true,
+  "auth-server-url": "http://keycloak:8080/auth/",
+  "ssl-required": "external",
+  "resource": "gamemgr",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "df117141-9a40-4fbd-8c82-4fd2cb847c78"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
+  

@@ -1,11 +1,13 @@
 import Keycloak from 'keycloak-js';
- 
-// Setup Keycloak instance as needed
-// Pass initialization options as required or leave blank to load from 'keycloak.json'
+
+// Setup Keycloak instance
 const keycloak = new Keycloak({
     url: 'http://keycloak:8080/auth/',
     realm: 'amazebot',
-    clientId: 'amazeui'
+    clientId: 'amazeui',
+    checkLoginIframe: false,
+    checkLoginIframeInterval: 36000,
+    enableLogging: true
 });
  
 export default keycloak;

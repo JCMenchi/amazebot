@@ -72,7 +72,7 @@ module.exports = (keycloak) => {
      *                     description: Maze description.
      *                     example: Simple Maze
      */
-    router.get('/mazes', function (req, res, next) {
+    router.get('/mazes', protect_middleware('maze.view'), function (req, res, next) {
 
         const repository = req.app.settings.repository;
         repository.getMazes((mazes, err) => {
@@ -136,7 +136,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: maze id not found.
      */
-    router.get('/mazes/:mazeid', function (req, res, next) {
+    router.get('/mazes/:mazeid', protect_middleware('maze.view'), function (req, res, next) {
         const mazeid = req.params.mazeid;
         logger.debug(`Get maze= ${mazeid}`);
 
@@ -190,7 +190,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: name already used.
      */
-    router.post('/mazes', function (req, res, next) {
+    router.post('/mazes', protect_middleware('maze.edit'), function (req, res, next) {
 
         const repository = req.app.settings.repository;
         repository.addMaze(req.fields, (maze, err) => {
@@ -249,7 +249,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: maze id not found.
      */
-    router.patch('/mazes/:mazeid', function (req, res, next) {
+    router.patch('/mazes/:mazeid', protect_middleware('maze.edit'), function (req, res, next) {
         const mazeid = req.params.mazeid;
         logger.debug(`Update maze= ${mazeid}`);
 
@@ -297,7 +297,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: name already used.
      */
-    router.delete('/mazes/:mazeid', protect_middleware('maze.admin'), function (req, res, next) {
+    router.delete('/mazes/:mazeid', protect_middleware('maze.admin'), protect_middleware('maze.admin'), function (req, res, next) {
         const mazeid = req.params.mazeid;
         logger.debug(`Delete maze= ${mazeid}`);
 

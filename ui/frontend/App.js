@@ -120,9 +120,9 @@ export default function App(props) {
             <Switch>
               <Route exact path="/" component={Home} />
               
-              <PrivateRoute roles={['ui.player']} path="/mazes" component={MazeManager} />
-              <PrivateRoute roles={['ui.player']} path="/games" component={GameManager} />
-              <PrivateRoute roles={['ui.player']} path="/players" component={PlayerManager} />
+              <PrivateRoute roles={['ui.admin']} path="/mazes" component={MazeManager} />
+              <PrivateRoute roles={['ui.player', 'ui.admin']} path="/games" component={GameManager} />
+              <PrivateRoute roles={['ui.player', 'ui.admin']} path="/players" component={PlayerManager} />
               
             </Switch>
           </div>

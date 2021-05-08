@@ -30,13 +30,13 @@
     "axios": "0.21.1",
     "express": "^4.17.1",
     "express-formidable": "^1.2.0",
-    "helmet": "^4.5.0",
-    "keycloak-connect": "^12.0.4",
+    "helmet": "^4.6.0",
+    "keycloak-connect": "^13.0.0",
     "log4js": "^6.3.0",
     "pg": "^8.6.0",
     "swagger-jsdoc": "6.1.0",
     "swagger-ui-express": "^4.1.6",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.1"
   },
   "bundledDependencies": [
     "express",
@@ -52,11 +52,11 @@
     "chai": "^4.3.4",
     "chai-fs": "^2.0.0",
     "chai-http": "^4.3.0",
-    "eslint": "^7.25.0",
+    "eslint": "^7.26.0",
     "eslint-plugin-mocha": "^8.1.0",
     "jsdoc": "^3.6.6",
     "jsdoc-to-markdown": "^7.0.1",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "mocha-junit-reporter": "^2.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2"

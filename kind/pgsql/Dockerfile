@@ -13,8 +13,8 @@ FROM alpine:3.13
 # Install packages
 #
 #
-RUN apk add --no-cache bash=5.1.0-r0 curl=7.76.1-r0 postgresql=13.2-r0 && rm -rf /var/cache/apk/*
-RUN mkdir /run/postgresql && chown postgres /run/postgresql
+RUN apk add --no-cache bash=5.1.0-r0 curl=7.76.1-r0 postgresql=13.2-r0 && rm -rf /var/cache/apk/* \
+    && mkdir /run/postgresql && chown postgres /run/postgresql
 #
 #=================================================================================================================
 

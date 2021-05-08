@@ -100,7 +100,7 @@ module.exports = class GameManager {
             this.app.set('repository', fr);
         } else {
             const { DBRepository } = require('./database');
-            const db = new DBRepository('mazeuser', 'mazeuser');
+            const db = new DBRepository('gameuser', 'gameuser');
             this.app.set('repository', db);
         }
 
@@ -126,6 +126,22 @@ module.exports = class GameManager {
     initSecurity() {
 
         this.keycloak = new Keycloak({});
+
+        this.keycloak.authenticated = (req) => {
+            logger.info('keycloak authenticated');
+        };
+
+        this.keycloak.deauthenticated = (req) => {
+            logger.info('keycloak deauthenticated');
+        };
+
+        this.keycloak.accessDenied = (req, res) => {
+            logger.info('keycloak accessDenied');
+            res.status(403).json({
+                error: 403,
+                message: 'access denied'
+            });
+        };
 
         this.app.use(this.keycloak.middleware({
             logout: '/logout',

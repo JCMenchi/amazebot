@@ -39,6 +39,8 @@ spec:
         - name: mazemgr
           image: "{{.Values.image.registry}}mazemgr:{{.Values.image.tag}}"
           imagePullPolicy: {{.Values.image.pullPolicy}}
+          command: ["node"]
+          args: ["main.js", "-p", "8082", "-s"]
           ports:
             - containerPort: 8082
               name: http

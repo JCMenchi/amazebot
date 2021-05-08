@@ -39,6 +39,8 @@ spec:
         - name: playermgr
           image: "{{.Values.image.registry}}playermgr:{{.Values.image.tag}}"
           imagePullPolicy: {{.Values.image.pullPolicy}}
+          command: ["node"]
+          args: ["main.js", "-p", "8081", "-s"]
           ports:
             - containerPort: 8081
               name: http

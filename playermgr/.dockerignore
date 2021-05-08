@@ -11,3 +11,4 @@ jsdocconfig.json
 .gitignore
 .dockerignore
 .nyc_output
+playermgr.yaml

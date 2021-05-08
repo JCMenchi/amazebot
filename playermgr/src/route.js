@@ -76,7 +76,7 @@ module.exports = (keycloak) => {
      *                     description: Player bot list
      *                     example: [1, 2]
      */
-    router.get('/players', function (req, res, next) {
+    router.get('/players', protect_middleware('player.admin'), function (req, res, next) {
         const repository = req.app.settings.repository;
         repository.getPlayers((players, err) => {
             /* istanbul ignore if */
@@ -131,7 +131,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: player id not found.
      */
-    router.get('/players/:playerid', function (req, res, next) {
+    router.get('/players/:playerid', protect_middleware('player.view'), function (req, res, next) {
         const playerid = req.params.playerid;
         logger.debug(`Get player= ${playerid}`);
 
@@ -193,7 +193,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: player id not found.
      */
-    router.patch('/players/:playerid', function (req, res, next) {
+    router.patch('/players/:playerid', protect_middleware('player.edit'), function (req, res, next) {
         const playerid = req.params.playerid;
         logger.debug(`Update player= ${playerid}`);
 
@@ -298,7 +298,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: player id or bot id not found.
      */
-    router.get('/players/:playerid/bot/:botid', function (req, res, next) {
+    router.get('/players/:playerid/bot/:botid', protect_middleware('player.view'), function (req, res, next) {
         const playerid = req.params.playerid;
         const botid = Number(req.params.botid);
         logger.debug(`Get Bot player=${playerid} bot=${botid}`);
@@ -369,7 +369,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: bot id not found.
      */
-    router.patch('/players/:playerid/bot/:botid', function (req, res, next) {
+    router.patch('/players/:playerid/bot/:botid', protect_middleware('player.edit'), function (req, res, next) {
         const playerid = req.params.playerid;
         const botid = Number(req.params.botid);
         logger.debug(`Get Bot player=${playerid} bot=${botid}`);
@@ -423,7 +423,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: bot does not exist.
      */
-    router.delete('/players/:playerid/bot/:botid', function (req, res, next) {
+    router.delete('/players/:playerid/bot/:botid', protect_middleware('player.edit'), function (req, res, next) {
         const playerid = req.params.playerid;
         const botid = Number(req.params.botid);
         logger.debug(`Delete Bot player=${playerid} bot=${botid}`);
@@ -478,7 +478,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: name already used.
      */
-    router.post('/players', function (req, res, next) {
+    router.post('/players', protect_middleware('player.admin'), function (req, res, next) {
 
         const name = req.fields.name;
 
@@ -542,7 +542,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: name already used.
      */
-    router.post('/players/:playerid/bot', function (req, res, next) {
+    router.post('/players/:playerid/bot', protect_middleware('player.edit'), function (req, res, next) {
         const playerid = req.params.playerid;
         const url = req.fields.url;
         const name = req.fields.name;
