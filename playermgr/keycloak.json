@@ -1,7 +1,8 @@
 {
   "realm": "amazebot",
   "bearer-only": true,
-  "auth-server-url": "http://keycloak:8080/auth/",
+  "auth-server-url": "http://localhost/auth/",
+  "auth-server-backchannel-url": "http://keycloak:8080/auth/",
   "ssl-required": "external",
   "resource": "playermgr",
   "verify-token-audience": true,

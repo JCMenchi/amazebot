@@ -19,10 +19,10 @@ let mazemgr;
  * @namespace ExtService
  */
 function initService(playermgrurl, mazemgrurl) {
-    axios.defaults.headers.common['Content-Type'] = 'application/json';
-
+    
     playermgr = axios.create({
         timeout: 10000,
+        headers: { 'content-type': 'application/json' },
         baseURL: playermgrurl
     });
     playermgr.interceptors.response.use(function (response) {
@@ -38,6 +38,7 @@ function initService(playermgrurl, mazemgrurl) {
 
     mazemgr = axios.create({
         timeout: 10000,
+        headers: { 'content-type': 'application/json' },
         baseURL: mazemgrurl
     });
     mazemgr.interceptors.response.use(function (response) {

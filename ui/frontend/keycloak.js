@@ -2,7 +2,7 @@ import Keycloak from 'keycloak-js';
 
 // Setup Keycloak instance
 const keycloak = new Keycloak({
-    url: 'http://keycloak:8080/auth/',
+    url: 'http://localhost/auth/',
     realm: 'amazebot',
     clientId: 'amazeui',
     checkLoginIframe: false,

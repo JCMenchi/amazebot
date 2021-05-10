@@ -126,6 +126,9 @@ module.exports = class GameManager {
     initSecurity() {
 
         this.keycloak = new Keycloak({});
+        // monkey patch keycloak config to use backend auth url
+        this.keycloak.config.authServerUrl = 'http://keycloak:8080/auth/';
+        this.keycloak.grantManager.rotation.realmUrl = 'http://keycloak:8080/auth/realms/' + this.keycloak.config.realm;
 
         this.keycloak.authenticated = (req) => {
             logger.info('keycloak authenticated');
