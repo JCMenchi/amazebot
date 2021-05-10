@@ -223,14 +223,17 @@ module.exports = (keycloak) => {
         const mazeid = req.fields.mazeid;
         const repository = req.app.settings.repository;
 
+        // get Bearer token from request
+        const token = req.headers.authorization;
+
         // get bot
-        getBot(playerid, botid)
+        getBot(playerid, botid, token)
             .then((result) => {
                 // bot exists look for maze
                 const theBot = result.data;
                 const botname = result.data.name;
                 const playername = result.data.player_name;
-                getMaze(mazeid)
+                getMaze(mazeid, token)
                     .then((result) => {
 
                         repository.addGame(playerid, botid, mazeid, playername, botname, result.data.name, result.data.configuration, theBot.url,
