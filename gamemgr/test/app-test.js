@@ -28,13 +28,14 @@ if (process.env.LOG4JS_CONFIG === undefined) {
 const logger = log4js.getLogger('unittest');
 
 const rungame = require('../src/engine');
-const { app, startServer } = require('../src/gamemgr');
 const { initService } = require('../src/service');
 
 const { FileRepository } = require('../src/file_repository.js');
-const { expect } = require('chai');
 const fr = new FileRepository();
-app.set('repository', fr);
+
+const GameManager = require('../src/gamemgr.js');
+const gamemgr = new GameManager(true, false, true);
+gamemgr.init();
 
 describe('Game Manager REST API', function () {
     let HTTPServer;
@@ -42,13 +43,13 @@ describe('Game Manager REST API', function () {
     before(() => {
         initService('http://127.0.0.1:8081/api', 'http://127.0.0.1:8082/api');
         // start server
-        HTTPServer = startServer(0);
+        HTTPServer = gamemgr.startServer(0);
     });
 
     describe('get status', function () {
         this.timeout(2000);
         it("should return info", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .get('/info')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -58,7 +59,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("should return game list", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .get('/api/games')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -67,7 +68,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("should return game 2", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .get('/api/games/2')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -76,7 +77,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("should be able to update game 2", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .patch('/api/games/2')
                 .send({state: 'success'})
                 .end((err, res) => {
@@ -86,7 +87,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("can run a game", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games/1/start')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -95,7 +96,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("can create a game", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games')
                 .send({'playerid' : 1, 'botid': 1, 'mazeid': 1})
                 .end((err, res) => {
@@ -105,7 +106,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("can delete a game", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .delete('/api/games/4')
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -118,7 +119,7 @@ describe('Game Manager REST API', function () {
     describe('check error', function () {
         this.timeout(2000);
         it("should check if game exist", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .get('/api/games/5345')
                 .end((err, res) => {
                     res.should.have.status(404);
@@ -127,7 +128,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("do run a game twice", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games/3/start')
                 .end((err, res) => {
                     res.should.have.status(404);
@@ -136,7 +137,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("should tell if game to be updated exists", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .patch('/api/games/234')
                 .send({name: 'success'})
                 .end((err, res) => {
@@ -146,7 +147,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("do run not existing game", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games/123456/start')
                 .end((err, res) => {
                     res.should.have.status(404);
@@ -155,7 +156,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("cannot create a game from bad player id", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games')
                 .send({'playerid' : 12345, 'botid': 1, 'mazeid': 1})
                 .end((err, res) => {
@@ -165,7 +166,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("cannot create a game from bad maze id", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .post('/api/games')
                 .send({'playerid' : 1, 'botid': 1, 'mazeid': 12345})
                 .end((err, res) => {
@@ -175,7 +176,7 @@ describe('Game Manager REST API', function () {
                 });
         });
         it("should check if game to be deleted exists", (done) => {
-            chai.request(app)
+            chai.request(gamemgr.app)
                 .delete('/api/games/3456')
                 .end((err, res) => {
                     res.should.have.status(404);
@@ -217,7 +218,7 @@ describe('Game Manager REST API', function () {
             };
 
             rungame(game, fr, (code, result) => {
-                expect(code).to.equal(0);
+                chai.expect(code).to.equal(0);
                 done();
             });
         });
@@ -252,7 +253,7 @@ describe('Game Manager REST API', function () {
             };
 
             rungame(game, fr, (code, result) => {
-                expect(code).to.equal(102);
+                chai.expect(code).to.equal(102);
                 done();
             });
         });
@@ -286,7 +287,7 @@ describe('Game Manager REST API', function () {
             };
 
             rungame(game, fr, (code, result) => {
-                expect(code).to.equal(101);
+                chai.expect(code).to.equal(101);
                 done();
             });
         });

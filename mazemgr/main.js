@@ -38,6 +38,16 @@ const parsed = require('yargs')
       describe: 'use in memory db for test',
       type: 'boolean'
     })
+    .option('s', {
+      alias: 'secure',
+      describe: 'use keycloak',
+      type: 'boolean'
+    })
+    .option('d', {
+      alias: 'showdoc',
+      describe: 'show swagger doc on /docs',
+      type: 'boolean'
+    })
     .demandCommand(0)
     .version().alias('v', 'version')
     .help().alias('h', 'help')
@@ -46,20 +56,9 @@ const parsed = require('yargs')
 // Configure tracing
 const tracing = require('./src/tracing');
 
-// Start server
-const { startServer, app } = require('./src/mazemgr');
-
-if (parsed.test) {
-  logger.info('Run in test mode.');
-  // use in memory data loaded from data/data.json for test
-  const { FileRepository } = require('./src/file_repository');
-  const fr = new FileRepository();
-  app.set('repository', fr);
-} else {
-  // in normal mode use a pgsql database
-  const { DBRepository } = require('./src/database');
-  const db = new DBRepository('mazeuser', 'mazeuser');
-  app.set('repository', db);
-}
-
-startServer(parsed.port);
+// initialize server
+const MazeManager = require('./src/mazemgr');
+const mazemgr = new MazeManager(parsed.showdoc, parsed.secure, parsed.test);
+mazemgr.init();
+// start server
+mazemgr.startServer(parsed.port);

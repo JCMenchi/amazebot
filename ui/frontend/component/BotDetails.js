@@ -8,7 +8,7 @@ import playerService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
 /**
- * Player Detail Component
+ * Bot Detail Component
  * 
  */
 export default function BotDetails(props) {

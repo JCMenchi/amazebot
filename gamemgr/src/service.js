@@ -19,10 +19,10 @@ let mazemgr;
  * @namespace ExtService
  */
 function initService(playermgrurl, mazemgrurl) {
-    axios.defaults.headers.common['Content-Type'] = 'application/json';
-
+    
     playermgr = axios.create({
         timeout: 10000,
+        headers: { 'content-type': 'application/json' },
         baseURL: playermgrurl
     });
     playermgr.interceptors.response.use(function (response) {
@@ -38,6 +38,7 @@ function initService(playermgrurl, mazemgrurl) {
 
     mazemgr = axios.create({
         timeout: 10000,
+        headers: { 'content-type': 'application/json' },
         baseURL: mazemgrurl
     });
     mazemgr.interceptors.response.use(function (response) {
@@ -62,7 +63,10 @@ function initService(playermgrurl, mazemgrurl) {
  * 
  * @memberof ExtService
  */
-function getBot(playerid, botid) {
+function getBot(playerid, botid, token) {
+    if (token) {
+        return playermgr.get(`/players/${playerid}/bot/${botid}`, {headers: { Authorization: token}});
+    }
     return playermgr.get(`/players/${playerid}/bot/${botid}`);
 }
 
@@ -74,7 +78,10 @@ function getBot(playerid, botid) {
  * 
  * @memberof ExtService
  */
-function getMaze(mazeid) {
+function getMaze(mazeid, token) {
+    if (token) {
+        return mazemgr.get(`/mazes/${mazeid}`, {headers: { Authorization: token}});
+    }
     return mazemgr.get(`/mazes/${mazeid}`);
 }
 

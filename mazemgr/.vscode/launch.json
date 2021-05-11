@@ -5,6 +5,7 @@
             "type": "pwa-node",
             "request": "launch",
             "name": "MazeMgr",
+            "args": ["-s"],
             "skipFiles": [
                 "<node_internals>/**"
             ],

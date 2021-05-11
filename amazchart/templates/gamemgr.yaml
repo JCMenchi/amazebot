@@ -50,7 +50,7 @@ spec:
             - name: LOG4JS_CONFIG
               value: "/home/node/app/log4js.json"
           command: ["node"]
-          args: ["main.js", "-p", "8083", "-P", "http://playermgr/api", "-M", "http://mazemgr/api"]
+          args: ["main.js", "-p", "8083", "-P", "http://playermgr/api", "-M", "http://mazemgr/api", "-s"]
           resources:
             requests:
               cpu: 500m

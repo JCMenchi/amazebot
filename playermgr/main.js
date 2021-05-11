@@ -35,7 +35,17 @@ const parsed = require('yargs')
     })
     .option('t', {
       alias: 'test',
-      describe: 'use inmemory db for test',
+      describe: 'use in memory db for test',
+      type: 'boolean'
+    })
+    .option('s', {
+      alias: 'secure',
+      describe: 'use keycloak',
+      type: 'boolean'
+    })
+    .option('d', {
+      alias: 'showdoc',
+      describe: 'show swagger doc on /docs',
       type: 'boolean'
     })
     .demandCommand(0)
@@ -46,18 +56,9 @@ const parsed = require('yargs')
 // Configure tracing
 const tracing = require('./src/tracing');
 
-// Start server
-const { startServer, app } = require('./src/playermgr');
-const { FileRepository } = require('./src/file_repository');
-const { DBRepository } = require('./src/database');
-
-if (parsed.test) {
-  logger.info('Run in test mode.');
-  const fr = new FileRepository();
-  app.set('repository', fr);
-} else {
-  const db = new DBRepository('playeruser', 'playeruser');
-  app.set('repository', db);
-}
-
-startServer(parsed.port);
+// initialize server
+const PlayerManager = require('./src/playermgr');
+const pmgr = new PlayerManager(parsed.showdoc, parsed.secure, parsed.test);
+pmgr.init();
+// start server
+pmgr.startServer(parsed.port);
