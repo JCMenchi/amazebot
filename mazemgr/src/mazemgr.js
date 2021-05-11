@@ -105,6 +105,7 @@ module.exports = class MazeManager {
         this.app.use(function (req, res, next) {
             /* istanbul ignore else */
             if (req.app.settings.performance) {
+                /* istanbul ignore else */
                 if (res.writableEnded) {
                     logger.debug('End Call ' + req.method + ' ' + req.path);
                     req.app.settings.performance.mark('End ' + req.method + ' ' + req.path);

@@ -109,8 +109,9 @@ module.exports = class PlayerManager {
         // show performance measurement and log error if nothing has been sent
         this.app.use(function (req, res, next) {
             /* istanbul ignore else */
-            if (this.showPerf) {
-                if (req.app.settings.performance && res.writableEnded) {
+            if (req.app.settings.performance) {
+                /* istanbul ignore else */
+                if (res.writableEnded) {
                     logger.debug('End Call ' + req.method + ' ' + req.path);
                     req.app.settings.performance.mark('End ' + req.method + ' ' + req.path);
                     req.app.settings.performance.measure('Call ' + req.method + ' ' + req.path, 'Start ' + req.method + ' ' + req.path, 'End ' + req.method + ' ' + req.path);
@@ -154,14 +155,6 @@ module.exports = class PlayerManager {
             logout: '/logout',
             admin: '/'
         }));
-
-        this.app.get('/service/secured', this.keycloak.protect('user'), function (req, res) {
-            res.json({ message: 'secured' });
-        });
-
-        this.app.get('/service/admin', this.keycloak.protect('realm:admin'), function (req, res) {
-            res.json({ message: 'admin' });
-        });
     }
 
     /**
