@@ -39,14 +39,14 @@ jobs:
         path: ./playermgr/coverage/**
     - name: Login to GHCR
       uses: docker/login-action@v1
-      if: ${{ github.ref == 'ref/heads/main' }}
+      if: ${{ github.ref == 'refs/heads/main' }}
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build and Push docker image
       uses: docker/build-push-action@v2
-      if: ${{ github.ref == 'ref/heads/main' }}
+      if: ${{ github.ref == 'refs/heads/main' }}
       with:
         context: ./playermgr
         push: true
