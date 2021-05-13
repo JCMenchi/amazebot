@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Player Manager Sec",
+            "args": ["-s", "-d"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": { 
+                "OTEL_EXPORTER_JAEGER_ENDPOINT": "http://jaeger:14268/api/traces?format=jaeger.thrift",
+                "OTEL_LOG_LEVEL": "debug"
+            },
+            "program": "${workspaceFolder}/main.js"
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Player Manager",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": { 
+                "OTEL_EXPORTER_JAEGER_ENDPOINT": "http://jaeger:14268/api/traces?format=jaeger.thrift",
+                "OTEL_LOG_LEVEL": "debug"
+            },
+            "program": "${workspaceFolder}/main.js"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+@baseurl = http://localhost:8083
+@monitoringurl = http://localhost:9466/metrics
+@playerurl = http://localhost:8081
+@mazeurl = http://localhost:8082
+
+###
+GET {{playerurl}}/api/players HTTP/1.1
+
+###
+GET {{playerurl}}/api/players/1 HTTP/1.1
+
+###
+GET {{mazeurl}}/api/mazes HTTP/1.1
+
+###
+GET {{mazeurl}}/api/mazes/1 HTTP/1.1
+
+###
+GET {{monitoringurl}} HTTP/1.1
+
+###
+GET {{baseurl}}/api/games HTTP/1.1
+
+###
+GET {{baseurl}}/api/games/2 HTTP/1.1
+
+###
+DELETE {{baseurl}}/api/games/1 HTTP/1.1
+
+###
+POST {{baseurl}}/api/games HTTP/1.1
+content-type: application/json
+
+{
+    "playerid": 87,
+    "botid": 29,
+    "mazeid": 3
+}
+
+###
+PATCH {{baseurl}}/api/games/2 HTTP/1.1
+content-type: application/json
+
+{
+    "state": "init",
+    "steps": 11
+}
+
+###
+POST {{baseurl}}/api/games/2/start HTTP/1.1

@@ -1,0 +1,54 @@
+name: PlayerMgrCI
+
+on: 
+  push:
+    paths:
+    - 'playermgr/**'
+
+jobs:
+  build_playermgr:
+    name: Build playerMgr
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Set env var
+      run: |
+        echo IMAGE_REPOSITORY=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+        echo IMAGE_TAG=$(node -p "require('./playermgr/package.json').version") >> $GITHUB_ENV
+    - run: npm install
+      working-directory: ./playermgr
+    - run: npm run build
+      working-directory: ./playermgr
+    - run: npm test
+      working-directory: ./playermgr
+    - run: npm run coverage
+      working-directory: ./playermgr
+    - run: npm run doc
+      working-directory: ./playermgr
+    - run: npm pack
+      working-directory: ./playermgr
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./playermgr/coverage/**
+    - name: Login to GHCR
+      uses: docker/login-action@v1
+      if: ${{ github.ref == 'ref/heads/main' }}
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and Push docker image
+      uses: docker/build-push-action@v2
+      if: ${{ github.ref == 'ref/heads/main' }}
+      with:
+        context: ./playermgr
+        push: true
+        tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/playermgr:${{ env.IMAGE_TAG }}
+        labels: ghrepo=${{ github.repsitory }},ref=${{ github.ref }}

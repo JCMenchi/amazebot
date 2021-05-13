@@ -1,0 +1,7 @@
+image:
+  registry: localhost:5000/
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "0.2.0"
+
+replicaCount: 1

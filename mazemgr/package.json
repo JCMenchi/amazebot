@@ -1,0 +1,72 @@
+{
+  "name": "mazemgr",
+  "version": "0.2.0",
+  "private": false,
+  "description": "Maze Manager",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js -t -p 8082 &",
+    "build": "npm i --no-optional --no-shrinkwrap --no-package-lock --only=production",
+    "clean": "npx rimraf .nyc_output doc/reference.md coverage doc/html test-results.xml",
+    "doc": "npx jsdoc --readme doc/static/intro.md -d doc/html -c jsdocconfig.json",
+    "docmd": "npx jsdoc2md --no-cache -f src/*.js > doc/reference.md",
+    "test": "npx mocha test --exit --reporter mocha-junit-reporter",
+    "coverage": "npx nyc --reporter=text --reporter=html --reporter=lcov mocha --exit"
+  },
+  "author": "JC Menchi",
+  "license": "MIT",
+  "dependencies": {
+    "@opentelemetry/core": "^0.19.0",
+    "@opentelemetry/exporter-jaeger": "^0.19.0",
+    "@opentelemetry/exporter-prometheus": "^0.19.0",
+    "@opentelemetry/instrumentation-express": "^0.16.0",
+    "@opentelemetry/instrumentation-http": "^0.19.0",
+    "@opentelemetry/metrics": "^0.19.0",
+    "@opentelemetry/node": "^0.19.0",
+    "@opentelemetry/tracing": "^0.19.0",
+    "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
+    "helmet": "^4.6.0",
+    "keycloak-connect": "^13.0.0",
+    "log4js": "^6.3.0",
+    "pg": "^8.6.0",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6",
+    "yargs": "^17.0.1"
+  },
+  "bundledDependencies": [
+    "express",
+    "log4js",
+    "swagger-jsdoc",
+    "swagger-ui-express",
+    "yargs"
+  ],
+  "files": [
+    "main.js",
+    "log4js.json",
+    "src"
+  ],
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-fs": "^2.0.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^7.26.0",
+    "eslint-plugin-mocha": "^8.1.0",
+    "jsdoc": "^3.6.6",
+    "jsdoc-to-markdown": "^7.0.1",
+    "mocha": "^8.4.0",
+    "mocha-junit-reporter": "^2.0.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "doc",
+      "coverage"
+    ],
+    "report-dir": "coverage",
+    "source-map": true,
+    "produce-source-map": true
+  }
+}

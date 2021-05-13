@@ -1,0 +1,23 @@
+{
+    "appenders": {
+        "out": { "type": "console" }
+    },
+    "categories": {
+        "default": {
+            "appenders": [ "out" ],
+            "level": "INFO"
+        },
+        "playermgr": {
+            "appenders": [ "out" ],
+            "level": "DEBUG"
+        },
+        "metrics": {
+            "appenders": [ "out" ],
+            "level": "INFO"
+        },
+        "tracing": {
+            "appenders": [ "out" ],
+            "level": "INFO"
+        }
+    }
+}

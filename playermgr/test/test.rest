@@ -1,0 +1,95 @@
+@baseurl = http://localhost:8081
+@monitoringurl = http://localhost:9464/metrics
+
+###
+GET {{monitoringurl}} HTTP/1.1
+
+###
+GET {{baseurl}}/api/players HTTP/1.1
+
+###
+GET {{baseurl}}/api/players/87 HTTP/1.1
+
+###
+DELETE {{baseurl}}/api/players/85 HTTP/1.1
+
+###
+PATCH {{baseurl}}/api/players/56 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "foo"
+}
+
+###
+GET {{baseurl}}/api/players/87/bot/28 HTTP/1.1
+
+### 
+
+# @name createJoe
+POST {{baseurl}}/api/players HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Joe"
+}
+
+###
+
+@joeId = {{createJoe.response.body.$.id}}
+
+POST {{baseurl}}/api/players/{{joeId}}/bot HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Bot1",
+    "url": "data/bots/bot1.js"
+}
+
+###
+POST {{baseurl}}/api/players/{{joeId}}/bot HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Bot2",
+    "url": "data/bots/bot2.js"
+}
+
+###
+
+# @name createWilliam
+POST {{baseurl}}/api/players HTTP/1.1
+content-type: application/json
+
+{
+    "id": 3,
+    "name": "William"
+}
+
+###
+
+@williamId = {{createWilliam.response.body.$.id}}
+
+POST {{baseurl}}/api/players/{{williamId}}/bot HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Bot3",
+    "url": "data/bots/bot3.js"
+}
+
+###
+POST {{baseurl}}/api/players HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Jack"
+}
+
+###
+PATCH {{baseurl}}/api/players/56/bot/11 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "bar"
+}

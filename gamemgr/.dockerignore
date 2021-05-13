@@ -1,0 +1,16 @@
+.nyc_coverage/
+.vscode/
+coverage/
+doc/
+test/
+Dockerfile
+package*.json
+test-results.xml
+jsdocconfig.json
+.eslintrc.js
+.gitignore
+.dockerignore
+.nyc_output
+data/log
+gamemgr.yaml
+testclient.http

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "MazeMgr",
+            "args": ["-s"],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": { 
+                "OTEL_EXPORTER_JAEGER_ENDPOINT": "http://jaeger:14268/api/traces?format=jaeger.thrift",
+                "OTEL_LOG_LEVEL": "debug"
+            },
+            "program": "${workspaceFolder}/main.js"
+        }
+    ]
+}

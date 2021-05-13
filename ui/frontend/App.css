@@ -1,0 +1,20 @@
+a.activePage {
+  background-color: rgb(45, 116, 110);
+  font-weight: bold;
+}
+
+a.activePage:hover {
+  background-color: rgb(36, 95, 90);
+  font-weight: bold;
+}
+
+.fabright {
+  margin: 0;
+  top: auto;
+  width: 36px !important;
+  height: 36px !important;
+  right: 2px;
+  bottom: 2px;
+  left: auto;
+  position: absolute;
+}

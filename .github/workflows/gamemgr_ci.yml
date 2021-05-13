@@ -1,0 +1,62 @@
+name: GameMgrCI
+
+on: 
+  push:
+    paths:
+    - 'gamemgr/**'
+
+jobs:
+  build_gamemgr:
+    name: Build gamemgr
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Set env var
+      run: |
+        echo IMAGE_REPOSITORY=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+        echo IMAGE_TAG=$(node -p "require('./gamemgr/package.json').version") >> $GITHUB_ENV
+    - run: npm install
+      working-directory: ./playermgr
+    - run: npm install
+      working-directory: ./mazemgr
+    - run: npm run start
+      working-directory: ./playermgr
+    - run: npm run start
+      working-directory: ./mazemgr
+    - run: npm install
+      working-directory: ./gamemgr
+    - run: npm run build
+      working-directory: ./gamemgr
+    - run: npm test
+      working-directory: ./gamemgr
+    - run: npm run coverage
+      working-directory: ./gamemgr
+    - run: npm run doc
+      working-directory: ./gamemgr
+    - run: npm pack
+      working-directory: ./gamemgr
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./gamemgr/coverage/**
+    - name: Login to GHCR
+      uses: docker/login-action@v1
+      if: ${{ github.ref == 'ref/heads/main' }}
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and Push docker image
+      uses: docker/build-push-action@v2
+      if: ${{ github.ref == 'ref/heads/main' }}
+      with:
+        context: ./gamemgr
+        push: true
+        tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/gamemgr:${{ env.IMAGE_TAG }}
+        labels: ghrepo=${{ github.repsitory }},ref=${{ github.ref }}

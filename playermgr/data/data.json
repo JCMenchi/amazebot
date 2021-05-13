@@ -1,0 +1,38 @@
+{
+    "description": "Simple Player examples",
+    "version": "0.1",
+    "players": {
+        "1": {
+            "id": 1,
+            "name": "Joe",
+            "bots": [1, 2]
+        },
+        "2": {
+            "id": 2,
+            "name": "Jack",
+            "bots": [2, 4]
+        },
+        "3": {
+            "id": 3,
+            "name": "William",
+            "bots": [3]
+        }
+    },
+    "bots": {
+        "1": {
+            "id": 1,
+            "name": "Bot1",
+            "url": "data/bots/bot1.js"
+        },
+        "2": {
+            "id": 2,
+            "name": "Bot2",
+            "url": "data/bots/bot2.js"
+        },
+        "3": {
+            "id": 3,
+            "name": "Bot3",
+            "url": "data/bots/bot3.js"
+        }
+    }
+}
