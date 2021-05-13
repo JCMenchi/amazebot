@@ -6,6 +6,7 @@ import { Fab, Grid, Paper } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 
+import MazeViewer from '../maze/MazeViewer';
 import mazeService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
@@ -86,11 +87,11 @@ export default function MazeDetails(props) {
                         {t('Description')}: {maze.description}
                     </Grid>
 
-                    {maze.configuration && maze.configuration.maze && maze.configuration.maze.map(item => (
-                        <Grid item>
-                            {item}
+                    {maze.configuration && maze.configuration.maze && 
+                        <Grid item style={{width:600, height:600}}>
+                            <MazeViewer cellWidth={60} cellHeight={60} cellMargin={4} mazedef={maze.configuration.maze} />
                         </Grid>
-                    ))}
+                    }
 
                 </Grid>
             }

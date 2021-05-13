@@ -64,6 +64,7 @@ function initService(playermgrurl, mazemgrurl) {
  * @memberof ExtService
  */
 function getBot(playerid, botid, token) {
+    /* istanbul ignore next */
     if (token) {
         return playermgr.get(`/players/${playerid}/bot/${botid}`, {headers: { Authorization: token}});
     }
@@ -79,6 +80,7 @@ function getBot(playerid, botid, token) {
  * @memberof ExtService
  */
 function getMaze(mazeid, token) {
+    /* istanbul ignore next */
     if (token) {
         return mazemgr.get(`/mazes/${mazeid}`, {headers: { Authorization: token}});
     }
