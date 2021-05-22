@@ -45,6 +45,26 @@ module.exports = (keycloak) => {
         next();
     }
 
+    router.get('/players/my/info', protect_middleware('player.view'), function (req, res, next) {
+        logger.debug('Get myinfo');
+
+        if (req.kauth && req.kauth.grant && req.kauth.grant.access_token) {
+            const playername = req.kauth.grant.access_token.content.preferred_username;
+            const repository = req.app.settings.repository;
+            repository.getPlayerFromName(playername, (player, err) => {
+                if (err) {
+                    returnError(404, 110, err, res, next);
+                } else {
+                    res.json(player);
+                    next();
+                }
+            });
+        } else {
+            returnError(404, 111, 'No user info', res, next);
+        }
+
+    });
+
     /**
      * @swagger
      * /api/players:
@@ -250,6 +270,61 @@ module.exports = (keycloak) => {
                 returnError(404, 104, err, res, next);
             } else {
                 res.json(player);
+                next();
+            }
+        });
+
+    });
+
+    /**
+     * @swagger
+     * /api/players/{playerid}/bot:
+     *   get:
+     *     summary: Return list of bots for player {playerid}.
+     *     description: Return listen of bots for player {playerid}.
+     *     parameters:
+     *       - in: path
+     *         name: playerid
+     *         required: true
+     *         description: Numeric ID of the player to retrieve.
+     *         schema:
+     *           type: integer
+     *     responses:
+     *       200:
+     *         description: player.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 type: object
+     *                 properties:
+     *                   id:
+     *                     type: integer
+     *                     description: The BOT ID.
+     *                     example: 1
+     *                   name:
+     *                     type: string
+     *                     description: Bot name.
+     *                     example: Simple Bot
+     *                   url:
+     *                     type: string
+     *                     description: URL to get bot code
+     *                     example: bots/bot1.js
+     *       404:
+     *         description: player id not found.
+     */
+     router.get('/players/:playerid/bot', protect_middleware('player.view'), function (req, res, next) {
+        const playerid = req.params.playerid;
+        
+        logger.debug(`Get Bots of player=${playerid}`);
+
+        const repository = req.app.settings.repository;
+        repository.getBots(playerid, (bots, err) => {
+            if (err) {
+                returnError(404, 105, err, res, next);
+            } else {
+                res.json(bots);
                 next();
             }
         });
@@ -559,5 +634,4 @@ module.exports = (keycloak) => {
     });
 
     return router;
-
 };

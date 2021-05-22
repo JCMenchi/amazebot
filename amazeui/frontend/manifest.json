@@ -1,6 +1,6 @@
 {
-    "short_name": "ADMINUI",
-    "name": "Admin UI",
+    "short_name": "MAZEUI",
+    "name": "Amazebot UI",
     "icons": [
       {
         "src": "favicon.ico",

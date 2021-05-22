@@ -2,7 +2,7 @@
 
 DOCKER_REGISTRY=localhost:5000/
 
-SUBDIR="mazemgr playermgr gamemgr ui"
+SUBDIR="mazemgr playermgr gamemgr ui amazeui"
 
 usage() { echo "Usage: $0 cmp1 cmp2" 1>&2; exit 1; }
 

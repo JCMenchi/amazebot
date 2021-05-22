@@ -1,0 +1,36 @@
+{
+    "home": "Accueil",
+    "about": "A Propos",
+    "player": "joueur",
+    "maze": "labyrinthe",
+    "game": "partie",
+
+    "Create new player": "Create new player",
+    "Name": "Nom",
+    "Create": "Créer",
+    "Cancel": "Annuler",
+    "Create new maze": "Create new maze",
+    "Please select a maze.": "Please select a maze.",
+    "Description": "Description",
+    "Bots": "Bots",
+    "Create new bot": "Create new bot",
+    "URL": "URL",
+    "Please select a game.": "Please select a game",
+    "Create new game": "Create new game",
+    "playerid": "playerid",
+    "botid": "botid",
+    "mazeid": "mazeid",
+    "Game Id": "Game Id",
+    "Player": "Player",
+    "Bot": "Bot",
+    "Bot URL": "Bot URL",
+    "Maze": "Maze",
+    "State": "State",
+    "Steps": "Steps",
+
+    "Please": "Bienvenu",
+    "or": "ou",
+    "Sign-in": "Se connecter",
+    "Register": "S'inscrire"
+}
+   

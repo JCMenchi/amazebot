@@ -56,3 +56,11 @@ data:
 EOF
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+# keycloak may use big http user in some case (e.g. registration)
+# the nginx ingress configuration has to be updated to cope with big buffer
+kubectl create configmap -n ingress-nginx ingress-nginx-controller \
+  --from-literal=proxy-buffer-size="16k" \
+  --from-literal=proxy-buffers="8 16k" \
+  --from-literal=proxy-busy-buffers-size="24k" \
+  -o yaml --dry-run=client | kubectl apply -f - 

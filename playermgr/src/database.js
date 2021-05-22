@@ -127,16 +127,6 @@ class DBRepository {
         
     }
 
-    /*
-    SELECT PLAYER.PID,
-	PLAYER.NAME,
-	BOT.BID,
-	BOT.NAME
-FROM PLAYER
-LEFT JOIN BOT 
-    ON BOT.PLAYER_ID = PLAYER.PID 
-WHERE PLAYER.PID = 49;
-    */
     getPlayer(playerid, cb) {
         this.pool.query('SELECT player.pid as pid, player.name as name, bot.bid as bid, bot.name as botname FROM player LEFT JOIN bot ON player.pid = bot.player_id WHERE player.pid = $1;',
                         [playerid], 
@@ -159,6 +149,28 @@ WHERE PLAYER.PID = 49;
                     cb(player);
                 } else {
                     cb(null, 'Player not found.');
+                }
+            }
+        });
+    }
+
+    getPlayerFromName(playername, cb) {
+        this.pool.query("SELECT pid, name FROM player WHERE name = $1;",
+                        [playername], 
+                        (err, res) => {
+            if (err) {
+                console.log(err.stack);
+                cb(null, `getPlayerFromName: database error: ${err.message}`);
+            } else {
+                if (res.rowCount > 0) {
+                    const player = {
+                        id: res.rows[0]['pid'],
+                        name: res.rows[0]['name']
+                    };
+                    cb(player);
+                } else {
+                    // player does not exists yet create it
+                    this.addPlayer(playername, cb);
                 }
             }
         });
@@ -261,6 +273,28 @@ WHERE PLAYER.PID = 49;
                         b.url = rec['url'];
                     }
                     cb(b);
+                } else {
+                    cb(null, 'Bot not found.');
+                }
+            }
+        });
+
+        return null;
+    }
+
+    getBots(playerid, cb) {
+
+        this.pool.query('SELECT bot.bid as bid, bot.name as name, bot.url as url, player_id, player.name as player_name FROM bot, player WHERE player_id = $1 AND player_id = player.pid', [playerid], (err, res) => {
+            if (err) {
+                console.log(err.stack);
+                cb(null, `getBot: database error: ${err.message}`);
+            } else {
+                if (res.rowCount > 0) {
+                    const bots = [];
+                    for(const rec of res.rows) {
+                        bots.push({id: rec['bid'], name: rec.name, url: rec['url']});
+                    }
+                    cb(bots);
                 } else {
                     cb(null, 'Bot not found.');
                 }
