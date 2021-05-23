@@ -26,8 +26,9 @@ const GAMEDB_SCHEMA = `
         mazename varchar(256),
         state varchar(64) NOT NULL DEFAULT 'init',
         steps integer DEFAULT 0,
-        boturl varchar(1024) NOT NULL,
+        boturl varchar(1024),
         maze_configuration json,
+        bot_result json,
         PRIMARY KEY (gid)
     );
 
@@ -117,7 +118,7 @@ class DBRepository {
                         id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
                         mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
                         mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
-                        mazeConfiguration: rec.maze_configuration
+                        mazeConfiguration: rec.maze_configuration, bot_result: rec.bot_result
                     });
                 }
                 cb(games);
@@ -137,7 +138,7 @@ class DBRepository {
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
                         mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
                         mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
-                        mazeConfiguration: rec.maze_configuration});
+                        mazeConfiguration: rec.maze_configuration, bot_result: rec.bot_result});
                 } else {
                     cb(null, 'Game not found.');
                 }
@@ -195,7 +196,7 @@ class DBRepository {
                         cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
                             mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
                             mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
-                            mazeConfiguration: rec.maze_configuration});
+                            mazeConfiguration: rec.maze_configuration, bot_result: rec.bot_result});
                     } else {
                         cb(null, `Game ${gameid} does not exist.`);
                     }
@@ -217,7 +218,7 @@ class DBRepository {
                     cb({id: rec['gid'], playerid: rec.playerid, botid: rec.botid,
                         mazeid: rec.mazeid, playername: rec.playername, botname: rec.botname,
                         mazename: rec.mazename, state: rec.state, steps: rec.steps, botURL: rec.boturl,
-                        mazeConfiguration: rec.maze_configuration});
+                        mazeConfiguration: rec.maze_configuration, bot_result: rec.bot_result});
                 } else {
                     cb(null, `Game ${gameid} does not exist.`);
                 }

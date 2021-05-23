@@ -45,8 +45,15 @@ export default function GameDetails(props) {
     }
 
     const handleEdit = (event, game_id) => {
-        LOGGER.info(`Edit game ${game_id}`);
-        loadData();
+        LOGGER.info(`Reset game ${game_id}`);
+        gameService
+            .patch("api/games/" + game_id, { state: 'init' })
+            .then((response) => {
+                loadData();
+            })
+            .catch((error) => {
+                console.error('Error when resteing game', error);
+            });
     }
 
     const handleReload = (event, game_id) => {

@@ -19,7 +19,7 @@ let mazemgr;
  * @namespace ExtService
  */
 function initService(playermgrurl, mazemgrurl) {
-    
+
     playermgr = axios.create({
         timeout: 10000,
         headers: { 'content-type': 'application/json' },
@@ -66,7 +66,7 @@ function initService(playermgrurl, mazemgrurl) {
 function getBot(playerid, botid, token) {
     /* istanbul ignore next */
     if (token) {
-        return playermgr.get(`/players/${playerid}/bot/${botid}`, {headers: { Authorization: token}});
+        return playermgr.get(`/players/${playerid}/bot/${botid}`, { headers: { Authorization: token } });
     }
     return playermgr.get(`/players/${playerid}/bot/${botid}`);
 }
@@ -82,7 +82,7 @@ function getBot(playerid, botid, token) {
 function getMaze(mazeid, token) {
     /* istanbul ignore next */
     if (token) {
-        return mazemgr.get(`/mazes/${mazeid}`, {headers: { Authorization: token}});
+        return mazemgr.get(`/mazes/${mazeid}`, { headers: { Authorization: token } });
     }
     return mazemgr.get(`/mazes/${mazeid}`);
 }
@@ -95,12 +95,17 @@ function getMaze(mazeid, token) {
  * 
  * @memberof ExtService
  */
-function getBotCode(boturl) {
-    /* istanbul ignore if */
-    if (boturl.startsWith('http')) {
-        return boturl;
+function getBotCode(game) {
+    /* istanbul ignore else */
+    if (game.botURL && game.botURL !== '') {
+        /* istanbul ignore if */
+        if (game.botURL.startsWith('http')) {
+            return game.botURL;
+        } else {
+            return playermgr.defaults.baseURL + '/' + game.botURL;
+        }
     } else {
-        return playermgr.defaults.baseURL + '/' + boturl;
+        return playermgr.defaults.baseURL + '/players/' + game.playerid + '/bot/' + game.botid + '/code';
     }
 }
 

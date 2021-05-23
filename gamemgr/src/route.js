@@ -295,6 +295,9 @@ module.exports = (keycloak) => {
         const gameid = req.params.gameid;
         logger.debug(`Get game= ${gameid}`);
 
+        // get Bearer token from request
+        const token = req.headers.authorization;
+
         const repository = req.app.settings.repository;
         repository.getGame(gameid, (game, err) => {
             if (err) {
@@ -310,8 +313,8 @@ module.exports = (keycloak) => {
                         if (err) {
                             returnError(404, 306, err, res, next);
                         } else {
-                            game.botURL = getBotCode(game.botURL);
-                            require('./engine')(game, repository);
+                            game.botURL = getBotCode(game);
+                            require('./engine')(game, repository, token);
                             res.json({ id: gameid, state: game.state });
                             next();
                         }
