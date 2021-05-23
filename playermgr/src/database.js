@@ -293,7 +293,7 @@ class DBRepository {
 
     getBotCode(playerid, botid, cb) {
 
-        this.pool.query('SELECT bot.botcode as botcode FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
+        this.pool.query('SELECT bot.botcode as botcode, bot.filename as filename FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `getBot: database error: ${err.message}`);
@@ -302,6 +302,7 @@ class DBRepository {
                     const rec = res.rows[0];
                     const b = {
                         id: rec['bid'], 
+                        filename: rec['filename'],
                         botcode: rec['botcode']
                     };
                     cb(b);
