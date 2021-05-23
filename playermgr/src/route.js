@@ -390,6 +390,23 @@ module.exports = (keycloak) => {
 
     });
 
+    router.get('/players/:playerid/bot/:botid/code', protect_middleware('player.view'), function (req, res, next) {
+        const playerid = req.params.playerid;
+        const botid = Number(req.params.botid);
+        logger.debug(`Get Bot player=${playerid} bot=${botid}`);
+
+        const repository = req.app.settings.repository;
+        repository.getBotCode(playerid, botid, (bot, err) => {
+            if (err) {
+                returnError(404, 105, err, res, next);
+            } else {
+                res.json(bot);
+                next();
+            }
+        });
+
+    });
+
     /**
      * @swagger
      * /api/players/{playerid}/bot/{botid}:
@@ -621,9 +638,11 @@ module.exports = (keycloak) => {
         const playerid = req.params.playerid;
         const url = req.fields.url;
         const name = req.fields.name;
+        const filename = req.fields.filename;
+        const botcode = req.fields.botcode;
 
         const repository = req.app.settings.repository;
-        repository.addBot(playerid, name, url, (bot, err) => {
+        repository.addBot(playerid, name, url, filename, botcode, (bot, err) => {
             if (err) {
                 returnError(404, 109, err, res, next);
             } else {
