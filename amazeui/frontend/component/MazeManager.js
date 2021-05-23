@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { Grid, Paper } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
 
 import MazeDetails from './MazeDetails';
 import mazeService from '../utils/player_service';
@@ -15,6 +16,8 @@ export default function MazeManager(props) {
 
     // for I18N
     const { t } = useTranslation();
+
+    const { playerId } = useParams();
 
     // Store the players in a state variable.
     // We are passing an empty array as the default value.
@@ -59,7 +62,7 @@ export default function MazeManager(props) {
 
                 {mazes.map(item => (
                     <Grid item key={item.id} style={{ height: 400, width: 300 }}>
-                        <MazeDetails style={{ height: 400, width: 300 }} mazeId={item.id} />
+                        <MazeDetails style={{ height: 400, width: 300 }} playerId={playerId} mazeId={item.id} />
                     </Grid>
                 ))}
 

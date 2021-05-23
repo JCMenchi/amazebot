@@ -8,6 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { DropzoneArea } from 'material-ui-dropzone'
 
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
@@ -25,6 +26,26 @@ export default function BotAddDialog(props) {
         onClose('');
     };
 
+    const handleFileDrop = (files, setFieldValue) => {
+        if (files.length > 0) {
+            setFieldValue('filename', files[0].name);
+            const reader = new FileReader();
+            reader.onload = function (loadEvent) {
+                if (loadEvent.target.readyState != 2)
+                  return;
+                if (loadEvent.target.error) {
+                  alert("Error while reading file " + files[0].name + ": " + loadEvent.target.error);
+                  return;
+                }
+                setFieldValue('botcode', loadEvent.target.result);
+              };
+            reader.readAsText(files[0]);
+        } else {
+            setFieldValue('filename', '');
+            setFieldValue('botcode', '');
+        }
+    };
+
     return (
         <Dialog onClose={handleClose} aria-labelledby="bot-add-dialog-title" open={open}>
             <DialogTitle id="bot-add-dialog-title">{t('Create new bot')}</DialogTitle>
@@ -32,7 +53,8 @@ export default function BotAddDialog(props) {
             <Formik
                 initialValues={{
                     name: '',
-                    url: ''
+                    botcode: '',
+                    filename: ''
                 }}
                 validate={values => {
                     const errors = {};
@@ -45,24 +67,25 @@ export default function BotAddDialog(props) {
                 }}
                 onSubmit={(values, { setSubmitting }) => {
                     playerService
-                    .post("api/players/" + props.playerId + "/bot", {name: values.name, url: values.url})
-                    .then((response) => {
-                        setSubmitting(false);
-                        // data is an object like { id: 101, name: 'player1'}
-                        onClose(response.data);
-                    })
-                    .catch((error) => {
-                        setSubmitting(false);
-                        if (error.response && error.response.data) {
-                            // data is an object like { error: 101, message: 'error message'}
-                            onClose(error.response.data);
-                        } else {
-                            onClose(error.response.statusText);
-                        }
-                    });
+                        .post("api/players/" + props.playerId + "/bot", 
+                            { name: values.name, filename: values.filename, botcode: values.botcode })
+                        .then((response) => {
+                            setSubmitting(false);
+                            // data is an object like { id: 101, name: 'player1'}
+                            onClose(response.data);
+                        })
+                        .catch((error) => {
+                            setSubmitting(false);
+                            if (error.response && error.response.data) {
+                                // data is an object like { error: 101, message: 'error message'}
+                                onClose(error.response.data);
+                            } else {
+                                onClose(error.response.statusText);
+                            }
+                        });
                 }}
             >
-                {({ submitForm, isSubmitting }) => (
+                {({ submitForm, isSubmitting, setFieldValue }) => (
                     <Form>
                         <Box margin={2}>
                             <Field
@@ -71,12 +94,11 @@ export default function BotAddDialog(props) {
                                 type="text"
                                 label={t('Name')}
                             />
-                            <Field
-                                component={TextField}
-                                name="url"
-                                type="text"
-                                label={t('URL')}
-                            />
+                            <DropzoneArea dropzoneText="Drop bot javascript code"
+                                acceptedFiles={[".js"]}
+                                filesLimit={1}
+                                showFileNames={true}
+                                onChange={ (files) => handleFileDrop(files, setFieldValue)} />
                             {isSubmitting && <LinearProgress />}
                             <br />
                             <Box marginTop={1}>
@@ -96,7 +118,9 @@ export default function BotAddDialog(props) {
                                     {t('Cancel')}
                                 </Button>
                             </Box>
+
                         </Box>
+
                     </Form>
                 )}
             </Formik>

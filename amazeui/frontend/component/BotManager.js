@@ -41,11 +41,7 @@ export default function BotManager(props) {
             .then((response) => {
                 setBots(response.data);
                 if (id !== -1) {
-                    if (id) {
-                        history.push(`/players/${playerId}/bot/${id}`);
-                    } else {
-                        history.push(`/players/${playerId}/bot`);
-                    }
+                    history.push(`/players/${playerId}/bot`);
                 }
             })
             .catch((error) => {
