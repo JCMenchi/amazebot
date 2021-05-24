@@ -32,15 +32,15 @@ export default function BotManager(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadBots(-1);
+        loadBots(true);
     }, []);
 
-    const loadBots = (id) => {
+    const loadBots = (init) => {
         playerService
             .get(`/api/players/${playerId}/bot`)
             .then((response) => {
                 setBots(response.data);
-                if (id !== -1) {
+                if (!init) {
                     history.push(`/players/${playerId}/bot`);
                 }
             })
@@ -66,7 +66,7 @@ export default function BotManager(props) {
         if (value.error) {
             setErrorMessage(value.message);
         } else if (value.id) {
-            loadBot(value.id);
+            loadBots(false);
         }
     };
 
@@ -76,7 +76,7 @@ export default function BotManager(props) {
 
                 {bots.map(item => (
                     <Grid item key={item.id}>
-                        <BotDetails playerId={playerId} botId={item.id} />
+                        <BotDetails playerId={playerId} botId={item.id} reload={loadBots} />
                     </Grid>
                 ))}
 

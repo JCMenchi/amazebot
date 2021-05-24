@@ -35,7 +35,7 @@
                 const right = this.getInfo(def, i, j, 'right');
                 const up = this.getInfo(def, i, j, 'up');
                 const down = this.getInfo(def, i, j, 'down');
-                row.push({ left, right, up, down });
+                row.push({ left, right, up, down, content: this.getCellContent(def,i,j) });
             }
             this.rooms.push(row);
         }
@@ -68,8 +68,21 @@
             return 'exit';
         } else if (char === ' ') {
             return 'door';
+        } else if (char === 'B') {
+            return 'botAtExit';
         }
 
         return 'wall';
+    }
+
+    getCellContent(rawDefinition, i, j) {
+        const char = rawDefinition[i*2+1][j*2+1];
+        if (char === 'b') {
+            return 'b';
+        } else if (char === 'B') {
+            return 'B';
+        } else {
+            return '';
+        }
     }
 };

@@ -105,9 +105,20 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                       />
             }
 
-            <path d={cellPath(room, xorigin, yorigin, width, height, margin)} 
-                    style={{stroke:"blue", strokeLinejoin: "round", strokeWidth:2, fill:"none"}}/>
+            { room.right === 'botAtExit' && 
+                <path d={`M ${xorigin+width+2*margin} ${yorigin+height/2.0} l -${margin*2} -${height*0.1} v ${height*0.2} Z`}
+                      style={{stroke:"none", fill:"blue"}}
+                      />
+            }
 
+            <path d={cellPath(room, xorigin, yorigin, width, height, margin)} 
+                    style={{stroke:"blue", strokeLinecap: "round", strokeLinejoin: "round", strokeWidth:2, fill:"none"}}/>
+
+            { room.content !== '' && 
+                <circle cx={xorigin + width/2 } cy={ yorigin + height/2 } r={width/4} 
+                style={{stroke:"none", fill:"blue"}} 
+                onClick={(event) => handleClick(event)} />
+            }
             { selected && 
                 <circle cx={xorigin + width/2 } cy={ yorigin + height/2 } r={width/8} 
                         style={{stroke:"none", fill:"green"}} 

@@ -45,6 +45,10 @@ module.exports = (game, repository, token, endcb) => {
                 gameinfo.steps = value.steps;
             }
             /* istanbul ignore next */
+            if (value.bot_result) {
+                gameinfo.bot_result = value.bot_result;
+            }
+            /* istanbul ignore next */
             repository.updateGame(game.id, gameinfo, (result, message) => {});
         });
 

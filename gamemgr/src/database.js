@@ -38,7 +38,7 @@ const GAMEDB_SCHEMA = `
 `;
 
 const GAME_FIELDS = ['playerid', 'botid', 'mazeid', 'playername', 'botname', 'mazename', 
-                     'state', 'steps', 'boturl', 'maze_configuration'];
+                     'state', 'steps', 'boturl', 'maze_configuration', 'bot_result'];
 
 class DBRepository {
 

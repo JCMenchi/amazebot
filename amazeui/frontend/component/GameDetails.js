@@ -5,6 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import ReplayIcon from '@material-ui/icons/Replay';
+import MazeViewer from '../maze/MazeViewer';
 
 import gameService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
@@ -47,7 +48,7 @@ export default function GameDetails(props) {
     const handleEdit = (event, game_id) => {
         LOGGER.info(`Reset game ${game_id}`);
         gameService
-            .patch("api/games/" + game_id, { state: 'init' })
+            .patch("api/games/" + game_id, { state: 'init', steps: 0, bot_result: {} })
             .then((response) => {
                 loadData();
             })
@@ -105,33 +106,26 @@ export default function GameDetails(props) {
             });
     }
 
+    const getMazeDef = (game) => {
+        if (game.bot_result && game.bot_result.maze) {
+            return game.bot_result.maze;
+        } else if (game.mazeConfiguration && game.mazeConfiguration.maze) {
+            return game.mazeConfiguration.maze;
+        } else {
+            return null;
+        }
+    }
+
     return (
         <Card raised>
             <CardHeader
-                title={game && `(${game.id})`}
-                
+                title={`${game.playername}.${game.botname} on ${game.mazename}`}
+                subheader={`${t('State')}: "${game.state}" ${t('Steps')}: ${game.steps} (${game.id})`}
             />
-            <CardContent>
-                <Grid container spacing={1} direction='column' alignItems='flex-start'>
-                    <Grid item>
-                        {t('Player')}: {game.playername}
-                    </Grid>
-                    <Grid item>
-                        {t('Bot')}: {game.botname}
-                    </Grid>
-                    <Grid item>
-                        {t('Bot URL')}: {game.botURL}
-                    </Grid>
-                    <Grid item>
-                        {t('Maze')}: {game.mazename}
-                    </Grid>
-                    <Grid item>
-                        {t('State')}: {game.state}
-                    </Grid>
-                    <Grid item>
-                        {t('Steps')}: {game.steps}
-                    </Grid>
-                </Grid>
+            <CardContent style={{ height: 300, width: 300 }}>
+                    { game && game.mazeConfiguration && 
+                        <MazeViewer cellWidth={20} cellHeight={20}
+                                cellMargin={4} mazedef={getMazeDef(game)} /> }
             </CardContent>
             <CardActions disableSpacing>
 
