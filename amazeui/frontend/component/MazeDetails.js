@@ -11,6 +11,17 @@ import MazeViewer from '../maze/MazeViewer';
 import mazeService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
+const DEFAULT_MAZE = [
+    "+0+1+2+3+",
+    "0 | | | |",
+    "+-+-+-+-+",
+    "x     | |",
+    "+-+-+ +-+",
+    "2 | |   X",
+    "+-+-+-+-+",
+    "3 | | | |",
+    "+-+-+-+-+"
+]
 /**
  * Maze Detail Component
  * 
@@ -20,8 +31,6 @@ export default function MazeDetails(props) {
     // for I18N
     const { t } = useTranslation();
 
-    const [errorMessage, setErrorMessage] = useState('');
-
     const [maze, setMaze] = useState({});
 
     // is Add Game dialog open
@@ -30,25 +39,28 @@ export default function MazeDetails(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        setErrorMessage('');
         mazeService
             .get("/api/mazes/" + props.mazeId)
             .then((response) => {
                 const mazeRemoteObject = response.data;
-                mazeRemoteObject.mazeLocal = new Maze(mazeRemoteObject.configuration.maze);
+                if (mazeRemoteObject.configuration && mazeRemoteObject.configuration.maze) {
+                    mazeRemoteObject.mazeLocal = new Maze(mazeRemoteObject.configuration.maze);
+                } else {
+                    mazeRemoteObject.mazeLocal = new Maze(DEFAULT_MAZE);
+                }
                 setMaze(mazeRemoteObject);
             })
             .catch((error) => {
                 if (error.response) {
-                    setErrorMessage(error.response.statusText);
+                    console.error(error.response.statusText);
                 } else {
-                    setErrorMessage(error.message);
+                    console.error(error.message);
                 }
             });
     }, [props.mazeId]);
 
     // Add Game dialog management
-    const handleCreateGame = (event) => {
+    const handleCreateGame = () => {
         // show dialog
         setOpenCreateDialog(true);
     }
@@ -57,40 +69,51 @@ export default function MazeDetails(props) {
         LOGGER.info(`Add game: ${JSON.stringify(value)}`);
         setOpenCreateDialog(false);
         if (value.error) {
-            setErrorMessage(value.message);
+            console.error(value.message);
         }
     };
 
-    /**
-     * 
-     * @param {Maze} maze 
-     */
-    const handleSave = (event, maze_id, maze) => {
-        
+    const handleSave = () => {
+        const mconf = maze.mazeLocal.getConfForSave();
+        mazeService
+            .patch("/api/mazes/" + props.mazeId, {configuration: mconf})
+            .then((response) => {
+                const mazeRemoteObject = response.data;
+                if (mazeRemoteObject.configuration && mazeRemoteObject.configuration.maze) {
+                    mazeRemoteObject.mazeLocal = new Maze(mazeRemoteObject.configuration.maze);
+                } else {
+                    mazeRemoteObject.mazeLocal = new Maze(DEFAULT_MAZE);
+                }
+                setMaze(mazeRemoteObject);
+            })
+            .catch((error) => {
+                if (error.response) {
+                    console.error(error.response.statusText);
+                } else {
+                    console.error(error.message);
+                }
+            });
     }
 
-    const handleDelete = (event, maze_id) => {
-        LOGGER.info(`Delete maze ${maze_id}`);
+    const handleDelete = () => {
+        LOGGER.info(`Delete maze ${props.mazeId}`);
 
         mazeService
-            .delete("api/mazes/" + maze_id)
+            .delete("api/mazes/" + props.mazeId)
             .then((response) => {
-                LOGGER.info(`Maze ${maze_id} deleted.`);
+                LOGGER.info(`Maze ${props.mazeId} deleted.`);
                 props.reload();
             })
             .catch((error) => {
                 if (error.response) {
                     if (error.response.data) {
-                        setErrorMessage(error.response.statusText);
                         // data is an object like { error: 101, message: 'error message'}
-                        LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.data.message}`);
+                        LOGGER.error(`Error while deleting maze ${props.mazeId}: ${error.response.data.message}`);
                     } else {
-                        setErrorMessage(error.response.statusText);
-                        LOGGER.error(`Error while deleting maze ${maze_id}: ${error.response.statusText}`);
+                        LOGGER.error(`Error while deleting maze ${props.mazeId}: ${error.response.statusText}`);
                     }
                 } else {
-                    setErrorMessage(error.message);
-                    LOGGER.error(`Error while deleting maze ${maze_id}: ${error.message}`);
+                    LOGGER.error(`Error while deleting maze ${props.mazeId}: ${error.message}`);
                 }
             });
     }
@@ -98,7 +121,7 @@ export default function MazeDetails(props) {
     return (
         <Card raised>
             <CardHeader
-                title={maze && `${maze.name} (${maze.id})`}
+                title={maze && `${maze.name} (${props.mazeId})`}
                 subheader={maze && maze.description}
             />
             <CardContent>
@@ -106,13 +129,13 @@ export default function MazeDetails(props) {
                 <MazeViewer readonly={false} cellWidth={20} cellHeight={20} cellMargin={4} maze={maze.mazeLocal} />}
             </CardContent>
             <CardActions disableSpacing>
-                <IconButton size="small" color="inherit" onClick={(event) => handleCreateGame(event, maze.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleCreateGame()}>
                     <PlayArrowIcon size="small" />
                 </IconButton>
-                <IconButton size="small" color="inherit" onClick={(event) => handleSave(event, maze.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleSave()}>
                     <SaveIcon size="small" />
                 </IconButton>
-                <IconButton aria-label="add to favorites" onClick={(event) => handleDelete(event, maze.id)}>
+                <IconButton aria-label="add to favorites" onClick={(event) => handleDelete()}>
                     <DeleteIcon />
                 </IconButton>
                 <GameCreateDialog open={openCreateDialog} playerId={props.playerId} mazeId={maze.id} onClose={handleCloseCreateDialog} />

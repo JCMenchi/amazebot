@@ -60,12 +60,6 @@ export default function Home(props) {
                 }).catch(() => {
                     console.error('Failed to load user profile');
                 });
-            keycloak.loadUserInfo()
-                .then((info) => {
-                    console.log(JSON.stringify(info, null, "  "))
-                }).catch(() => {
-                    console.error('Failed to load user info');
-                });
 
         }
     }, [initialized, keycloak.authenticated]);

@@ -21,9 +21,6 @@ export default function GameManager(props) {
     // We are passing an empty array as the default value.
     const [games, setGames] = useState([]);
 
-    // message to display when nothing is selected or after an error
-    const [errorMessage, setErrorMessage] = useState(t('Please select a game.'));
-
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
@@ -39,9 +36,9 @@ export default function GameManager(props) {
         .catch((error) => {
             if (error.response && error.response.data) {
                 // data is an object like { error: 101, message: 'error message'}
-                setErrorMessage(error.response.data.message);
+                console.error(error.response.data.message);
             } else {
-                setErrorMessage(error.message);
+                console.error(error.message);
             }
         });
     }

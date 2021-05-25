@@ -43,6 +43,13 @@
         }
     }
 
+    getConfForSave() {
+        return { maze: this.getDefinition(),
+                 entry: this.entry,
+                 exit: this.exit
+        }
+    }
+
     getDefinition() {
         const mazeDef = [];
         for (let i = 0; i < this.nbRow; i++) {
@@ -150,10 +157,10 @@
         }
 
         if (char === 'x') {
-            this.entry = {i,j};
+            this.entry = {r:i, c:j};
             return 'entry';
         } else if (char === 'X') {
-            this.exit = {i,j};
+            this.exit = {r:i, c:j};
             return 'exit';
         } else if (char === ' ') {
             return 'door';
@@ -176,3 +183,8 @@
         }
     }
 };
+
+Maze.WALL_TYPE_WALL = 'wall';
+Maze.WALL_TYPE_DOOR = 'door';
+Maze.WALL_TYPE_EXIT = 'exit';
+Maze.WALL_TYPE_ENTRY = 'entry';

@@ -17,8 +17,6 @@ export default function BotDetails(props) {
     // for I18N
     const { t } = useTranslation();
 
-    const [errorMessage, setErrorMessage] = useState('');
-
     const [bot, setBot] = useState({});
 
     const [botcode, setBotcode] = useState('');
@@ -46,12 +44,12 @@ export default function BotDetails(props) {
                     }
                 })
                 .catch((error) => {
-                    setErrorMessage(error);
+                    console.error(error);
                 });
 
             })
             .catch((error) => {
-                setErrorMessage(error.response.statusText);
+                console.error(error.response.statusText);
             });
     }, [props.botId]);
 

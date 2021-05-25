@@ -21,8 +21,6 @@ export default function GameDetails(props) {
     // for I18N
     const { t } = useTranslation();
 
-    const [errorMessage, setErrorMessage] = useState('');
-
     const [game, setGame] = useState({});
 
     // The useEffect() hook fires any time that the component is rendered.
@@ -32,7 +30,6 @@ export default function GameDetails(props) {
     }, [props.gameId]);
 
     const loadData = () => {
-        setErrorMessage('');
         gameService
             .get("/api/games/" + props.gameId)
             .then((response) => {
@@ -40,9 +37,9 @@ export default function GameDetails(props) {
             })
             .catch((error) => {
                 if (error.response) {
-                    setErrorMessage(error.response.statusText);
+                    console.error(error.response.statusText);
                 } else {
-                    setErrorMessage(error.message);
+                    console.error(error.message);
                 }
             });
     }

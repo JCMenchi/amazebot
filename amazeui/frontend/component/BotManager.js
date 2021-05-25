@@ -4,7 +4,7 @@ import { Fab, Paper, Grid } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { useParams } from 'react-router-dom';
 
-import BotAddDialog from './BotAdd';
+import BotAddDialog from './BotAddDialog';
 import BotDetails from './BotDetails';
 import playerService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
@@ -22,9 +22,6 @@ export default function BotManager(props) {
     // Store the bots in a state variable.
     // We are passing an empty array as the default value.
     const [bots, setBots] = useState([]);
-
-    // message to display when nothing is selected or after an error
-    const [errorMessage, setErrorMessage] = useState('');
 
     // is Add Player dialog open
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
@@ -47,14 +44,14 @@ export default function BotManager(props) {
             .catch((error) => {
                 if (error.response.data) {
                     // data is an object like { error: 101, message: 'error message'}
-                    setErrorMessage(error.response.data.message);
+                    console.error(error.response.data.message);
                 } else {
-                    setErrorMessage(error.response.statusText);
+                    console.error(error.response.statusText);
                 }
             });
     }
 
-    // Add player dialog management
+    // Add bot dialog management
     const handleAddBot = (event) => {
         // show dialog
         setOpenAddDialog(true);
