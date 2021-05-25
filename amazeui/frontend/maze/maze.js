@@ -13,6 +13,8 @@
         this.nbRow = 0;
         this.nbColumn = 0;
         this.rooms = [];
+        this.entry = null;
+        this.exit = null;
 
         this.loadFromStringArray(this.mazeRawDefinition);
     }
@@ -35,10 +37,95 @@
                 const right = this.getInfo(def, i, j, 'right');
                 const up = this.getInfo(def, i, j, 'up');
                 const down = this.getInfo(def, i, j, 'down');
-                row.push({ left, right, up, down, content: this.getCellContent(def,i,j) });
+                row.push({ maze: this, row: i, column: j, left, right, up, down, content: this.getCellContent(def,i,j) });
             }
             this.rooms.push(row);
         }
+    }
+
+    getDefinition() {
+        const mazeDef = [];
+        for (let i = 0; i < this.nbRow; i++) {
+            let topLine = '';
+            let line = '';
+            for (let j = 0; j < this.nbColumn; j++) {
+                topLine = topLine + '+';
+                if (this.rooms[i][j].up === 'entry') {
+                    topLine = topLine + 'x';
+                } else if (this.rooms[i][j].up === 'exit') {
+                    topLine = topLine + 'X';
+                } else if (this.rooms[i][j].up === 'door') {
+                    topLine = topLine + ' ';
+                } else {
+                    topLine = topLine + '-';
+                }
+
+                if (this.rooms[i][j].left === 'entry') {
+                    line = line + 'x';
+                } else if (this.rooms[i][j].left === 'exit') {
+                    line = line + 'X';
+                } else if (this.rooms[i][j].left === 'door') {
+                    line = line + ' ';
+                } else {
+                    line = line + '|';
+                }
+
+                line = line + ' ';
+            }
+            topLine = topLine + '+';
+            mazeDef.push(topLine);
+            
+            if (this.rooms[i][this.nbColumn-1].right === 'entry') {
+                line = line + 'x';
+            } else if (this.rooms[i][this.nbColumn-1].right === 'exit') {
+                line = line + 'X';
+            } else if (this.rooms[i][this.nbColumn-1].right === 'door') {
+                line = line + ' ';
+            } else {
+                line = line + '|';
+            }
+            mazeDef.push(line);
+        }
+        // draw last line
+        let bottomLine = '';
+        for (let j = 0; j < this.nbColumn; j++) {
+            bottomLine = bottomLine + '+';
+            if (this.rooms[this.nbRow-1][j].down === 'entry') {
+                bottomLine = bottomLine + 'x';
+            } else if (this.rooms[this.nbRow-1][j].down === 'exit') {
+                bottomLine = bottomLine + 'X';
+            } else {
+                bottomLine = bottomLine + '-';
+            }
+        }
+        bottomLine = bottomLine + '+';
+        mazeDef.push(bottomLine);
+
+        return mazeDef;
+    }
+
+    getCell(i, j) {
+        if (i >= 0 && j >= 0 && i < this.nbRow && j < this.nbColumn) {
+            return this.rooms[i][j];
+        }
+
+        return null;
+    }
+
+    getLeftCell(i, j) {
+        return this.getCell(i, j - 1);
+    }
+
+    getRightCell(i, j) {
+        return this.getCell(i, j + 1);
+    }
+
+    getUpCell(i, j) {
+        return this.getCell(i - 1, j);
+    }
+
+    getDownCell(i, j) {
+        return this.getCell(i + 1, j);
     }
 
     /**
@@ -63,12 +150,15 @@
         }
 
         if (char === 'x') {
+            this.entry = {i,j};
             return 'entry';
         } else if (char === 'X') {
+            this.exit = {i,j};
             return 'exit';
         } else if (char === ' ') {
             return 'door';
         } else if (char === 'B') {
+            this.exit = {i,j};
             return 'botAtExit';
         }
 

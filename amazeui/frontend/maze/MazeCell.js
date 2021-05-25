@@ -42,13 +42,117 @@ function cellPath(cell, xo, yo, w, h, m) {
  * Maze cell
  * 
  */
-export default function MazeCell({xorigin, yorigin, width, height, margin, room}) {
+export default function MazeCell({reload, xorigin, yorigin, width, height, margin, room}) {
 
 
     const [selected, setSelected] = useState(false);
 
     const handleClick = (event) => {
         setSelected(!selected);
+    }
+
+    const closeUpWall = () => {
+        const upcell = room.maze.getUpCell(room.row, room.column);
+        if (upcell) {
+            room.up = WALL_TYPE_WALL;
+            upcell.down = WALL_TYPE_WALL
+        } else {
+            if (room.up === WALL_TYPE_ENTRY) {
+                room.up = WALL_TYPE_EXIT;
+            } else {
+                room.up = WALL_TYPE_WALL;
+            }
+        }
+        reload();
+    }
+
+    const openUpWall = () => {
+        const upcell = room.maze.getUpCell(room.row, room.column);
+        if (upcell) {
+            room.up = WALL_TYPE_DOOR;
+            upcell.down = WALL_TYPE_DOOR
+        } else {
+            room.up = WALL_TYPE_ENTRY;
+        }
+        reload();
+    }
+
+    const closeDownWall = () => {
+        const downcell = room.maze.getDownCell(room.row, room.column);
+        if (downcell) {
+            room.down = WALL_TYPE_WALL;
+            downcell.up = WALL_TYPE_WALL
+        } else {
+            if (room.down === WALL_TYPE_ENTRY) {
+                room.down = WALL_TYPE_EXIT;
+            } else {
+                room.down = WALL_TYPE_WALL;
+            }
+        }
+        reload();
+    }
+
+    const openDownWall = () => {
+        const downcell = room.maze.getDownCell(room.row, room.column);
+        if (downcell) {
+            room.down = WALL_TYPE_DOOR;
+            downcell.up = WALL_TYPE_DOOR
+        } else {
+            room.down = WALL_TYPE_ENTRY;
+        }
+        reload();
+    }
+
+    const closeLeftWall = () => {
+        const leftcell = room.maze.getLeftCell(room.row, room.column);
+        if (leftcell) {
+            room.left = WALL_TYPE_WALL;
+            leftcell.right = WALL_TYPE_WALL
+        } else {
+            if (room.left === WALL_TYPE_ENTRY) {
+                room.left = WALL_TYPE_EXIT;
+            } else {
+                room.left = WALL_TYPE_WALL;
+            }
+        }
+        reload();
+    }
+
+    const openLeftWall = () => {
+        const leftcell = room.maze.getLeftCell(room.row, room.column);
+        if (leftcell) {
+            room.left = WALL_TYPE_DOOR;
+            leftcell.right = WALL_TYPE_DOOR
+        } else {
+            room.left = WALL_TYPE_ENTRY;
+        }
+        reload();
+    }
+
+    const closeRightWall = () => {
+        const rightcell = room.maze.getRightCell(room.row, room.column);
+        if (rightcell) {
+            room.right = WALL_TYPE_WALL;
+            rightcell.left = WALL_TYPE_WALL
+        } else {
+            if (room.right === WALL_TYPE_ENTRY) {
+                room.right = WALL_TYPE_EXIT;
+            } else {
+                room.right = WALL_TYPE_WALL;
+            }
+        }
+        reload();
+    }
+
+    const openRightWall = () => {
+        const rightcell = room.maze.getRightCell(room.row, room.column);
+        if (rightcell) {
+            room.right = WALL_TYPE_DOOR;
+            rightcell.left = WALL_TYPE_DOOR
+        } else {
+            room.right = WALL_TYPE_ENTRY;
+        }
+        reload();
     }
 
     return (
@@ -63,8 +167,20 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                       width={width/3.0}
                       height={margin*1.5}
                       style={{stroke:"none", fill:"grey"}}
+                      onClick={(event) => closeUpWall(event)}
                       />
             }
+
+            { room.up === 'wall' && 
+                <rect x={xorigin} 
+                      y={yorigin - margin}
+                      width={width}
+                      height={margin*1.5}
+                      style={{stroke:"none", fill:"grey", fillOpacity: 0}}
+                      onClick={(event) => openUpWall(event)}
+                      />
+            }
+
 
             { room.down !== 'wall' && 
                 <rect x={xorigin + width/3.0} 
@@ -72,6 +188,17 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                       width={width/3.0}
                       height={margin*1.5}
                       style={{stroke:"none", fill:"grey"}}
+                      onClick={(event) => closeDownWall(event)}
+                      />
+            }
+
+            { room.down === 'wall' && 
+                <rect x={xorigin} 
+                      y={yorigin + height}
+                      width={width}
+                      height={margin*1.5}
+                      style={{stroke:"none", fill:"grey", fillOpacity: 0}}
+                      onClick={(event) => openDownWall(event)}
                       />
             }
 
@@ -81,6 +208,17 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                       width={margin*1.5}
                       height={height/3.0}
                       style={{stroke:"none", fill:"grey"}}
+                      onClick={(event) => closeRightWall(event)}
+                      />
+            }
+
+            { room.right === 'wall' && 
+                <rect x={xorigin + width} 
+                      y={yorigin}
+                      width={margin*2}
+                      height={height}
+                      style={{stroke:"none", fill:"grey", fillOpacity: 0}}
+                      onClick={(event) => openRightWall(event)}
                       />
             }
 
@@ -90,18 +228,83 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                       width={margin*1.5}
                       height={height/3.0}
                       style={{stroke:"none", fill:"grey"}}
+                      onClick={(event) => closeLeftWall(event)}
+                      />
+            }
+
+            { room.left === 'wall' && 
+                <rect x={xorigin - 1.5*margin } 
+                      y={yorigin + height/3.0}
+                      width={margin*1.5}
+                      height={height/3.0}
+                      style={{stroke:"none", fill:"grey", fillOpacity: 0}}
+                      onClick={(event) => openLeftWall(event)}
+                      />
+            }
+
+            { room.up === 'entry' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin} l -${width*0.1} -${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeUpWall(event)}
+                      />
+            }
+
+            { room.up === 'exit' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin-margin*2} l -${width*0.1} ${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeUpWall(event)}
+                      />
+            }
+
+            { room.up === 'botAtExit' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin-margin*2} l -${width*0.1} ${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"blue"}} onClick={(event) => closeUpWall(event)}
+                      />
+            }
+
+            { room.down === 'entry' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin+height} l -${width*0.1} ${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeDownWall(event)}
+                      />
+            }
+
+            { room.down === 'exit' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin+height+margin*2} l -${width*0.1} -${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeDownWall(event)}
+                      />
+            }
+
+            { room.botAtExit === 'exit' && 
+                <path d={`M ${xorigin+width/2.0} ${yorigin+height+margin*2} l -${width*0.1} -${margin*2} h ${width*0.2} Z`}
+                      style={{stroke:"none", fill:"blue"}} onClick={(event) => closeDownWall(event)}
                       />
             }
 
             { room.left === 'entry' && 
                 <path d={`M ${xorigin} ${yorigin+height/2.0} l -${margin*2} -${height*0.1} v ${height*0.2} Z`}
-                      style={{stroke:"none", fill:"green"}}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeLeftWall(event)}
+                      />
+            }
+
+            { room.left === 'exit' && 
+                <path d={`M ${xorigin-2*margin} ${yorigin+height/2.0} l ${margin*2} -${height*0.1} v ${height*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeLeftWall(event)}
+                      />
+            }
+
+            { room.left === 'botAtExit' && 
+                <path d={`M ${xorigin-2*margin} ${yorigin+height/2.0} l ${margin*2} -${height*0.1} v ${height*0.2} Z`}
+                      style={{stroke:"none", fill:"blue"}} onClick={(event) => closeLeftWall(event)}
+                      />
+            }
+
+            { room.right === 'entry' && 
+                <path d={`M ${xorigin+width} ${yorigin+height/2.0} l ${margin*2} -${height*0.1} v ${height*0.2} Z`}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeRightWall(event)}
                       />
             }
 
             { room.right === 'exit' && 
                 <path d={`M ${xorigin+width+2*margin} ${yorigin+height/2.0} l -${margin*2} -${height*0.1} v ${height*0.2} Z`}
-                      style={{stroke:"none", fill:"green"}}
+                      style={{stroke:"none", fill:"green"}} onClick={(event) => closeRightWall(event)}
                       />
             }
 
@@ -119,6 +322,7 @@ export default function MazeCell({xorigin, yorigin, width, height, margin, room}
                 style={{stroke:"none", fill:"blue"}} 
                 onClick={(event) => handleClick(event)} />
             }
+
             { selected && 
                 <circle cx={xorigin + width/2 } cy={ yorigin + height/2 } r={width/8} 
                         style={{stroke:"none", fill:"green"}} 

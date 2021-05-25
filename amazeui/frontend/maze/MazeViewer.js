@@ -18,6 +18,12 @@ export default function MazeViewer({ mazedef, cellWidth, cellHeight, cellMargin 
         setMaze(m);
     }, [mazedef]);
 
+    const reload = () => {
+        mazedef = maze.getDefinition();
+        const m = new Maze(mazedef);
+        setMaze(m);
+    }
+
     return (
         <svg viewBox={`0 0 ${maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin} ${maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin}`}>
             {maze &&
@@ -28,10 +34,14 @@ export default function MazeViewer({ mazedef, cellWidth, cellHeight, cellMargin 
                 {maze &&
                     [...Array(maze.nbRow).keys()].map((i) => (
                         [...Array(maze.nbColumn).keys()].map((j) => (
-                            <MazeCell xorigin={2 * cellMargin + j * (cellWidth + 2 * cellMargin)}
+                            <MazeCell key={i*maze.nbColumn+j}
+                                xorigin={2 * cellMargin + j * (cellWidth + 2 * cellMargin)}
                                 yorigin={2 * cellMargin + i * (cellHeight + 2 * cellMargin)}
                                 width={cellWidth}
-                                height={cellHeight} margin={cellMargin} room={maze.rooms[i][j]} />
+                                height={cellHeight} 
+                                margin={cellMargin}
+                                reload={reload}
+                                room={maze.rooms[i][j]} />
                         ))
                     ))
                 }
