@@ -7,25 +7,19 @@ import MazeCell from './MazeCell';
  * Maze viewer
  * 
  */
-export default function MazeViewer({ mazedef, cellWidth, cellHeight, cellMargin }) {
+export default function MazeViewer({ maze, cellWidth, cellHeight, cellMargin, readonly }) {
 
-    const [maze, setMaze] = useState({nbColumn: 0, nbRow: 0});
+    const [mazeDef, setMazeDef] = useState([]);
 
-    // The useEffect() hook fires any time that the component is rendered.
-    // An empty array is passed as the second argument so that the effect only fires once.
-    useEffect(() => {
-        const m = new Maze(mazedef);
-        setMaze(m);
-    }, [mazedef]);
-
+    const width = maze?(maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin):300;
+    const height = maze?(maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin):300;
     const reload = () => {
-        mazedef = maze.getDefinition();
-        const m = new Maze(mazedef);
-        setMaze(m);
+        const newdef = maze.getDefinition();
+        setMazeDef(newdef);
     }
 
     return (
-        <svg viewBox={`0 0 ${maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin} ${maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin}`}>
+        <svg viewBox={`0 0 ${width} ${height}`}>
             {maze &&
                 <rect x="0" y="0" width={maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin}
                     height={maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin} style={{ stroke: "none", fill: "#AAA" }} />
@@ -40,7 +34,9 @@ export default function MazeViewer({ mazedef, cellWidth, cellHeight, cellMargin 
                                 width={cellWidth}
                                 height={cellHeight} 
                                 margin={cellMargin}
+                                mazeDef={mazeDef}
                                 reload={reload}
+                                readonly={readonly}
                                 room={maze.rooms[i][j]} />
                         ))
                     ))

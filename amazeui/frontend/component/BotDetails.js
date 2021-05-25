@@ -21,6 +21,8 @@ export default function BotDetails(props) {
 
     const [bot, setBot] = useState({});
 
+    const [botcode, setBotcode] = useState('');
+
     const editorRef = useRef(null);
 
     function handleEditorDidMount(editor, monaco) {
@@ -40,7 +42,7 @@ export default function BotDetails(props) {
                 .get("/api/players/" + props.playerId + "/bot/" + props.botId + "/code")
                 .then((response) => {
                     if (response.data.botcode) {
-                        editorRef.current.setValue(response.data.botcode);
+                        setBotcode(response.data.botcode);
                     }
                 })
                 .catch((error) => {
@@ -99,7 +101,7 @@ export default function BotDetails(props) {
                 width="400px"
                 height="200px"
                 defaultLanguage="javascript"
-                defaultValue="// some comment"
+                defaultValue={botcode}
                 onMount={handleEditorDidMount}
             />
             </CardContent>

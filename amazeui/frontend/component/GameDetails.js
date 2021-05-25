@@ -7,6 +7,8 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import ReplayIcon from '@material-ui/icons/Replay';
 import MazeViewer from '../maze/MazeViewer';
 
+import Maze from '../maze/maze';
+
 import gameService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
@@ -108,9 +110,9 @@ export default function GameDetails(props) {
 
     const getMazeDef = (game) => {
         if (game.bot_result && game.bot_result.maze) {
-            return game.bot_result.maze;
+            return new Maze(game.bot_result.maze);
         } else if (game.mazeConfiguration && game.mazeConfiguration.maze) {
-            return game.mazeConfiguration.maze;
+            return new Maze(game.mazeConfiguration.maze);
         } else {
             return null;
         }
@@ -124,8 +126,8 @@ export default function GameDetails(props) {
             />
             <CardContent style={{ height: 300, width: 300 }}>
                     { game && game.mazeConfiguration && 
-                        <MazeViewer cellWidth={20} cellHeight={20}
-                                cellMargin={4} mazedef={getMazeDef(game)} /> }
+                        <MazeViewer readonly={true} cellWidth={20} cellHeight={20}
+                                cellMargin={4} maze={getMazeDef(game)} /> }
             </CardContent>
             <CardActions disableSpacing>
 

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardContent, CardActions, IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import GameCreateDialog from './GameCreateDialog';
 
+import Maze from '../maze/maze';
 import MazeViewer from '../maze/MazeViewer';
 import mazeService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
@@ -33,7 +34,9 @@ export default function MazeDetails(props) {
         mazeService
             .get("/api/mazes/" + props.mazeId)
             .then((response) => {
-                setMaze(response.data);
+                const mazeRemoteObject = response.data;
+                mazeRemoteObject.mazeLocal = new Maze(mazeRemoteObject.configuration.maze);
+                setMaze(mazeRemoteObject);
             })
             .catch((error) => {
                 if (error.response) {
@@ -58,7 +61,12 @@ export default function MazeDetails(props) {
         }
     };
 
-    const handleEdit = (event, maze_id) => {
+    /**
+     * 
+     * @param {Maze} maze 
+     */
+    const handleSave = (event, maze_id, maze) => {
+        
     }
 
     const handleDelete = (event, maze_id) => {
@@ -94,14 +102,15 @@ export default function MazeDetails(props) {
                 subheader={maze && maze.description}
             />
             <CardContent>
-                {maze && maze.configuration && <MazeViewer cellWidth={20} cellHeight={20} cellMargin={4} mazedef={maze.configuration.maze} />}
+                {maze && maze.mazeLocal && 
+                <MazeViewer readonly={false} cellWidth={20} cellHeight={20} cellMargin={4} maze={maze.mazeLocal} />}
             </CardContent>
             <CardActions disableSpacing>
                 <IconButton size="small" color="inherit" onClick={(event) => handleCreateGame(event, maze.id)}>
                     <PlayArrowIcon size="small" />
                 </IconButton>
-                <IconButton size="small" color="inherit" onClick={(event) => handleEdit(event, maze.id)}>
-                    <EditIcon size="small" />
+                <IconButton size="small" color="inherit" onClick={(event) => handleSave(event, maze.id)}>
+                    <SaveIcon size="small" />
                 </IconButton>
                 <IconButton aria-label="add to favorites" onClick={(event) => handleDelete(event, maze.id)}>
                     <DeleteIcon />

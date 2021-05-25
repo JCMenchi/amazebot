@@ -42,16 +42,21 @@ function cellPath(cell, xo, yo, w, h, m) {
  * Maze cell
  * 
  */
-export default function MazeCell({reload, xorigin, yorigin, width, height, margin, room}) {
+export default function MazeCell({readonly, reload, xorigin, yorigin, width, height, margin, room}) {
 
 
     const [selected, setSelected] = useState(false);
 
     const handleClick = (event) => {
-        setSelected(!selected);
+        if (!readonly) {
+            setSelected(!selected);
+        }
     }
 
     const closeUpWall = () => {
+        if (readonly) {
+            return;
+        }
         const upcell = room.maze.getUpCell(room.row, room.column);
         if (upcell) {
             room.up = WALL_TYPE_WALL;
@@ -67,6 +72,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const openUpWall = () => {
+        if (readonly) {
+            return;
+        }
         const upcell = room.maze.getUpCell(room.row, room.column);
         if (upcell) {
             room.up = WALL_TYPE_DOOR;
@@ -78,6 +86,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const closeDownWall = () => {
+        if (readonly) {
+            return;
+        }
         const downcell = room.maze.getDownCell(room.row, room.column);
         if (downcell) {
             room.down = WALL_TYPE_WALL;
@@ -93,6 +104,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const openDownWall = () => {
+        if (readonly) {
+            return;
+        }
         const downcell = room.maze.getDownCell(room.row, room.column);
         if (downcell) {
             room.down = WALL_TYPE_DOOR;
@@ -104,6 +118,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const closeLeftWall = () => {
+        if (readonly) {
+            return;
+        }
         const leftcell = room.maze.getLeftCell(room.row, room.column);
         if (leftcell) {
             room.left = WALL_TYPE_WALL;
@@ -119,6 +136,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const openLeftWall = () => {
+        if (readonly) {
+            return;
+        }
         const leftcell = room.maze.getLeftCell(room.row, room.column);
         if (leftcell) {
             room.left = WALL_TYPE_DOOR;
@@ -130,6 +150,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const closeRightWall = () => {
+        if (readonly) {
+            return;
+        }
         const rightcell = room.maze.getRightCell(room.row, room.column);
         if (rightcell) {
             room.right = WALL_TYPE_WALL;
@@ -145,6 +168,9 @@ export default function MazeCell({reload, xorigin, yorigin, width, height, margi
     }
 
     const openRightWall = () => {
+        if (readonly) {
+            return;
+        }
         const rightcell = room.maze.getRightCell(room.row, room.column);
         if (rightcell) {
             room.right = WALL_TYPE_DOOR;
