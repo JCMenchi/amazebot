@@ -44,7 +44,7 @@ export default function GameDetails(props) {
             });
     }
 
-    const handleEdit = (event, game_id) => {
+    const handleEdit = () => {
         LOGGER.info(`Reset game ${props.gameId}`);
         gameService
             .patch("api/games/" + props.gameId, { state: 'init', steps: 0, bot_result: {} })
@@ -56,13 +56,13 @@ export default function GameDetails(props) {
             });
     }
 
-    const handleReload = (event) => {
+    const handleReload = () => {
         LOGGER.info(`Reload games`);
         loadData();
     }
 
-    const handleRun = (event) => {
-        LOGGER.info(`Run game ${gamprops.gameIde_id}`);
+    const handleRun = () => {
+        LOGGER.info(`Run game ${props.gameId}`);
         gameService
             .post("api/games/" + props.gameId + "/start")
             .then((response) => {
@@ -83,24 +83,24 @@ export default function GameDetails(props) {
             });
     }
 
-    const handleDelete = (event, game_id) => {
-        LOGGER.info(`Delete game ${game_id}`);
+    const handleDelete = () => {
+        LOGGER.info(`Delete game ${props.gameId}`);
         gameService
-            .delete("api/games/" + game_id)
+            .delete("api/games/" + props.gameId)
             .then((response) => {
-                LOGGER.info(`Game ${game_id} deleted.`);
+                LOGGER.info(`Game ${props.gameId} deleted.`);
                 props.reload();
             })
             .catch((error) => {
                 if (error.response) {
                     if (error.response.data) {
                         // data is an object like { error: 101, message: 'error message'}
-                        LOGGER.error(`Error while deleting game ${game_id}: ${error.response.data.message}`);
+                        LOGGER.error(`Error while deleting game ${props.gameId}: ${error.response.data.message}`);
                     } else {
-                        LOGGER.error(`Error while deleting game ${game_id}: ${error.response.statusText}`);
+                        LOGGER.error(`Error while deleting game ${props.gameId}: ${error.response.statusText}`);
                     }
                 } else {
-                    LOGGER.error(`Error while deleting game ${game_id}: ${error.message}`);
+                    LOGGER.error(`Error while deleting game ${props.gameId}: ${error.message}`);
                 }
             });
     }
@@ -123,16 +123,16 @@ export default function GameDetails(props) {
             />
 
             <CardActions disableSpacing>
-                <IconButton size="small" color="inherit" onClick={(event) => handleRun(event, game.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleRun()}>
                     <PlayArrowIcon size="small" />
                 </IconButton>
-                <IconButton size="small" color="inherit" onClick={(event) => handleReload(event, game.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleReload()}>
                     <ReplayIcon size="small" />
                 </IconButton>
-                <IconButton size="small" color="inherit" onClick={(event) => handleEdit(event, game.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleEdit()}>
                     <EditIcon size="small" />
                 </IconButton>
-                <IconButton size="small" color="inherit" onClick={(event) => handleDelete(event, game.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleDelete()}>
                     <DeleteIcon size="small" />
                 </IconButton>
             </CardActions>

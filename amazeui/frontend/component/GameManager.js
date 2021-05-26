@@ -24,10 +24,10 @@ export default function GameManager(props) {
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadGame();
+        loadGames(true);
     }, []);
 
-    const loadGame = () => {
+    const loadGames = (init) => {
         gameService
         .get("/api/games")
         .then((response) => {
@@ -49,7 +49,7 @@ export default function GameManager(props) {
             <Grid container spacing={2}>
                 {games.map(item => (
                     <Grid item key={item.id}>
-                        <GameDetails gameId={item.id} />
+                        <GameDetails gameId={item.id} reload={loadGames} />
                     </Grid>
                 ))}
             </Grid>

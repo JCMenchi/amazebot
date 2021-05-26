@@ -77,7 +77,7 @@ export default function MazeManager(props) {
 
                 {mazes.map(item => (
                     <Grid item key={item.id} >
-                        <MazeDetails playerId={playerId} mazeId={item.id} />
+                        <MazeDetails playerId={playerId} mazeId={item.id} reload={loadMazes} />
                     </Grid>
                 ))}
 
