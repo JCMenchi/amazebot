@@ -124,10 +124,6 @@ export default function MazeDetails(props) {
                 title={maze && `${maze.name} (${props.mazeId})`}
                 subheader={maze && maze.description}
             />
-            <CardContent>
-                {maze && maze.mazeLocal && 
-                <MazeViewer readonly={false} cellWidth={20} cellHeight={20} cellMargin={4} maze={maze.mazeLocal} />}
-            </CardContent>
             <CardActions disableSpacing>
                 <IconButton size="small" color="inherit" onClick={(event) => handleCreateGame()}>
                     <PlayArrowIcon size="small" />
@@ -135,11 +131,15 @@ export default function MazeDetails(props) {
                 <IconButton size="small" color="inherit" onClick={(event) => handleSave()}>
                     <SaveIcon size="small" />
                 </IconButton>
-                <IconButton aria-label="add to favorites" onClick={(event) => handleDelete()}>
-                    <DeleteIcon />
+                <IconButton  size="small" color="inherit" onClick={(event) => handleDelete()}>
+                    <DeleteIcon  size="small"/>
                 </IconButton>
                 <GameCreateDialog open={openCreateDialog} playerId={props.playerId} mazeId={maze.id} onClose={handleCloseCreateDialog} />
             </CardActions>
+            <CardContent style={{ padding: 8, height: 316, width: 316 }}>
+                {maze && maze.mazeLocal && 
+                <MazeViewer height={300} width={300} readonly={false} cellWidth={20} cellHeight={20} cellMargin={4} maze={maze.mazeLocal} />}
+            </CardContent>
         </Card>
 
     );

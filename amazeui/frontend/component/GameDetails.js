@@ -45,9 +45,9 @@ export default function GameDetails(props) {
     }
 
     const handleEdit = (event, game_id) => {
-        LOGGER.info(`Reset game ${game_id}`);
+        LOGGER.info(`Reset game ${props.gameId}`);
         gameService
-            .patch("api/games/" + game_id, { state: 'init', steps: 0, bot_result: {} })
+            .patch("api/games/" + props.gameId, { state: 'init', steps: 0, bot_result: {} })
             .then((response) => {
                 loadData();
             })
@@ -56,17 +56,17 @@ export default function GameDetails(props) {
             });
     }
 
-    const handleReload = (event, game_id) => {
-        LOGGER.info(`Reload game ${game_id}`);
+    const handleReload = (event) => {
+        LOGGER.info(`Reload games`);
         loadData();
     }
 
-    const handleRun = (event, game_id) => {
-        LOGGER.info(`Run game ${game_id}`);
+    const handleRun = (event) => {
+        LOGGER.info(`Run game ${gamprops.gameIde_id}`);
         gameService
-            .post("api/games/" + game_id + "/start")
+            .post("api/games/" + props.gameId + "/start")
             .then((response) => {
-                LOGGER.info(`Game ${game_id} started.`);
+                LOGGER.info(`Game ${props.gameId} started.`);
                 loadData();
             })
             .catch((error) => {
@@ -121,13 +121,8 @@ export default function GameDetails(props) {
                 title={`${game.playername}.${game.botname} on ${game.mazename}`}
                 subheader={`${t('State')}: "${game.state}" ${t('Steps')}: ${game.steps} (${game.id})`}
             />
-            <CardContent style={{ height: 300, width: 300 }}>
-                    { game && game.mazeConfiguration && 
-                        <MazeViewer readonly={true} cellWidth={20} cellHeight={20}
-                                cellMargin={4} maze={getMazeDef(game)} /> }
-            </CardContent>
-            <CardActions disableSpacing>
 
+            <CardActions disableSpacing>
                 <IconButton size="small" color="inherit" onClick={(event) => handleRun(event, game.id)}>
                     <PlayArrowIcon size="small" />
                 </IconButton>
@@ -137,10 +132,16 @@ export default function GameDetails(props) {
                 <IconButton size="small" color="inherit" onClick={(event) => handleEdit(event, game.id)}>
                     <EditIcon size="small" />
                 </IconButton>
-                <IconButton size="small" edge="end" color="inherit" onClick={(event) => handleDelete(event, game.id)}>
+                <IconButton size="small" color="inherit" onClick={(event) => handleDelete(event, game.id)}>
                     <DeleteIcon size="small" />
                 </IconButton>
             </CardActions>
+
+            <CardContent style={{ padding: 8, height: 316, width: 316 }}>
+                    { game && game.mazeConfiguration && 
+                        <MazeViewer width={300} height={300} readonly={true} cellWidth={20} cellHeight={20}
+                                cellMargin={4} maze={getMazeDef(game)} /> }
+            </CardContent>
         </Card>
 
     );

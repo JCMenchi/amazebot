@@ -76,14 +76,12 @@ export default function BotManager(props) {
                         <BotDetails playerId={playerId} botId={item.id} reload={loadBots} />
                     </Grid>
                 ))}
-
-                <Fab size="small" color="primary" aria-label="add"
-                    onClick={(event) => handleAddBot(event)}>
-                    <AddIcon />
-                </Fab>
-                <BotAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
-
             </Grid>
+            <Fab className="fabright" size="small" color="primary" aria-label="add"
+                onClick={(event) => handleAddBot(event)}>
+                <AddIcon />
+            </Fab>
+            <BotAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
         </Paper>
     );
 }

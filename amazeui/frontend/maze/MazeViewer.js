@@ -7,19 +7,19 @@ import MazeCell from './MazeCell';
  * Maze viewer
  * 
  */
-export default function MazeViewer({ maze, cellWidth, cellHeight, cellMargin, readonly }) {
+export default function MazeViewer({ maze, cellWidth, cellHeight, cellMargin, width, height, readonly }) {
 
     const [mazeDef, setMazeDef] = useState([]);
 
-    const width = maze?(maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin):300;
-    const height = maze?(maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin):300;
+    const worldWidth = maze?(maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin):300;
+    const worldHeight = maze?(maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin):300;
     const reload = () => {
         const newdef = maze.getDefinition();
         setMazeDef(newdef);
     }
 
     return (
-        <svg viewBox={`0 0 ${width} ${height}`}>
+        <svg width={width} height={height} viewBox={`0 0 ${worldWidth} ${worldHeight}`}>
             {maze &&
                 <rect x="0" y="0" width={maze.nbColumn * (cellWidth + 2 * cellMargin) + 2 * cellMargin}
                     height={maze.nbRow * (cellHeight + 2 * cellMargin) + 2 * cellMargin} style={{ stroke: "none", fill: "#AAA" }} />

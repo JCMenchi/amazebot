@@ -47,13 +47,11 @@ export default function GameManager(props) {
         <Paper elevation={4} variant='elevation' style={{ padding: 4, height: '100%', width: '100%', overflow: 'hidden' }}>
 
             <Grid container spacing={2}>
-
                 {games.map(item => (
                     <Grid item key={item.id}>
                         <GameDetails gameId={item.id} />
                     </Grid>
                 ))}
-
             </Grid>
         </Paper>
     );

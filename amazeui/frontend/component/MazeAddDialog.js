@@ -12,6 +12,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 
+import Maze from '../maze/maze';
 import mazeService from '../utils/player_service';
 
 export default function MazeAddDialog(props) {
@@ -32,7 +33,9 @@ export default function MazeAddDialog(props) {
             <Formik
                 initialValues={{
                     name: '',
-                    description: ''
+                    description: '',
+                    nbrow: 4,
+                    nbcolumn: 4
                 }}
                 validate={values => {
                     const errors = {};
@@ -44,8 +47,13 @@ export default function MazeAddDialog(props) {
                     return errors;
                 }}
                 onSubmit={(values, { setSubmitting }) => {
+                    const mz = Maze.CreateMaze(Number(values.nbrow), Number(values.nbcolumn));
                     mazeService
-                    .post("api/mazes", {name: values.name, description: values.description})
+                    .post("api/mazes", {
+                        name: values.name, 
+                        description: values.description,
+                        configuration: mz.getConfForSave()
+                    })
                     .then((response) => {
                         setSubmitting(false);
                         // data is an object like { id: 101, name: 'maze1'}
@@ -76,6 +84,18 @@ export default function MazeAddDialog(props) {
                                 name="description"
                                 type="text"
                                 label={t('Description')}
+                            />
+                            <Field
+                                component={TextField}
+                                name="nbrow"
+                                type="text"
+                                label={t('NbRow')}
+                            />
+                            <Field
+                                component={TextField}
+                                name="nbcolumn"
+                                type="text"
+                                label={t('NbColumn')}
                             />
                             {isSubmitting && <LinearProgress />}
                             <br />

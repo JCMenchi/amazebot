@@ -16,7 +16,9 @@
         this.entry = null;
         this.exit = null;
 
-        this.loadFromStringArray(this.mazeRawDefinition);
+        if (def) {
+            this.loadFromStringArray(this.mazeRawDefinition);
+        }
     }
     
     /**
@@ -188,3 +190,29 @@ Maze.WALL_TYPE_WALL = 'wall';
 Maze.WALL_TYPE_DOOR = 'door';
 Maze.WALL_TYPE_EXIT = 'exit';
 Maze.WALL_TYPE_ENTRY = 'entry';
+
+Maze.CreateMaze = (nbrow, nbcolumn) => {
+    const maze = new Maze();
+    maze.nbRow = nbrow;
+    maze.nbColumn = nbcolumn;
+    
+    for (let i = 0; i < nbrow; i++) {
+        const row = [];
+        for (let j = 0; j < nbcolumn; j++) {
+            const room = { maze: maze, row: i, column: j, 
+                           left: Maze.WALL_TYPE_WALL, 
+                           right: Maze.WALL_TYPE_WALL, 
+                           up: Maze.WALL_TYPE_WALL, 
+                           down: Maze.WALL_TYPE_WALL, 
+                           content: ''};
+            row.push(room);
+        }
+        maze.rooms.push(row)
+    }
+
+    maze.entry = {r:0,c:0}
+    maze.exit = {r:0,c:nbcolumn-1}
+    maze.rooms[0][0].left = Maze.WALL_TYPE_ENTRY;
+    maze.rooms[0][nbcolumn-1].right = Maze.WALL_TYPE_EXIT;
+    return maze;
+}

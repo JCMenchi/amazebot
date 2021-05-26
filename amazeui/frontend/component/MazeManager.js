@@ -76,18 +76,17 @@ export default function MazeManager(props) {
             <Grid container spacing={2}>
 
                 {mazes.map(item => (
-                    <Grid item key={item.id} style={{ height: 400, width: 300 }}>
-                        <MazeDetails style={{ height: 400, width: 300 }} playerId={playerId} mazeId={item.id} />
+                    <Grid item key={item.id} >
+                        <MazeDetails playerId={playerId} mazeId={item.id} />
                     </Grid>
                 ))}
-                <Fab size="small" color="primary" aria-label="add"
-                    onClick={(event) => handleAddMaze(event)}>
-                    <AddIcon />
-                </Fab>
-                <MazeAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
 
             </Grid>
-
+            <Fab className="fabright" size="small" color="primary" aria-label="add"
+                onClick={(event) => handleAddMaze(event)}>
+                <AddIcon />
+            </Fab>
+            <MazeAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
         </Paper>
     );
 }
