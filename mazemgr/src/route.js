@@ -297,7 +297,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: name already used.
      */
-    router.delete('/mazes/:mazeid', protect_middleware('maze.admin'), protect_middleware('maze.admin'), function (req, res, next) {
+    router.delete('/mazes/:mazeid', protect_middleware('maze.edit'), function (req, res, next) {
         const mazeid = req.params.mazeid;
         logger.debug(`Delete maze= ${mazeid}`);
 

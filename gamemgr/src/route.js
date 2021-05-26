@@ -353,7 +353,7 @@ module.exports = (keycloak) => {
      *       404:
      *         description: game not found.
      */
-    router.delete('/games/:gameid', protect_middleware('game.admin'), protect_middleware('game.admin'), function (req, res, next) {
+    router.delete('/games/:gameid', protect_middleware('game.edit'), function (req, res, next) {
         const gameid = req.params.gameid;
         logger.debug(`Delete game= ${gameid}`);
 
