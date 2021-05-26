@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,11 @@ import { useTranslation } from 'react-i18next';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import DialogActions from '@material-ui/core/DialogActions';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { Formik, Form, Field } from 'formik';
@@ -16,113 +20,74 @@ import gameService from '../utils/player_service';
 
 export default function GameCreateDialog(props) {
 
-    const { onClose, open } = props;
+    const { onClose, open, botList } = props;
+
+    const [botId, setBotId] = useState(0);
 
     // for I18N
     const { t } = useTranslation();
 
+    useEffect(() => {
+        if (open && botList.length > 0) {
+            setBotId(botList[0].id);
+        }
+    }, [open]);
+
     const handleClose = () => {
+        gameService
+            .post("api/games", {
+                mazeid: props.mazeId,
+                playerid: props.playerId,
+                botid: botId
+            })
+            .then((response) => {
+                // data is an object
+                onClose(response.data);
+            })
+            .catch((error) => {
+                if (error.response.data) {
+                    // data is an object
+                    onClose(error.response.data);
+                } else {
+                    onClose(error.response.statusText);
+                }
+            });
+    };
+
+    const handleCancel = () => {
         onClose('');
+    };
+
+    const handleChange = (event) => {
+        const b = event.target.value;
+        setBotId(b);
     };
 
     return (
         <Dialog onClose={handleClose} aria-labelledby="game-add-dialog-title" open={open}>
-            <DialogTitle id="game-add-dialog-title">{t('Create new game')}</DialogTitle>
-
-            <Formik
-                initialValues={{
-                    playerid: props.playerId,
-                    botid: '',
-                    mazeid: props.mazeId
-                }}
-                validate={values => {
-                    const errors = {};
-                    if (!values.playerid) {
-                        errors.playerid = 'Required';
-                    } else if (values.playerid === '') {
-                        errors.playerid = 'Required';
+            <DialogTitle id="game-add-dialog-title">{t('New game on')} {props.mazeName}</DialogTitle>
+            <FormControl variant="filled">
+                <InputLabel>Choose your Bot</InputLabel>
+                <Select
+                    id="bot"
+                    value={botId}
+                    onChange={handleChange}
+                >
+                    {
+                        botList.map(item => (
+                            <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                        ))
                     }
-
-                    if (!values.botid) {
-                        errors.botid = 'Required';
-                    } else if (values.botid === '') {
-                        errors.botid = 'Required';
-                    }
-
-                    if (!values.mazeid) {
-                        errors.mazeid = 'Required';
-                    } else if (values.mazeid === '') {
-                        errors.mazeid = 'Required';
-                    }
-
-                    return errors;
-                }}
-                onSubmit={(values, { setSubmitting }) => {
-                    gameService
-                    .post("api/games", { mazeid: Number(values.mazeid), 
-                                         playerid: Number(values.playerid),
-                                         botid: Number(values.botid)})
-                    .then((response) => {
-                        setSubmitting(false);
-                        // data is an object
-                        onClose(response.data);
-                    })
-                    .catch((error) => {
-                        setSubmitting(false);
-                        if (error.response.data) {
-                            // data is an object
-                            onClose(error.response.data);
-                        } else {
-                            onClose(error.response.statusText);
-                        }
-                    });
-                }}
-            >
-                {({ submitForm, isSubmitting }) => (
-                    <Form>
-                        <Box margin={2}>
-                            <Field
-                                component={TextField}
-                                name="playerid"
-                                type="text"
-                                label={t('playerid')}
-                            />
-                            <Field
-                                component={TextField}
-                                name="botid"
-                                type="text"
-                                label={t('botid')}
-                            />
-                            <Field
-                                component={TextField}
-                                name="mazeid"
-                                type="text"
-                                label={t('mazeid')}
-                            />
-                            {isSubmitting && <LinearProgress />}
-                            <br />
-                            <Box marginTop={1}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    style={{ marginRight: 8 }}
-                                    disabled={isSubmitting}
-                                    onClick={submitForm}>
-                                    {t('Create')}
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={isSubmitting}
-                                    onClick={handleClose}>
-                                    {t('Cancel')}
-                                </Button>
-                            </Box>
-                        </Box>
-                    </Form>
-                )}
-            </Formik>
-
+                </Select>
+            </FormControl>
+            <DialogActions>
+                <Button onClick={handleCancel} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={handleClose} color="primary">
+                    Ok
+                </Button>
+            </DialogActions>
         </Dialog>
     );
 }

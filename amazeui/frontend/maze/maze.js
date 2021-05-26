@@ -1,4 +1,16 @@
 
+const DEFAULT_MAZE = [
+    "+0+1+2+3+",
+    "0 | | | |",
+    "+-+-+-+-+",
+    "x     | |",
+    "+-+-+ +-+",
+    "2 | |   X",
+    "+-+-+-+-+",
+    "3 | | | |",
+    "+-+-+-+-+"
+];
+
 /**
  * Maze
  */
@@ -9,7 +21,7 @@
      * @param {string[]} def 
      */
     constructor(def) {
-        this.mazeRawDefinition = def;
+        this.mazeRawDefinition = def || DEFAULT_MAZE;
         this.nbRow = 0;
         this.nbColumn = 0;
         this.rooms = [];

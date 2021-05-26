@@ -11,17 +11,6 @@ import MazeViewer from '../maze/MazeViewer';
 import mazeService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
 
-const DEFAULT_MAZE = [
-    "+0+1+2+3+",
-    "0 | | | |",
-    "+-+-+-+-+",
-    "x     | |",
-    "+-+-+ +-+",
-    "2 | |   X",
-    "+-+-+-+-+",
-    "3 | | | |",
-    "+-+-+-+-+"
-]
 /**
  * Maze Detail Component
  * 
@@ -32,6 +21,8 @@ export default function MazeDetails(props) {
     const { t } = useTranslation();
 
     const [maze, setMaze] = useState({});
+
+    const [bots, setBots] = useState([]);
 
     // is Add Game dialog open
     const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
@@ -46,7 +37,7 @@ export default function MazeDetails(props) {
                 if (mazeRemoteObject.configuration && mazeRemoteObject.configuration.maze) {
                     mazeRemoteObject.mazeLocal = new Maze(mazeRemoteObject.configuration.maze);
                 } else {
-                    mazeRemoteObject.mazeLocal = new Maze(DEFAULT_MAZE);
+                    mazeRemoteObject.mazeLocal = new Maze();
                 }
                 setMaze(mazeRemoteObject);
             })
@@ -61,16 +52,29 @@ export default function MazeDetails(props) {
 
     // Add Game dialog management
     const handleCreateGame = () => {
-        // show dialog
-        setOpenCreateDialog(true);
+
+        mazeService.get("/api/players/" + props.playerId + "/bot",)
+        .then((response) => {
+            const bots = [];
+            for(const b of response.data) {
+                bots.push({id: b.id, name: b.name});
+            }
+            setBots(bots);
+            // show dialog
+            setOpenCreateDialog(true);
+        })
+        .catch((error) => {
+            if (error.response) {
+                console.error(error.response.statusText);
+            } else {
+                console.error(error.message);
+            }
+        });
     }
 
-    const handleCloseCreateDialog = (value) => {
-        LOGGER.info(`Add game: ${JSON.stringify(value)}`);
+    const handleCloseCreateDialog = (result) => {
+        LOGGER.info('Add game', result);
         setOpenCreateDialog(false);
-        if (value.error) {
-            console.error(value.message);
-        }
     };
 
     const handleSave = () => {
@@ -134,12 +138,16 @@ export default function MazeDetails(props) {
                 <IconButton  size="small" color="inherit" onClick={(event) => handleDelete()}>
                     <DeleteIcon  size="small"/>
                 </IconButton>
-                <GameCreateDialog open={openCreateDialog} playerId={props.playerId} mazeId={maze.id} onClose={handleCloseCreateDialog} />
             </CardActions>
             <CardContent style={{ padding: 8, height: 316, width: 316 }}>
                 {maze && maze.mazeLocal && 
                 <MazeViewer height={300} width={300} readonly={false} cellWidth={20} cellHeight={20} cellMargin={4} maze={maze.mazeLocal} />}
             </CardContent>
+
+            <GameCreateDialog botList={bots} open={openCreateDialog} 
+                              playerId={props.playerId} 
+                              mazeId={maze.id} mazeName={maze.name}
+                              onClose={handleCloseCreateDialog} />
         </Card>
 
     );

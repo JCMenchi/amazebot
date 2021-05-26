@@ -88,13 +88,13 @@ export default function MazeAddDialog(props) {
                             <Field
                                 component={TextField}
                                 name="nbrow"
-                                type="text"
+                                type="number"
                                 label={t('NbRow')}
                             />
                             <Field
                                 component={TextField}
                                 name="nbcolumn"
-                                type="text"
+                                type="number"
                                 label={t('NbColumn')}
                             />
                             {isSubmitting && <LinearProgress />}
