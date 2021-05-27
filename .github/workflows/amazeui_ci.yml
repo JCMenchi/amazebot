@@ -1,0 +1,52 @@
+name: AMazeUICI
+
+on: 
+  push:
+    paths:
+    - 'amazeui/**'
+
+jobs:
+  build_amazeui:
+    name: Build amazeui
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Set env var
+      run: |
+        echo IMAGE_REPOSITORY=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+        echo IMAGE_TAG=$(node -p "require('./amazeui/package.json').version") >> $GITHUB_ENV
+    - run: npm install
+      working-directory: ./amazeui
+    - run: npm run build
+      working-directory: ./amazeui
+    - run: npm test
+      working-directory: ./amazeui
+    - run: npm run coverage
+      working-directory: ./amazeui
+    - run: npm pack
+      working-directory: ./amazeui
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ./amazeui/coverage/**
+    - name: Login to GHCR
+      uses: docker/login-action@v1
+      if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and Push docker image
+      uses: docker/build-push-action@v2
+      if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        context: ./amazeui
+        push: true
+        tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/amazeui:${{ env.IMAGE_TAG }}
+        labels: ghrepo=${{ github.repsitory }},ref=${{ github.ref }}

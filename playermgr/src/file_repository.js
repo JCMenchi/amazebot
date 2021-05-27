@@ -65,7 +65,7 @@ class FileRepository {
 
     updatePlayer(playerid, fields, cb) {
         if (this.players[playerid]) {
-            for(const k in fields) {
+            for (const k in fields) {
                 /* istanbul ignore else */
                 if (Object.keys(this.players[playerid]).includes(k)) {
                     this.players[playerid][k] = fields[k];
@@ -82,12 +82,21 @@ class FileRepository {
             const p = this.players[playerid];
             delete this.players[playerid];
             // update bot list
-            for(const b of p.bots) {
+            for (const b of p.bots) {
                 if (this.bots[b]) {
                     delete this.bots[b];
                 }
             }
             cb(p);
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
+        }
+    }
+
+    getBots(playerid, cb) {
+        /* istanbul ignore else */
+        if (this.players[playerid]) {
+            cb(this.players[playerid].bots);
         } else {
             cb(null, `Player ${playerid} does not exist.`);
         }
@@ -117,7 +126,30 @@ class FileRepository {
         }
     }
 
-    addBot(playerid, name, url, cb) {
+    getBotCode(playerid, botid, cb) {
+        /* istanbul ignore else */
+        if (this.players[playerid]) {
+            if (this.players[playerid].bots.includes(botid)) {
+                /* istanbul ignore else */
+                if (this.bots[botid]) {
+                    const botinfo = {
+                        id: botid,
+                        filename: this.bots[botid].filename,
+                        botcode: this.bots[botid].botcode
+                    };
+                    cb(botinfo);
+                } else {
+                    cb(null, `Bot ${botid} does not exist.`);
+                }
+            } else {
+                cb(null, `Bot ${botid} does not belong to player ${playerid}.`);
+            }
+        } else {
+            cb(null, `Player ${playerid} does not exist.`);
+        }
+    }
+
+    addBot(playerid, name, url, filename, botcode, cb) {
         if (this.players[playerid]) {
             this.botid = this.botid + 1;
             this.bots[this.botid] = {
@@ -137,7 +169,7 @@ class FileRepository {
             /* istanbul ignore else */
             if (this.players[playerid].bots.includes(botid)) {
                 const bot = this.bots[botid];
-                for(const k in fields) {
+                for (const k in fields) {
                     /* istanbul ignore else */
                     if (Object.keys(bot).includes(k)) {
                         bot[k] = fields[k];

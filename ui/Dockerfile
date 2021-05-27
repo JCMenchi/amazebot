@@ -10,5 +10,5 @@
 # run nginx
 FROM nginx:1.19
 
-COPY amazeui /usr/share/nginx/html/amazeui
+COPY adminui /usr/share/nginx/html/adminui
 COPY nginx.conf /etc/nginx/conf.d/default.conf

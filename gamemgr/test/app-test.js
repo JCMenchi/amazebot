@@ -217,7 +217,8 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, fr, (code, result) => {
+            // use undefined for token, np authent during test
+            rungame(game, fr, undefined, (code, result) => {
                 chai.expect(code).to.equal(0);
                 done();
             });
@@ -252,7 +253,8 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, fr, (code, result) => {
+            // use undefined for token, np authent during test
+            rungame(game, fr, undefined, (code, result) => {
                 chai.expect(code).to.equal(102);
                 done();
             });
@@ -286,7 +288,8 @@ describe('Game Manager REST API', function () {
                 }
             };
 
-            rungame(game, fr, (code, result) => {
+            // use undefined for token, np authent during test
+            rungame(game, fr, undefined, (code, result) => {
                 chai.expect(code).to.equal(101);
                 done();
             });

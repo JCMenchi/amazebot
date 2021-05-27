@@ -45,6 +45,27 @@ module.exports = (keycloak) => {
         next();
     }
 
+    router.get('/players/my/info', protect_middleware('player.view'), function (req, res, next) {
+        logger.debug('Get myinfo');
+
+        /* istanbul ignore next */
+        if (req.kauth && req.kauth.grant && req.kauth.grant.access_token) {
+            const playername = req.kauth.grant.access_token.content.preferred_username;
+            const repository = req.app.settings.repository;
+            repository.getPlayerFromName(playername, (player, err) => {
+                if (err) {
+                    returnError(404, 101, err, res, next);
+                } else {
+                    res.json(player);
+                    next();
+                }
+            });
+        } else {
+            returnError(404, 102, 'No user info', res, next);
+        }
+
+    });
+
     /**
      * @swagger
      * /api/players:
@@ -81,7 +102,7 @@ module.exports = (keycloak) => {
         repository.getPlayers((players, err) => {
             /* istanbul ignore if */
             if (err) {
-                returnError(404, 101, err, res, next);
+                returnError(404, 103, err, res, next);
             } else {
                 const playerList = [];
                 for (const p in players) {
@@ -138,7 +159,7 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.getPlayer(playerid, (player, err) => {
             if (err) {
-                returnError(404, 102, err, res, next);
+                returnError(404, 104, err, res, next);
             } else {
                 res.json(player);
                 next();
@@ -200,7 +221,7 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.updatePlayer(playerid, req.fields, (player, err) => {
             if (err) {
-                returnError(404, 103, err, res, next);
+                returnError(404, 105, err, res, next);
             } else {
                 res.json(player);
                 next();
@@ -247,9 +268,64 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.deletePlayer(playerid, (player, err) => {
             if (err) {
-                returnError(404, 104, err, res, next);
+                returnError(404, 106, err, res, next);
             } else {
                 res.json(player);
+                next();
+            }
+        });
+
+    });
+
+    /**
+     * @swagger
+     * /api/players/{playerid}/bot:
+     *   get:
+     *     summary: Return list of bots for player {playerid}.
+     *     description: Return listen of bots for player {playerid}.
+     *     parameters:
+     *       - in: path
+     *         name: playerid
+     *         required: true
+     *         description: Numeric ID of the player to retrieve.
+     *         schema:
+     *           type: integer
+     *     responses:
+     *       200:
+     *         description: player.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: array
+     *               items:
+     *                 type: object
+     *                 properties:
+     *                   id:
+     *                     type: integer
+     *                     description: The BOT ID.
+     *                     example: 1
+     *                   name:
+     *                     type: string
+     *                     description: Bot name.
+     *                     example: Simple Bot
+     *                   url:
+     *                     type: string
+     *                     description: URL to get bot code
+     *                     example: bots/bot1.js
+     *       404:
+     *         description: player id not found.
+     */
+     router.get('/players/:playerid/bot', protect_middleware('player.view'), function (req, res, next) {
+        const playerid = req.params.playerid;
+        
+        logger.debug(`Get Bots of player=${playerid}`);
+
+        const repository = req.app.settings.repository;
+        repository.getBots(playerid, (bots, err) => {
+            if (err) {
+                returnError(404, 107, err, res, next);
+            } else {
+                res.json(bots);
                 next();
             }
         });
@@ -306,7 +382,24 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.getBot(playerid, botid, (bot, err) => {
             if (err) {
-                returnError(404, 105, err, res, next);
+                returnError(404, 108, err, res, next);
+            } else {
+                res.json(bot);
+                next();
+            }
+        });
+
+    });
+
+    router.get('/players/:playerid/bot/:botid/code', protect_middleware('player.view'), function (req, res, next) {
+        const playerid = req.params.playerid;
+        const botid = Number(req.params.botid);
+        logger.debug(`Get Bot player=${playerid} bot=${botid}`);
+
+        const repository = req.app.settings.repository;
+        repository.getBotCode(playerid, botid, (bot, err) => {
+            if (err) {
+                returnError(404, 109, err, res, next);
             } else {
                 res.json(bot);
                 next();
@@ -377,7 +470,7 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.updateBot(playerid, botid, req.fields, (player, err) => {
             if (err) {
-                returnError(404, 106, err, res, next);
+                returnError(404, 110, err, res, next);
             } else {
                 res.json(player);
                 next();
@@ -431,7 +524,7 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.deleteBot(playerid, botid, (bot, err) => {
             if (err) {
-                returnError(404, 107, err, res, next);
+                returnError(404, 111, err, res, next);
             } else {
                 res.json(bot);
                 next();
@@ -485,7 +578,7 @@ module.exports = (keycloak) => {
         const repository = req.app.settings.repository;
         repository.addPlayer(name, (player, err) => {
             if (err) {
-                returnError(404, 108, err, res, next);
+                returnError(404, 112, err, res, next);
             } else {
                 res.status(201).json({ id: player.id, name: player.name });
                 next();
@@ -546,11 +639,13 @@ module.exports = (keycloak) => {
         const playerid = req.params.playerid;
         const url = req.fields.url;
         const name = req.fields.name;
+        const filename = req.fields.filename;
+        const botcode = req.fields.botcode;
 
         const repository = req.app.settings.repository;
-        repository.addBot(playerid, name, url, (bot, err) => {
+        repository.addBot(playerid, name, url, filename, botcode, (bot, err) => {
             if (err) {
-                returnError(404, 109, err, res, next);
+                returnError(404, 113, err, res, next);
             } else {
                 res.status(201).json(bot);
                 next();
@@ -559,5 +654,4 @@ module.exports = (keycloak) => {
     });
 
     return router;
-
 };

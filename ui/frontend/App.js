@@ -97,7 +97,7 @@ export default function App(props) {
           </Alert>
         </Snackbar>
 
-        <BrowserRouter basename="/amazeui/">
+        <BrowserRouter basename="/adminui/">
           <AppBar position="static">
             <ButtonGroup color="primary" aria-label="outlined primary button group">
               <Button size="small" style={{ color: grey[400] }} onClick={() => toggleUITheme()} >

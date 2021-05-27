@@ -69,9 +69,27 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        it("should return bot list for player", (done) => {
+            chai.request(pmgr.app)
+                .get('/api/players/1/bot')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    done();
+                });
+        });
         it("should return player 1 bot 1", (done) => {
             chai.request(pmgr.app)
                 .get('/api/players/1/bot/1')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    done();
+                });
+        });
+        it("should return code for player 1 bot 1", (done) => {
+            chai.request(pmgr.app)
+                .get('/api/players/1/bot/1/code')
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -141,13 +159,23 @@ describe('Player Manager REST API', function () {
 
     describe('check error message', function () {
         this.timeout(2000);
+        it("should return error when user info and user not logged", (done) => {
+            chai.request(pmgr.app)
+                .get('/api/players/my/info')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(102);
+                    done();
+                });
+        });
         it("should check if player exists", (done) => {
             chai.request(pmgr.app)
                 .get('/api/players/5')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(102);
+                    res.body.error.should.eql(104);
                     done();
                 });
         });
@@ -161,13 +189,23 @@ describe('Player Manager REST API', function () {
                     done();
                 });
         });
+        it("should tell that player does not exist when asking bot list", (done) => {
+            chai.request(pmgr.app)
+                .get('/api/players/1234/bot')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(107);
+                    done();
+                });
+        });
         it("should tell that bot does not exist.", (done) => {
             chai.request(pmgr.app)
                 .get('/api/players/1/bot/5')
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(105);
+                    res.body.error.should.eql(108);
                     done();
                 });
         });
@@ -177,7 +215,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(103);
+                    res.body.error.should.eql(105);
                     done();
                 });
         });
@@ -187,7 +225,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(104);
+                    res.body.error.should.eql(106);
                     done();
                 });
         });
@@ -197,7 +235,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(107);
+                    res.body.error.should.eql(111);
                     done();
                 });
         });
@@ -217,7 +255,7 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(106);
+                    res.body.error.should.eql(110);
                     done();
                 });
         });
@@ -227,7 +265,17 @@ describe('Player Manager REST API', function () {
                 .end((err, res) => {
                     res.should.have.status(404);
                     res.body.should.be.a('object');
-                    res.body.error.should.eql(106);
+                    res.body.error.should.eql(110);
+                    done();
+                });
+        });
+        it("should bot does not exist when asking for code", (done) => {
+            chai.request(pmgr.app)
+                .get('/api/players/1/bot/1234/code')
+                .end((err, res) => {
+                    res.should.have.status(404);
+                    res.body.should.be.a('object');
+                    res.body.error.should.eql(109);
                     done();
                 });
         });

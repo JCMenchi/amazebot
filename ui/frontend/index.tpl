@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   
-  <link rel="manifest" crossorigin="use-credentials" href="/amazeui/manifest.json">
+  <link rel="manifest" crossorigin="use-credentials" href="/adminui/manifest.json">
 
 </head>
 

@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: amazeui
-          image: "{{.Values.image.registry}}ui:{{.Values.image.tag}}"
+          image: "{{.Values.image.registry}}amazeui:{{.Values.image.tag}}"
           imagePullPolicy: {{.Values.image.pullPolicy}}
           ports:
             - containerPort: 80

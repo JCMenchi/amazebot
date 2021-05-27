@@ -34,8 +34,8 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
-    path: path.resolve(__dirname, "amazeui/"),
-    publicPath: "/amazeui/",
+    path: path.resolve(__dirname, "adminui/"),
+    publicPath: "/adminui/",
     filename: "[name].bundle.js"
   },
   optimization: {
@@ -47,10 +47,10 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "frontend/"),
     historyApiFallback: {
-      index: '/amazeui/index.html'
+      index: '/adminui/index.html'
     },
     port: 3000,
-    publicPath: "http://localhost:3000/amazeui",
+    publicPath: "http://localhost:3000/adminui",
     hot: true,
     proxy: {
       '/api/players': 'http://localhost/',
@@ -64,13 +64,13 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       minify: false,
-      title: 'aMazeUI',
+      title: 'Admin UI',
       template: './frontend/index.tpl',
       meta: {
         'viewport': 'initial-scale=1, width=device-width',
         'mobile-web-app-capable': 'yes'
       },
-      base: '/amazeui',
+      base: '/adminui',
       favicon: 'frontend/favicon.ico'
     }),
     new CopyPlugin({

@@ -1,0 +1,37 @@
+{
+    "home": "Home",
+    "about": "About",
+    "player": "player",
+    "maze": "maze",
+    "game": "game",
+
+    "Please select a player.": "Please select a player.",
+    "Create new player": "Create new player",
+    "Name": "Name",
+    "Create": "Create",
+    "Cancel": "Cancel",
+    "Create new maze": "Create new maze",
+    "Please select a maze.": "Please select a maze.",
+    "Description": "Description",
+    "Bots": "Bots",
+    "Create new bot": "Create new bot",
+    "URL": "URL",
+    "Please select a game.": "Please select a game",
+    "Create new game": "Create new game",
+    "playerid": "playerid",
+    "botid": "botid",
+    "mazeid": "mazeid",
+    "Game Id": "Game Id",
+    "Player": "Player",
+    "Bot": "Bot",
+    "Bot URL": "Bot URL",
+    "Maze": "Maze",
+    "State": "State",
+    "Steps": "Steps",
+
+    "or": "or",
+    "Please": "Please",
+    "Sign-in": "Sign-in",
+    "Register": "Register"
+}
+   

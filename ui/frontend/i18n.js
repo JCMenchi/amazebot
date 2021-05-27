@@ -26,7 +26,7 @@ i18n
       escapeValue: false, // not needed for react as it escapes by default
     },
     backend: {
-      loadPath: '/amazeui/locales/{{lng}}/{{ns}}.json'
+      loadPath: '/adminui/locales/{{lng}}/{{ns}}.json'
     }
   });
 
