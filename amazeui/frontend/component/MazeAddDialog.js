@@ -12,9 +12,10 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 
-import playerService from '../utils/player_service';
+import Maze from '../maze/maze';
+import mazeService from '../utils/player_service';
 
-export default function BotAddDialog(props) {
+export default function MazeAddDialog(props) {
 
     const { onClose, open } = props;
 
@@ -26,13 +27,15 @@ export default function BotAddDialog(props) {
     };
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby="bot-add-dialog-title" open={open}>
-            <DialogTitle id="bot-add-dialog-title">{t('Create new bot')}</DialogTitle>
+        <Dialog onClose={handleClose} aria-labelledby="maze-add-dialog-title" open={open}>
+            <DialogTitle id="maze-add-dialog-title">{t('Create new maze')}</DialogTitle>
 
             <Formik
                 initialValues={{
                     name: '',
-                    url: ''
+                    description: '',
+                    nbrow: 4,
+                    nbcolumn: 4
                 }}
                 validate={values => {
                     const errors = {};
@@ -44,16 +47,21 @@ export default function BotAddDialog(props) {
                     return errors;
                 }}
                 onSubmit={(values, { setSubmitting }) => {
-                    playerService
-                    .post("api/players/" + props.playerId + "/bot", {name: values.name, url: values.url})
+                    const mz = Maze.CreateMaze(Number(values.nbrow), Number(values.nbcolumn));
+                    mazeService
+                    .post("api/mazes", {
+                        name: values.name, 
+                        description: values.description,
+                        configuration: mz.getConfForSave()
+                    })
                     .then((response) => {
                         setSubmitting(false);
-                        // data is an object like { id: 101, name: 'player1'}
+                        // data is an object like { id: 101, name: 'maze1'}
                         onClose(response.data);
                     })
                     .catch((error) => {
                         setSubmitting(false);
-                        if (error.response && error.response.data) {
+                        if (error.response.data) {
                             // data is an object like { error: 101, message: 'error message'}
                             onClose(error.response.data);
                         } else {
@@ -73,9 +81,21 @@ export default function BotAddDialog(props) {
                             />
                             <Field
                                 component={TextField}
-                                name="url"
+                                name="description"
                                 type="text"
-                                label={t('URL')}
+                                label={t('Description')}
+                            />
+                            <Field
+                                component={TextField}
+                                name="nbrow"
+                                type="number"
+                                label={t('NbRow')}
+                            />
+                            <Field
+                                component={TextField}
+                                name="nbcolumn"
+                                type="number"
+                                label={t('NbColumn')}
                             />
                             {isSubmitting && <LinearProgress />}
                             <br />
@@ -105,8 +125,7 @@ export default function BotAddDialog(props) {
     );
 }
 
-BotAddDialog.propTypes = {
+MazeAddDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-    playerId: PropTypes.string.isRequired
+    open: PropTypes.bool.isRequired
 };

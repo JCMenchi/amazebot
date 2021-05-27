@@ -4,7 +4,7 @@ import { Fab, Paper, Grid } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { useParams } from 'react-router-dom';
 
-import BotAddDialog from './BotAdd';
+import BotAddDialog from './BotAddDialog';
 import BotDetails from './BotDetails';
 import playerService from '../utils/player_service';
 import LOGGER from '../utils/uilogger';
@@ -23,42 +23,35 @@ export default function BotManager(props) {
     // We are passing an empty array as the default value.
     const [bots, setBots] = useState([]);
 
-    // message to display when nothing is selected or after an error
-    const [errorMessage, setErrorMessage] = useState('');
-
     // is Add Player dialog open
     const [openAddDialog, setOpenAddDialog] = React.useState(false);
 
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadBots(-1);
+        loadBots(true);
     }, []);
 
-    const loadBots = (id) => {
+    const loadBots = (init) => {
         playerService
             .get(`/api/players/${playerId}/bot`)
             .then((response) => {
                 setBots(response.data);
-                if (id !== -1) {
-                    if (id) {
-                        history.push(`/players/${playerId}/bot/${id}`);
-                    } else {
-                        history.push(`/players/${playerId}/bot`);
-                    }
+                if (!init) {
+                    history.push(`/players/${playerId}/bot`);
                 }
             })
             .catch((error) => {
                 if (error.response.data) {
                     // data is an object like { error: 101, message: 'error message'}
-                    setErrorMessage(error.response.data.message);
+                    console.error(error.response.data.message);
                 } else {
-                    setErrorMessage(error.response.statusText);
+                    console.error(error.response.statusText);
                 }
             });
     }
 
-    // Add player dialog management
+    // Add bot dialog management
     const handleAddBot = (event) => {
         // show dialog
         setOpenAddDialog(true);
@@ -70,7 +63,7 @@ export default function BotManager(props) {
         if (value.error) {
             setErrorMessage(value.message);
         } else if (value.id) {
-            loadBot(value.id);
+            loadBots(false);
         }
     };
 
@@ -80,17 +73,15 @@ export default function BotManager(props) {
 
                 {bots.map(item => (
                     <Grid item key={item.id}>
-                        <BotDetails playerId={playerId} botId={item.id} />
+                        <BotDetails playerId={playerId} botId={item.id} reload={loadBots} />
                     </Grid>
                 ))}
-
-                <Fab size="small" color="primary" aria-label="add"
-                    onClick={(event) => handleAddBot(event)}>
-                    <AddIcon />
-                </Fab>
-                <BotAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
-
             </Grid>
+            <Fab className="fabright" size="small" color="primary" aria-label="add"
+                onClick={(event) => handleAddBot(event)}>
+                <AddIcon />
+            </Fab>
+            <BotAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
         </Paper>
     );
 }

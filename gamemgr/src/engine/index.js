@@ -7,7 +7,7 @@ const fs = require('fs');
  Service worker cannot be tested by mocha
 */
 
-module.exports = (game, repository, endcb) => {
+module.exports = (game, repository, token, endcb) => {
     /* istanbul ignore else */
     if (!endcb && worker.isMainThread) {
         // run in asynchroneous mode when no callback is defined
@@ -22,7 +22,7 @@ module.exports = (game, repository, endcb) => {
         }
 
         // This re-loads the current file inside a Worker instance.
-        const wrk = new worker.Worker(__filename, { workerData: game });
+        const wrk = new worker.Worker(__filename, { workerData: { game: game, token: token }});
 
         wrk.on('online', () => {
             /* istanbul ignore next */
@@ -43,6 +43,10 @@ module.exports = (game, repository, endcb) => {
             /* istanbul ignore next */
             if (value.steps) {
                 gameinfo.steps = value.steps;
+            }
+            /* istanbul ignore next */
+            if (value.bot_result) {
+                gameinfo.bot_result = value.bot_result;
             }
             /* istanbul ignore next */
             repository.updateGame(game.id, gameinfo, (result, message) => {});
@@ -77,7 +81,7 @@ module.exports = (game, repository, endcb) => {
         const log4js = require('log4js');
         const logger = log4js.getLogger('gamemgr');
 
-        runBot(game, logger, endcb);
+        runBot(game, token, logger, endcb);
     }
 };
 
@@ -101,10 +105,10 @@ if (!worker.isMainThread) {
     }
     const logger = log4js.getLogger('gameworker');
 
-    const game = worker.workerData;
+    const game = worker.workerData.game;
     logger.info('Start Worker.');
 
-    runBot(game, logger, (code, result) => {
+    runBot(game, worker.workerData.token, logger, (code, result) => {
         if (code === 0) {
             worker.parentPort.postMessage(result);
         }
@@ -112,18 +116,24 @@ if (!worker.isMainThread) {
     });
 }
 
-function runBot(game, logger, endcb) {
+function runBot(game, token, logger, endcb) {
     const axios = require('axios');
     const vm = require('vm');
     const maze = require('./maze');
 
-    axios.get(game.botURL).then((result) => {
+    axios.get(game.botURL, token?{ headers: { Authorization: token } }:undefined).then((result) => {
         // load bot script
         global.executeStep = undefined;
 
         try {
-            const script = new vm.Script(result.data, { filename: game.botURL });
-            script.runInThisContext({ timeout: 5000 });
+            /* istanbul ignore if */
+            if (result.data.botcode) {
+                const script = new vm.Script(result.data.botcode, { filename: result.data.filename });
+                script.runInThisContext({ timeout: 5000 });
+            } else {
+                const script = new vm.Script(result.data, { filename: game.botURL });
+                script.runInThisContext({ timeout: 5000 });
+            }
         } catch (e) {
             logger.error('Cannot load script:', e);
         }

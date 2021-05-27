@@ -13,8 +13,8 @@ a.activePage:hover {
   top: auto;
   width: 36px !important;
   height: 36px !important;
-  right: 2px;
-  bottom: 2px;
+  right: 10px;
+  bottom: 10px;
   left: auto;
-  position: absolute;
+  position: absolute !important;
 }

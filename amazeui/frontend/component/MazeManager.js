@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { Grid, Paper } from '@material-ui/core';
+import { Fab, Grid, Paper } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
 
+import MazeAddDialog from './MazeAddDialog';
 import MazeDetails from './MazeDetails';
 import mazeService from '../utils/player_service';
+import LOGGER from '../utils/uilogger';
 
 /**
  * Maze Manager Component
@@ -16,55 +20,73 @@ export default function MazeManager(props) {
     // for I18N
     const { t } = useTranslation();
 
+    const { playerId } = useParams();
+
     // Store the players in a state variable.
     // We are passing an empty array as the default value.
     const [mazes, setMazes] = useState([]);
 
-    // message to display when nothing is selected or after an error
-    const [errorMessage, setErrorMessage] = useState(t('Please select a maze.'));
+    // is Add Player dialog open
+    const [openAddDialog, setOpenAddDialog] = React.useState(false);
 
     // The useEffect() hook fires any time that the component is rendered.
     // An empty array is passed as the second argument so that the effect only fires once.
     useEffect(() => {
-        loadMaze(-1);
+        loadMazes(true);
     }, []);
 
-    const loadMaze = (id) => {
+    const loadMazes = (init) => {
         mazeService
             .get("api/mazes")
             .then((response) => {
                 setMazes(response.data);
                 // if id is -1, it is the useEffect loading do not modify history
-                if (id !== -1) {
-                    if (id) {
-                        history.push(`/mazes/${id}`);
-                    } else {
-                        history.push('/mazes');
-                    }
+                if (!init) {
+                    history.push(`/players/${playerId}/mazes`);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.data) {
                     // data is an object like { error: 101, message: 'error message'}
-                    setErrorMessage(error.response.data.message);
+                    console.error(error.response.data.message);
                 } else {
-                    setErrorMessage(error.message);
+                    console.error(error.message);
                 }
             });
     }
+
+    // Add maze dialog management
+    const handleAddMaze = (event) => {
+        // show dialog
+        setOpenAddDialog(true);
+    }
+
+    const handleCloseAddDialog = (value) => {
+        LOGGER.info(`Add maze: ${JSON.stringify(value)}`);
+        setOpenAddDialog(false);
+        if (value.error) {
+            console.error(value.message);
+        } else if (value.id) {
+            loadMazes(false);
+        }
+    };
 
     return (
         <Paper elevation={4} variant='elevation' style={{ padding: 4, height: '100%', width: '100%', overflow: 'hidden' }}>
             <Grid container spacing={2}>
 
                 {mazes.map(item => (
-                    <Grid item key={item.id} style={{ height: 400, width: 300 }}>
-                        <MazeDetails style={{ height: 400, width: 300 }} mazeId={item.id} />
+                    <Grid item key={item.id} >
+                        <MazeDetails playerId={playerId} mazeId={item.id} reload={loadMazes} />
                     </Grid>
                 ))}
 
             </Grid>
-
+            <Fab className="fabright" size="small" color="primary" aria-label="add"
+                onClick={(event) => handleAddMaze(event)}>
+                <AddIcon />
+            </Fab>
+            <MazeAddDialog playerId={playerId} open={openAddDialog} onClose={handleCloseAddDialog} />
         </Paper>
     );
 }

@@ -60,12 +60,6 @@ export default function Home(props) {
                 }).catch(() => {
                     console.error('Failed to load user profile');
                 });
-            keycloak.loadUserInfo()
-                .then((info) => {
-                    console.log(JSON.stringify(info, null, "  "))
-                }).catch(() => {
-                    console.error('Failed to load user info');
-                });
 
         }
     }, [initialized, keycloak.authenticated]);
@@ -95,8 +89,8 @@ export default function Home(props) {
                     <ButtonGroup color="primary" aria-label="outlined primary button group">
 
                         <Button component={NavLink} to={"/players/" + playerId + "/bot" } activeClassName='activePage' variant="contained" >{t("bot")}</Button>
-                        <Button component={NavLink} to="/mazes" activeClassName='activePage' variant="contained" >{t("maze")}</Button>
-                        <Button component={NavLink} to="/games" activeClassName='activePage' variant="contained" >{t("game")}</Button>
+                        <Button component={NavLink} to={"/players/" + playerId + "/mazes" } activeClassName='activePage' variant="contained" >{t("maze")}</Button>
+                        <Button component={NavLink} to={"/players/" + playerId + "/games" } activeClassName='activePage' variant="contained" >{t("game")}</Button>
                         <Button variant="contained" onClick={() => keycloak.logout()}>{t("Logout")}</Button>
                     </ButtonGroup>
 
@@ -113,8 +107,8 @@ export default function Home(props) {
 
             <div style={{ display: 'flex', flexGrow: 1 }}>
                 <Switch>
-                    <PrivateRoute roles={['ui.player']} path="/mazes" component={MazeManager} />
-                    <PrivateRoute roles={['ui.player']} path="/games" component={GameManager} />
+                    <PrivateRoute roles={['ui.player']} path="/players/:playerId/mazes" component={MazeManager} />
+                    <PrivateRoute roles={['ui.player']} path="/players/:playerId/games" component={GameManager} />
                     <PrivateRoute roles={['ui.player']} path={'/players/:playerId/bot'} component={BotManager} />
                 </Switch>
             </div>

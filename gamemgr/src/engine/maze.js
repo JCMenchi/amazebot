@@ -127,6 +127,7 @@ class Maze {
      */
     constructor(def, logfilename) {
         this.mazeRawDefinition = def;
+        this.currentMazeDef = def;
         this.entry = [0, 0, 'left'];
         this.exit = [0, 0, 'right'];
         this.nbRow = 0;
@@ -236,7 +237,7 @@ class Maze {
                 this.botPosition.move(result.direction);
             }
             this.steps++;
-            this.showBot();
+            this.currentMazeDef = this.showBot();
             if (this.botPosition.exit) {
                 this.state = 'success';
                 break;
@@ -252,7 +253,7 @@ class Maze {
      * @return {RunResult}
      */
     result() {
-        return { steps: this.steps, state: this.state }; 
+        return { steps: this.steps, state: this.state, bot_result: { maze: this.currentMazeDef } }; 
     }
 
     /**
@@ -263,6 +264,7 @@ class Maze {
     /* istanbul ignore next */
     showBot() {
         this.logfile.write(`=== STEP ${this.steps} ====\n`);
+        const mazeDef = [];
         for (let i = 0; i < this.nbRow; i++) {
             let topLine = '';
             let line = '';
@@ -304,7 +306,9 @@ class Maze {
                     line = line + ' ';
                 }
             }
-            topLine = topLine + '+\n';
+            topLine = topLine + '+';
+            mazeDef.push(topLine);
+            topLine = topLine + '\n';
             if (this.rooms[i][this.nbColumn-1].right === 'entry') {
                 line = line + 'x';
             } else if (this.rooms[i][this.nbColumn-1].right === 'exit') {
@@ -318,11 +322,14 @@ class Maze {
             } else {
                 line = line + '|';
             }
+            mazeDef.push(line);
             line = line + '\n';
             // draw top of row
             this.logfile.write(topLine);
+            
             // draw row
             this.logfile.write(line);
+            
         }
         // draw last line
         let bottomLine = '';
@@ -340,9 +347,14 @@ class Maze {
                 bottomLine = bottomLine + '-';
             }
         }
-        bottomLine = bottomLine + '+\n';
+        bottomLine = bottomLine + '+';
+        mazeDef.push(bottomLine);
+        bottomLine = bottomLine + '\n';
         this.logfile.write(bottomLine);
+
+        return mazeDef;
     }
+
 }
 
 module.exports = { Maze };

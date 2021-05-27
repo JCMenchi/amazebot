@@ -30,6 +30,8 @@ const PLAYERDB_SCHEMA = `
         name varchar(64) UNIQUE NOT NULL,
         url varchar(1024),
         player_id integer,
+        filename varchar(1024),
+        botcode text,
         PRIMARY KEY (bid),
         CONSTRAINT bot_uname UNIQUE (name, player_id),
         CONSTRAINT fk_pid FOREIGN KEY(player_id) 
@@ -239,14 +241,18 @@ class DBRepository {
         });
     }
 
-    addBot(playerid, name, url, cb) {
-        this.pool.query('INSERT INTO bot (name, url, player_id) VALUES ($1, $2, $3) RETURNING *;', [name, url, playerid], (err, res) => {
+    addBot(playerid, name, url, filename, botcode, cb) {
+        this.pool.query('INSERT INTO bot (name, url, filename, botcode, player_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;', 
+                        [name, url, filename, botcode, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `addBot: database error: ${err.message}`);
             } else {
                 if (res.rowCount === 1) {
-                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], player_id: res.rows[0]['player_id'], bid: res.rows[0]['bid']});
+                    cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], 
+                        player_id: res.rows[0]['player_id'], bid: res.rows[0]['bid'],
+                        filename: res.rows[0]['filename']
+                    });
                 } else {
                     cb(null, 'Cannot create bot.');
                 }
@@ -256,7 +262,7 @@ class DBRepository {
 
     getBot(playerid, botid, cb) {
 
-        this.pool.query('SELECT bot.bid, bot.name as name, bot.url as url, player_id, player.name as player_name FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
+        this.pool.query('SELECT bot.bid, bot.name as name, bot.url as url, bot.filename as filename, player_id, player.name as player_name FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `getBot: database error: ${err.message}`);
@@ -272,6 +278,9 @@ class DBRepository {
                     if (rec['url']) {
                         b.url = rec['url'];
                     }
+                    if (rec['filename']) {
+                        b.filename = rec['filename'];
+                    }
                     cb(b);
                 } else {
                     cb(null, 'Bot not found.');
@@ -282,9 +291,34 @@ class DBRepository {
         return null;
     }
 
+    getBotCode(playerid, botid, cb) {
+
+        this.pool.query('SELECT bot.botcode as botcode, bot.filename as filename FROM bot, player WHERE bid = $1 AND player_id = $2 AND player_id = player.pid', [botid, playerid], (err, res) => {
+            if (err) {
+                console.log(err.stack);
+                cb(null, `getBot: database error: ${err.message}`);
+            } else {
+                if (res.rowCount === 1) {
+                    const rec = res.rows[0];
+                    const b = {
+                        id: rec['bid'], 
+                        filename: rec['filename'],
+                        botcode: rec['botcode']
+                    };
+                    cb(b);
+                } else {
+                    cb(null, 'Bot not found.');
+                }
+            }
+        });
+
+        return null;
+    }
+
+
     getBots(playerid, cb) {
 
-        this.pool.query('SELECT bot.bid as bid, bot.name as name, bot.url as url, player_id, player.name as player_name FROM bot, player WHERE player_id = $1 AND player_id = player.pid', [playerid], (err, res) => {
+        this.pool.query('SELECT bot.bid as bid, bot.name as name, bot.url as url, bot.filename as filename, player_id, player.name as player_name FROM bot, player WHERE player_id = $1 AND player_id = player.pid', [playerid], (err, res) => {
             if (err) {
                 console.log(err.stack);
                 cb(null, `getBot: database error: ${err.message}`);
@@ -292,7 +326,7 @@ class DBRepository {
                 if (res.rowCount > 0) {
                     const bots = [];
                     for(const rec of res.rows) {
-                        bots.push({id: rec['bid'], name: rec.name, url: rec['url']});
+                        bots.push({id: rec['bid'], name: rec.name, url: rec['url'], filename: rec['filename']});
                     }
                     cb(bots);
                 } else {
@@ -326,7 +360,7 @@ class DBRepository {
                     cb(null, `updateBot: database error: ${err.message}`);
                 } else {
                     if (res.rowCount === 1) {
-                        cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], url: res.rows[0]['url'], player_id: res.rows[0]['player_id']});
+                        cb({id: res.rows[0]['bid'], name: res.rows[0]['name'], filename: res.rows[0]['filename'], url: res.rows[0]['url'], player_id: res.rows[0]['player_id']});
                     } else {
                         cb(null, `Bot not found for player ${playerid} does not exist.`);
                     }
