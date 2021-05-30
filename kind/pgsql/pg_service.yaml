@@ -34,6 +34,17 @@ spec:
         - image: localhost:5000/pgsql:13
           imagePullPolicy: Always
           name: pgsql
+          env:
+            - name: PG_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-admin
+                  key: username
+            - name: PG_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsql-admin
+                  key: password
           ports:
             - containerPort: 5432
               name: pgsql
