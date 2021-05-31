@@ -19,17 +19,17 @@ spec:
       containers:
         - name: keycloak
           image: jboss/keycloak:12.0.4
-
-#          -Dkeycloak.frontendUrl
           env:
             - name: KEYCLOAK_USER
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin
+                  key: username
             - name: KEYCLOAK_PASSWORD
-              value: admin
-#            - name: KEYCLOAK_IMPORT
-#              value: /etc/keycloak-realm.json
-#            - name: KEYCLOAK_FRONTEND_URL
-#              value: http://localhost/keycloak/auth
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin
+                  key: password
             - name: KEYCLOAK_LOGLEVEL
               value: DEBUG
             - name: PROXY_ADDRESS_FORWARDING
@@ -54,6 +54,16 @@ spec:
             limits:
               cpu: 2500m
               memory: 2500M
+          volumeMounts:
+            - name: kcrealm
+              mountPath: /etc/custom
+      volumes:
+        - name: kcrealm
+          configMap:
+            name: kcrealm
+            items:
+            - key: realm-export.json
+              path: realm-export.json
 ---
 apiVersion: v1
 kind: Service
