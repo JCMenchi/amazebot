@@ -124,8 +124,19 @@ module.exports = class MazeManager {
      */
     /* istanbul ignore next */
     initSecurity() {
-       
-        this.keycloak = new Keycloak({});
+        const opt = {
+            resource: "mazemgr",
+            realm: "amazebot",
+            "bearer-only": true,
+            "auth-server-url": process.env.EXTERNAL_AUTH_URL || "http://localhost/auth/",
+            "auth-server-backchannel-url": "http://keycloak:8080/auth/",
+            "ssl-required": "external",
+            "verify-token-audience": true,
+            "use-resource-role-mappings": true,
+            "confidential-port": 0
+        };
+
+        this.keycloak = new Keycloak({}, opt);
         // monkey patch keycloak config to use backend auth url
         this.keycloak.config.authServerUrl = 'http://keycloak:8080/auth/';
         this.keycloak.grantManager.rotation.realmUrl = 'http://keycloak:8080/auth/realms/' + this.keycloak.config.realm;
