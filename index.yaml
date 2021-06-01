@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  amazchart:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2021-06-01T07:40:05.82797685+02:00"
+    description: A Helm chart for aMazeBot
+    digest: fa1fc976a56bc57d02f0bdebf6bfcf3f879db97099ae901541c05ef146de66bc
+    icon: file://./maze.png
+    name: amazchart
+    type: application
+    urls:
+    - https://github.com/JCMenchi/amazebot/releases/download/amazchart-0.1.0/amazchart-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-06-01T07:40:05.827984394+02:00"
