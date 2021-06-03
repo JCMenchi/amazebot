@@ -56,7 +56,7 @@ data:
     help: "https://kind.sigs.k8s.io/docs/user/local-registry/"
 EOF
 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+kubectl apply -f nginx_deploy.yaml
 
 # keycloak may use big http user in some case (e.g. registration)
 # the nginx ingress configuration has to be updated to cope with big buffer
