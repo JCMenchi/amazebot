@@ -10,8 +10,8 @@ PG_ADMIN_PASSWORD=${PG_ADMIN_PASSWORD:-pgr}
 show_help () {
     echo "Usage: $0 [-h] [ -u username] [ -p password ] dbname"
     echo "  Create new Database"
-    echo "      -u username : PG admin user (default: ${PG_ADMIN_USER})"
-    echo "      -p password : PG admin user password"
+    echo "      -u username : database user name"
+    echo "      -p password : database user password"
 }
 # Decode args
 OPTIND=1  # Reset in case getopts has been used previously in the shell.
@@ -22,10 +22,10 @@ while getopts ":h?u:p:" opt; do
         exit 0
         ;;
     u)
-        export PG_ADMIN_USER=${OPTARG}
+        export APP_USER=${OPTARG}
         ;;
     p)
-        export PG_ADMIN_USER=${OPTARG}
+        export APP_PASSWORD=${OPTARG}
         ;;
     esac
 done
@@ -40,7 +40,8 @@ fi
 APP=$1
 
 APP_DB=${APP}db
-APP_USER=${APP}user
+APP_USER=${APP_USER:-${APP}user}
+APP_PASSWORD=${APP_PASSWORD:-${APP}user}
 
 # check if database exists
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c'\l' | grep -c "${APP_DB}" )
@@ -53,7 +54,7 @@ fi
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c 'select rolname FROM pg_roles;' | grep -c "${APP_USER}" )
 if [ "${n}" -eq 0 ]; then
 	echo "Create user: ${APP_USER}"
-	PGPASSWORD=${PG_ADMIN_PASSWORD} "${PG_HOME}"/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "CREATE USER ${APP_USER} WITH ROLE ${PG_ADMIN_USER} PASSWORD '${APP_USER}'"
+	PGPASSWORD=${PG_ADMIN_PASSWORD} "${PG_HOME}"/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "CREATE USER ${APP_USER} WITH ROLE ${PG_ADMIN_USER} PASSWORD '${APP_PASSWORD}'"
 	PGPASSWORD=${PG_ADMIN_PASSWORD} "${PG_HOME}"/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "CREATE DATABASE ${APP_DB} WITH OWNER = '${APP_USER}'"
 	PGPASSWORD=${PG_ADMIN_PASSWORD} "${PG_HOME}"/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "GRANT ALL PRIVILEGES ON DATABASE ${APP_DB} to ${APP_USER};"
 else
@@ -63,7 +64,17 @@ fi
 
 # execute sql script with db name if provided
 if [ -e "${APP}".sql ]; then
-	PGPASSWORD=${APP_USER} "${PG_HOME}"/bin/psql -U "${APP_USER}" -h"${PGHOST}"  -p"${PGPORT}" -d"${APP_DB}" -f "${APP}".sql
+	PGPASSWORD=${APP_PASSWORD} "${PG_HOME}"/bin/psql -U "${APP_USER}" -h"${PGHOST}"  -p"${PGPORT}" -d"${APP_DB}" -f "${APP}".sql
+fi
+
+# Add secret for service
+n=$(kubectl get secrets | grep -q "${APP_DB}"-admin; echo $?)
+if [ "$n" == 1 ]; then
+    kubectl create secret generic "${APP}"-pgsql \
+            --from-literal=username="${APP_USER}" \
+            --from-literal=password="${APP_PASSWORD}" \
+            --from-literal=database="${APP_DB}" \
+            --from-literal=dbhost="pgsql"
 fi
 
 # show users

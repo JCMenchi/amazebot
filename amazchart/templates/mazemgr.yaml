@@ -53,6 +53,16 @@ spec:
               value: "/home/node/app/log4js.json"
             - name: EXTERNAL_AUTH_URL
               value: {{.Values.auth.external_url}}
+            - name: PG_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: maze-pgsql
+                  key: username
+            - name: PG_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: maze-pgsql
+                  key: password
           resources:
             requests:
               cpu: 500m

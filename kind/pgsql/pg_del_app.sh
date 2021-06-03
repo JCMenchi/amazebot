@@ -8,24 +8,20 @@ PG_ADMIN_USER=${PG_ADMIN_USER:-pgr}
 PG_ADMIN_PASSWORD=${PG_ADMIN_PASSWORD:-pgr}
 
 show_help () {
-    echo "Usage: $0 [-h] [ -u username] [ -p password ] dbname"
+    echo "Usage: $0 [-h] [ -u username] dbname"
     echo "  Delete Database"
-    echo "      -u username : PG admin user (default: ${PG_ADMIN_USER})"
-    echo "      -p password : PG admin user password"
+    echo "      -u username : database user name"
 }
 # Decode args
 OPTIND=1  # Reset in case getopts has been used previously in the shell.
-while getopts ":h?u:p:" opt; do
+while getopts ":h?u:" opt; do
     case "$opt" in
     h|\?)
         show_help
         exit 0
         ;;
     u)
-        export PG_ADMIN_USER=${OPTARG}
-        ;;
-    p)
-        export PG_ADMIN_USER=${OPTARG}
+        export APP_USER=${OPTARG}
         ;;
     esac
 done
@@ -40,7 +36,7 @@ fi
 APP=$1
 
 APP_DB=${APP}db
-APP_USER=${APP}user
+APP_USER=${APP_USER:-${APP}user}
 
 # check if database exists
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c'\l' | grep -c "${APP_DB}" )
@@ -58,6 +54,13 @@ if [ "${n}" -eq 0 ]; then
 	exit 3
 else
 	PGPASSWORD=${PG_ADMIN_PASSWORD} ${PG_HOME}/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "DROP USER ${APP_USER};"
+fi
+
+# delete secret
+# Add secret for service
+n=$(kubectl get secrets | grep -q "${APP_DB}"-admin; echo $?)
+if [ "$n" == 0 ]; then
+    kubectl delete secrets "${APP}"-pgsql
 fi
 
 # show users

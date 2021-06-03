@@ -35,6 +35,8 @@ const MAZE_FIELDS = ['name', 'description', 'configuration', 'solution'];
 class DBRepository {
 
     constructor(user, password) {
+        user = user || process.env.PG_DB_USER || 'mazeuser';
+        password = password || process.env.PG_DB_PASSWORD || user;
         this.pool = new Pool({
             user: user,
             host: 'pgsql',

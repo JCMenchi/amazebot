@@ -15,6 +15,9 @@ FROM alpine:3.13
 #
 RUN apk add --no-cache bash=5.1.0-r0 curl=7.77.0-r0 postgresql=13.3-r0 && rm -rf /var/cache/apk/* \
     && mkdir /run/postgresql && chown postgres /run/postgresql
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin
 #
 #=================================================================================================================
 

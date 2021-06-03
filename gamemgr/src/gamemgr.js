@@ -100,7 +100,7 @@ module.exports = class GameManager {
             this.app.set('repository', fr);
         } else {
             const { DBRepository } = require('./database');
-            const db = new DBRepository('gameuser', 'gameuser');
+            const db = new DBRepository();
             this.app.set('repository', db);
         }
 
