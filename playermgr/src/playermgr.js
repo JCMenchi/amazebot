@@ -102,7 +102,7 @@ module.exports = class PlayerManager {
             this.app.set('repository', fr);
         } else {
             const { DBRepository } = require('./database');
-            const db = new DBRepository('playeruser', 'playeruser');
+            const db = new DBRepository();
             this.app.set('repository', db);
         }
 

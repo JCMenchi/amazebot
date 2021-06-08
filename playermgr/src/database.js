@@ -50,6 +50,8 @@ const BOT_FIELDS = ['name', 'url'];
 class DBRepository {
 
     constructor(user, password) {
+        user = user || process.env.PG_DB_USER || 'playeruser';
+        password = password || process.env.PG_DB_PASSWORD || user;
         this.pool = new Pool({
             user: user,
             host: 'pgsql',

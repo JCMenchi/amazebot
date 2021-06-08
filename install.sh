@@ -6,7 +6,10 @@ export EXTERNAL_AUTH_URL=${EXTERNAL_AUTH_URL:-http://localhost/auth}
 
 cd kind || exit
 
+# create K8S cluster
 ./kind_create.sh
+
+# Create services
 ./create_services.sh
 
 cd ..

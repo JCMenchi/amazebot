@@ -37,13 +37,25 @@ spec:
             - name: DB_VENDOR
               value: postgres
             - name: DB_ADDR
-              value: pgsql
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-pgsql
+                  key: dbhost
             - name: DB_DATABASE
-              value: keycloakdb
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-pgsql
+                  key: database
             - name: DB_USER
-              value: keycloakuser
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-pgsql
+                  key: username
             - name: DB_PASSWORD
-              value: keycloakuser
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-pgsql
+                  key: password
           ports:
             - name: webui
               containerPort: 8080

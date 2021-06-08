@@ -43,6 +43,8 @@ const GAME_FIELDS = ['playerid', 'botid', 'mazeid', 'playername', 'botname', 'ma
 class DBRepository {
 
     constructor(user, password) {
+        user = user || process.env.PG_DB_USER || 'gameuser';
+        password = password || process.env.PG_DB_PASSWORD || user;
         this.pool = new Pool({
             user: user,
             host: 'pgsql',

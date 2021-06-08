@@ -8,24 +8,16 @@ PG_ADMIN_USER=${PG_ADMIN_USER:-pgr}
 PG_ADMIN_PASSWORD=${PG_ADMIN_PASSWORD:-pgr}
 
 show_help () {
-    echo "Usage: $0 [-h] [ -u username] [ -p password ] dbname"
+    echo "Usage: $0 [-h] dbname"
     echo "  Delete Database"
-    echo "      -u username : PG admin user (default: ${PG_ADMIN_USER})"
-    echo "      -p password : PG admin user password"
 }
 # Decode args
 OPTIND=1  # Reset in case getopts has been used previously in the shell.
-while getopts ":h?u:p:" opt; do
+while getopts ":h?" opt; do
     case "$opt" in
     h|\?)
         show_help
         exit 0
-        ;;
-    u)
-        export PG_ADMIN_USER=${OPTARG}
-        ;;
-    p)
-        export PG_ADMIN_USER=${OPTARG}
         ;;
     esac
 done
@@ -39,14 +31,22 @@ fi
 
 APP=$1
 
-APP_DB=${APP}db
-APP_USER=${APP}user
+# check if secret 
+n=$(kubectl get secrets | grep -q "${APP}"-pgsql; echo $?)
+if [ "$n" == 1 ]; then
+    echo "Cannot find secret ${APP}-pgsql"
+    exit 2
+fi
+
+# get value from secret
+APP_DB=$(kubectl get secret "${APP}"-pgsql -o yaml | grep " database:" | cut -d: -f2 | cut -d\  -f2 | base64 -d)
+APP_USER=$(kubectl get secret "${APP}"-pgsql -o yaml | grep " username:" | cut -d: -f2 | cut -d\  -f2 | base64 -d)
 
 # check if database exists
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c'\l' | grep -c "${APP_DB}" )
 if [ "${n}" -eq 0 ]; then
 	echo "Database ${APP_DB} does not exist."
-	exit 2
+	exit 3
 else
     PGPASSWORD=${PG_ADMIN_PASSWORD} ${PG_HOME}/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "DROP DATABASE ${APP_DB};"
 fi
@@ -55,10 +55,13 @@ fi
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c 'select rolname FROM pg_roles;' | grep -c "${APP_USER}" )
 if [ "${n}" -eq 0 ]; then
 	echo "User ${APP_USER} does not exist."
-	exit 3
+	exit 4
 else
 	PGPASSWORD=${PG_ADMIN_PASSWORD} ${PG_HOME}/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c "DROP USER ${APP_USER};"
 fi
+
+# delete secret
+kubectl delete secrets "${APP}"-pgsql
 
 # show users
 PGPASSWORD=${PG_ADMIN_PASSWORD} "${PG_HOME}"/bin/psql -U "${PG_ADMIN_USER}" -h"${PGHOST}"  -p"${PGPORT}" -dpostgres -c'\du'

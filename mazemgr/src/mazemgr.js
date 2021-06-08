@@ -97,7 +97,7 @@ module.exports = class MazeManager {
             this.app.set('repository', fr);
         } else {
             const { DBRepository } = require('./database');
-            const db = new DBRepository('mazeuser', 'mazeuser');
+            const db = new DBRepository();
             this.app.set('repository', db);
         }
 

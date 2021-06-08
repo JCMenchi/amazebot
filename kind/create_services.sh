@@ -11,6 +11,15 @@ export PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-admin}
 export KC_ADMIN_USER=${KC_ADMIN_USER:-kcadmin}
 export KC_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD:-kcadminsecret}
 
+export PG_PLAYERDB_USER=${PG_PLAYERDB_USER:-playeruser}
+export PG_PLAYERDB_PASSWORD=${PG_PLAYERDB_PASSWORD:-playeruser}
+
+export PG_MAZEDB_USER=${PG_MAZEDB_USER:-mazeuser}
+export PG_MAZEDB_PASSWORD=${PG_MAZEDB_PASSWORD:-mazeuser}
+
+export PG_GAMEDB_USER=${PG_GAMEDB_USER:-gameuser}
+export PG_GAMEDB_PASSWORD=${PG_GAMEDB_PASSWORD:-gameuser}
+
 # Create tracing service
 kubectl apply -f tracing/tracing.yaml
 
@@ -75,6 +84,6 @@ if [ "${ret}" == 1 ]; then
 fi
 
 # create db for backend
-kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh player
-kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh maze
-kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh game
+kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh -u "${PG_PLAYERDB_USER}" -p "${PG_PLAYERDB_PASSWORD}" player
+kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh -u "${PG_MAZEDB_USER}" -p "${PG_MAZEDB_PASSWORD}" maze
+kubectl exec "${pgpod}" -- /run/postgresql/pg_add_app.sh -u "${PG_GAMEDB_USER}" -p "${PG_GAMEDB_PASSWORD}" game
