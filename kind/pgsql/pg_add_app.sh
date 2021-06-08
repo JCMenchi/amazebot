@@ -7,6 +7,10 @@ PGPORT=${PGPORT:-5432}
 PG_ADMIN_USER=${PG_ADMIN_USER:-pgr}
 PG_ADMIN_PASSWORD=${PG_ADMIN_PASSWORD:-pgr}
 
+# generate random values for default
+APP_USER=$(tr -cd '[:lower:]' < /dev/urandom | fold -w16 | head -n1)
+APP_PASSWORD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1)
+
 show_help () {
     echo "Usage: $0 [-h] [ -u username] [ -p password ] dbname"
     echo "  Create new Database"
@@ -40,8 +44,6 @@ fi
 APP=$1
 
 APP_DB=${APP}db
-APP_USER=${APP_USER:-${APP}user}
-APP_PASSWORD=${APP_PASSWORD:-${APP}user}
 
 # check if database exists
 n=$(PGPASSWORD=${PG_ADMIN_PASSWORD} psql -U "${PG_ADMIN_USER}" -h"${PGHOST}" -p"${PGPORT}" -dpostgres -c'\l' | grep -c "${APP_DB}" )

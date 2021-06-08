@@ -53,9 +53,9 @@ module.exports = {
     publicPath: "http://localhost:3000/amazeui",
     hot: true,
     proxy: {
-      '/api/players': 'http://localhost:8081/',
-      '/api/mazes': 'http://localhost:8082/',
-      '/api/games': 'http://localhost:8083/',
+      '/api/players': 'http://localhost/',
+      '/api/mazes': 'http://localhost/',
+      '/api/games': 'http://localhost/',
     }
   },
   plugins: [

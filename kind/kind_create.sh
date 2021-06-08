@@ -56,12 +56,27 @@ data:
     help: "https://kind.sigs.k8s.io/docs/user/local-registry/"
 EOF
 
-kubectl apply -f nginx_deploy.yaml
+# sleep for a few seconds to let control plane start
+sleep 10
 
 # keycloak may use big http user in some case (e.g. registration)
 # the nginx ingress configuration has to be updated to cope with big buffer
+kubectl create namespace ingress-nginx -o yaml --dry-run=client | kubectl apply -f -
 kubectl create configmap -n ingress-nginx ingress-nginx-controller \
   --from-literal=proxy-buffer-size="16k" \
   --from-literal=proxy-buffers="8 16k" \
   --from-literal=proxy-busy-buffers-size="24k" \
   -o yaml --dry-run=client | kubectl apply -f - 
+
+kubectl apply -f nginx_deploy.yaml
+
+kubectl apply -f metrics.yaml
+
+sleep 5
+
+nginxpod=$(kubectl get pods -n ingress-nginx --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep ingress-nginx-controller)
+kubectl wait --timeout=60s -n ingress-nginx --for=condition=ready pod/"${nginxpod}"
+
+echo ""
+echo "==================================================="
+echo "Kluster is ready"

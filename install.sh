@@ -8,9 +8,6 @@ cd kind || exit
 
 # create K8S cluster
 ./kind_create.sh
-# give sometime to ingress
-sleep 5
-kubectl cluster-info --context kind-kmate
 
 # Create services
 ./create_services.sh
