@@ -45,6 +45,7 @@ func (Bot) TableName() string {
 type BotCode struct {
 	Bid      int64  `gorm:"primaryKey" json:"id"`
 	Name     string `json:"name"`
+	URL      string `json:"url,omitempty"`
 	Filename string `json:"filename,omitempty"`
 	Botcode  string `json:"botcode,omitempty"`
 	PlayerId int64  `json:"-"`
@@ -80,6 +81,20 @@ func GetPlayer(db *gorm.DB, pid int64) *Player {
 	}
 
 	return player
+}
+
+func GetBot(db *gorm.DB, bid int64) *Bot {
+	if db == nil {
+		return nil
+	}
+	var bot *Bot
+	result := db.First(&bot, bid)
+	if result.Error != nil {
+		fmt.Printf("Error GetBot(%v): %v\n", bid, result.Error)
+		return nil
+	}
+
+	return bot
 }
 
 func AddPlayer(db *gorm.DB, name string) *Player {
@@ -134,8 +149,8 @@ func GetPlayerByName(db *gorm.DB, name string) *Player {
 	var player *Player
 	result := db.Preload("Bots").Where("name = ?", name).First(&player)
 	if result.Error != nil {
-		fmt.Printf("Error GetPlayerByName(%v): %v\n", name, result.Error)
-		return nil
+		// player does not exist, create it
+		return AddPlayer(db, name)
 	}
 
 	return player
@@ -154,18 +169,34 @@ func GetPlayersWithBots(db *gorm.DB) []Player {
 	return players
 }
 
-func AddBot(db *gorm.DB, pid int64, botname string, codefilename string) *BotBase {
+func GetPlayerBots(db *gorm.DB, pid int64) []Bot {
+	if db == nil {
+		return nil
+	}
+	var bots []Bot
+	result := db.Where("player_id = ?", pid).Find(&bots)
+	if result.Error != nil {
+		fmt.Printf("Error GetPlayerBots(%v): %v\n", pid, result.Error)
+	}
+
+	return bots
+}
+
+func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code string) *BotBase {
 	if db == nil {
 		return nil
 	}
 
-	dat, err := ioutil.ReadFile(codefilename)
-	if err != nil {
-		fmt.Printf("Error AddBot(%v): %v\n", botname, err)
-		return nil
+	if len(code) == 0 {
+		dat, err := ioutil.ReadFile(codefilename)
+		if err != nil {
+			fmt.Printf("Error AddBot(%v): %v\n", botname, err)
+			return nil
+		}
+		code = string(dat)
 	}
 
-	bot := &BotCode{Name: botname, Filename: filepath.Base(codefilename), Botcode: string(dat), PlayerId: pid}
+	bot := &BotCode{Name: botname, Filename: filepath.Base(codefilename), Botcode: code, PlayerId: pid}
 
 	result := db.Create(bot)
 	if result.Error != nil {
@@ -173,6 +204,20 @@ func AddBot(db *gorm.DB, pid int64, botname string, codefilename string) *BotBas
 		return nil
 	}
 	return &BotBase{Bid: bot.Bid, Name: bot.Name}
+}
+
+func GetBotCode(db *gorm.DB, bid int64) *BotCode {
+	if db == nil {
+		return nil
+	}
+	var bot *BotCode
+	result := db.First(&bot, bid)
+	if result.Error != nil {
+		fmt.Printf("Error GetBotCode(%v): %v\n", bid, result.Error)
+		return nil
+	}
+
+	return bot
 }
 
 func ConnectToDB(dsn string) *gorm.DB {
