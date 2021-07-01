@@ -39,11 +39,25 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.playercli.yaml)")
 
-	rootCmd.PersistentFlags().StringP("dsn", "d", "", "Database connection string")
-	viper.BindPFlag("dsn", rootCmd.PersistentFlags().Lookup("dsn"))
+	rootCmd.PersistentFlags().StringP("dsn-host", "H", "pgsql", "Player Database Hostname")
+	viper.BindPFlag("dsn.host", rootCmd.PersistentFlags().Lookup("dsn-host"))
+	viper.SetDefault("dsn.host", "pgsql")
 
-	rootCmd.PersistentFlags().StringP("player-dsn", "p", "", "Player Database connection string")
-	viper.BindPFlag("player.dsn", rootCmd.PersistentFlags().Lookup("player-dsn"))
+	rootCmd.PersistentFlags().StringP("dsn-dbname", "d", "playerdb", "Player Database name")
+	viper.BindPFlag("dsn.dbname", rootCmd.PersistentFlags().Lookup("dsn-dbname"))
+	viper.SetDefault("dsn.dbname", "playerdb")
+
+	rootCmd.PersistentFlags().IntP("dsn-port", "P", 5432, "Player Database port")
+	viper.BindPFlag("dsn.port", rootCmd.PersistentFlags().Lookup("dsn-port"))
+	viper.SetDefault("dsn.port", 5432)
+
+	// PG_DB_USER, PG_DB_PASSWORD
+	rootCmd.PersistentFlags().StringP("dsn-user", "u", "", "Player Database User Name")
+	viper.BindPFlag("dsn.user", rootCmd.PersistentFlags().Lookup("dsn-user"))
+
+	rootCmd.PersistentFlags().StringP("dsn-password", "p", "", "Player Database User password")
+	viper.BindPFlag("dsn.password", rootCmd.PersistentFlags().Lookup("dsn-password"))
+
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -71,4 +85,18 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+/* Build database connection string
+e.g. postgres://playeruser:playeruser@pgsql:5432/playerdb?sslmode=disable
+*/
+func getDSN() string {
+	dsn := "postgres://"
+	dsn += viper.GetString("dsn.user") + ":"
+	dsn += viper.GetString("dsn.password") + "@"
+	dsn += viper.GetString("dsn.host") + ":"
+	dsn += fmt.Sprint(viper.GetInt("dsn.port")) + "/"
+	dsn += viper.GetString("dsn.dbname")
+	dsn += "?sslmode=disable"
+	return dsn
 }

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"jc.org/playermgr/model"
 )
 
@@ -26,7 +25,7 @@ var createPlayerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) == 1 {
-			dsn := viper.GetString("player.dsn")
+			dsn := getDSN()
 			fmt.Printf("get called with DSN: %v\n", dsn)
 
 			db := model.ConnectToDB(dsn)
@@ -51,7 +50,7 @@ var createBotCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if len(args) == 3 {
-			dsn := viper.GetString("player.dsn")
+			dsn := getDSN()
 			fmt.Printf("get called with DSN: %v\n", dsn)
 
 			db := model.ConnectToDB(dsn)

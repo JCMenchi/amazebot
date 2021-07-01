@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"jc.org/playermgr/model"
 )
 
@@ -20,7 +19,7 @@ var deleteCmd = &cobra.Command{
 	Long: `Delete a player or delete a bot from a player.
 When deleting a player its bot are deleted.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dsn := viper.GetString("player.dsn")
+		dsn := getDSN()
 		fmt.Printf("delete called with DSN: %v\n", dsn)
 		db := model.ConnectToDB(dsn)
 		if playerId != -1 {

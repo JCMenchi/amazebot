@@ -9,7 +9,6 @@ import (
 	"jc.org/playermgr/model"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // getCmd represents the get command
@@ -18,7 +17,7 @@ var getCmd = &cobra.Command{
 	Short: "Get Player",
 	Long:  `Get Player info.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dsn := viper.GetString("player.dsn")
+		dsn := getDSN()
 		fmt.Printf("get called with DSN: %v\n", dsn)
 
 		db := model.ConnectToDB(dsn)
