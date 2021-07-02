@@ -10,6 +10,9 @@ spec:
     - port: 80
       targetPort: 8081
       name: playermgr
+    - port: 40000
+      targetPort: 40000
+      name: playermgrdebug
   selector:
     app: playermgr
 ---
@@ -36,10 +39,11 @@ spec:
         - name: playermgr
           image: "{{.Values.image.registry}}goplayermgr:{{.Values.image.tag}}"
           imagePullPolicy: {{.Values.image.pullPolicy}}
-          args: ["serve"]
           ports:
             - containerPort: 8081
               name: http
+            - containerPort: 40000
+              name: debug
           env:
             - name: EXTERNAL_AUTH_URL
               value: {{.Values.auth.external_url}}
