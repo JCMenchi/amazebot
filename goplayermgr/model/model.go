@@ -55,6 +55,14 @@ func (BotCode) TableName() string {
 	return "bot"
 }
 
+type BotWithPlayer struct {
+	Bid        int64  `gorm:"primaryKey" json:"id"`
+	Name       string `json:"name"`
+	URL        string `json:"url,omitempty"`
+	Filename   string `json:"filename,omitempty"`
+	PlayerName string `json:"player_name"`
+}
+
 func GetPlayers(db *gorm.DB) []Player {
 	if db == nil {
 		return nil
@@ -83,18 +91,34 @@ func GetPlayer(db *gorm.DB, pid int64) *Player {
 	return player
 }
 
-func GetBot(db *gorm.DB, bid int64) *Bot {
+func GetBot(db *gorm.DB, pid int64, bid int64) *BotWithPlayer {
 	if db == nil {
 		return nil
 	}
+
+	var player *Player
+	result := db.First(&player, pid)
+	if result.Error != nil {
+		fmt.Printf("Error GetBot(%v) cannot find player: %v\n", pid, result.Error)
+		return nil
+	}
+
 	var bot *Bot
-	result := db.First(&bot, bid)
+	result = db.First(&bot, bid)
 	if result.Error != nil {
 		fmt.Printf("Error GetBot(%v): %v\n", bid, result.Error)
 		return nil
 	}
 
-	return bot
+	botwp := &BotWithPlayer{
+		Bid:        bot.Bid,
+		Name:       bot.Name,
+		URL:        bot.URL,
+		Filename:   bot.Filename,
+		PlayerName: player.Name,
+	}
+
+	return botwp
 }
 
 func AddPlayer(db *gorm.DB, name string) *Player {

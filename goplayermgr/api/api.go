@@ -210,6 +210,13 @@ func addRoutes(rg *gin.RouterGroup) {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
 
+		pid, err := strconv.ParseInt(c.Param("playerid"), 10, 0)
+		if err != nil {
+			log.Printf("Error in GET /players/:playerid/bot: %v\n", err)
+			c.JSON(500, "")
+			return
+		}
+
 		bid, err := strconv.ParseInt(c.Param("botid"), 10, 0)
 		if err != nil {
 			log.Printf("Error in GET /players/:playerid/bot/:botid: %v\n", err)
@@ -217,7 +224,7 @@ func addRoutes(rg *gin.RouterGroup) {
 			return
 		}
 
-		bot := model.GetBot(playerDB, bid)
+		bot := model.GetBot(playerDB, pid, bid)
 		if bot == nil {
 			c.JSON(500, "")
 			return
