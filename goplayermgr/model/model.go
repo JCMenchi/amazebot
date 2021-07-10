@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 type Player struct {
 	Pid  int64  `gorm:"primaryKey" json:"id"`
-	Name string `json:"name"`
+	Name string `gorm:"unique" json:"name"`
 	Bots []Bot  `gorm:"foreignKey:PlayerId" json:"bots,omitempty"`
 }
 
@@ -69,6 +71,7 @@ func GetPlayers(db *gorm.DB) []Player {
 	}
 	var players []Player
 	result := db.Find(&players)
+
 	if result.Error != nil {
 		fmt.Printf("err: %v\n", result.Error)
 		return nil
@@ -144,10 +147,18 @@ func DeletePlayer(db *gorm.DB, pid int64) *Player {
 	player := &Player{Pid: pid}
 
 	result := db.Delete(player)
+
+	// notest
 	if result.Error != nil {
 		fmt.Printf("Error DeletePlayer(%v): %v\n", pid, result.Error)
 		return nil
 	}
+
+	if result.RowsAffected == 0 {
+		fmt.Printf("Warn DeletePlayer(%v): player does not exist\n", pid)
+		return nil
+	}
+
 	return player
 }
 
@@ -159,10 +170,18 @@ func DeleteBot(db *gorm.DB, bid int64) *BotBase {
 	bot := &BotBase{Bid: bid}
 
 	result := db.Delete(bot)
+
+	// notest
 	if result.Error != nil {
 		fmt.Printf("Error DeleteBot(%v): %v\n", bid, result.Error)
 		return nil
 	}
+
+	if result.RowsAffected == 0 {
+		fmt.Printf("Warn DeleteBot(%v): bot does not exist\n", bid)
+		return nil
+	}
+
 	return bot
 }
 
@@ -186,6 +205,8 @@ func GetPlayersWithBots(db *gorm.DB) []Player {
 	}
 	var players []Player
 	result := db.Preload("Bots").Find(&players)
+
+	// notest
 	if result.Error != nil {
 		fmt.Printf("err: %v\n", result.Error)
 	}
@@ -211,6 +232,14 @@ func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code st
 		return nil
 	}
 
+	// check if player exist
+	p := GetPlayer(db, pid)
+	if p == nil {
+		fmt.Printf("Error AddBot(%v): cannot add bot to non existing player\n", botname)
+		return nil
+	}
+
+	// load code
 	if len(code) == 0 {
 		dat, err := ioutil.ReadFile(codefilename)
 		if err != nil {
@@ -220,6 +249,7 @@ func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code st
 		code = string(dat)
 	}
 
+	// create bot
 	bot := &BotCode{Name: botname, Filename: filepath.Base(codefilename), Botcode: code, PlayerId: pid}
 
 	result := db.Create(bot)
@@ -245,13 +275,37 @@ func GetBotCode(db *gorm.DB, bid int64) *BotCode {
 }
 
 func ConnectToDB(dsn string) *gorm.DB {
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: dsn, PreferSimpleProtocol: true}),
-		&gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 
-	if err != nil {
-		fmt.Printf("ConnectToDB error: %v\n", err)
-		return nil
+	if strings.HasPrefix(dsn, "postgres:") {
+		db, err := gorm.Open(postgres.New(postgres.Config{DSN: dsn, PreferSimpleProtocol: true}),
+			&gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
+
+		if err != nil {
+			fmt.Printf("ConnectToDB error: %v\n", err)
+			return nil
+		}
+
+		err = db.AutoMigrate(&Player{}, &BotCode{})
+		if err != nil {
+			fmt.Printf("AutoMigrate DB error: %v\n", err.Error())
+			return nil
+		}
+
+		return db
+	} else if strings.HasPrefix(dsn, "file:") {
+		sl := sqlite.Open(dsn)
+		db, err := gorm.Open(sl,
+			&gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
+
+		if err != nil {
+			fmt.Printf("ConnectToDB error: %v\n", err)
+			return nil
+		}
+
+		db.AutoMigrate(&Player{}, &BotCode{})
+
+		return db
 	}
 
-	return db
+	return nil
 }

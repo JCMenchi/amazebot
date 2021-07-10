@@ -24,20 +24,25 @@ var rootCmd = &cobra.Command{
 	ValidArgs: []string{"create", "delete", "get", "serve"},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// Decode command line arguments
+// This is called by main.main().
 func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
+// Initialize cli flags and viper config
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	// define flags comon to all commands
 
+	// define viper config file
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.playercli.yaml)")
+
+	// define Database connection string
+	rootCmd.PersistentFlags().StringP("dsn-type", "t", "pgsql", "Player Database type one of pgsql or sqlite (default pgsql)")
+	viper.BindPFlag("dsn.type", rootCmd.PersistentFlags().Lookup("dsn-type"))
+	viper.SetDefault("dsn.type", "pgsql")
 
 	rootCmd.PersistentFlags().StringP("dsn-host", "H", "pgsql", "Player Database Hostname")
 	viper.BindPFlag("dsn.host", rootCmd.PersistentFlags().Lookup("dsn-host"))
@@ -51,13 +56,11 @@ func init() {
 	viper.BindPFlag("dsn.port", rootCmd.PersistentFlags().Lookup("dsn-port"))
 	viper.SetDefault("dsn.port", 5432)
 
-	// PG_DB_USER, PG_DB_PASSWORD
 	rootCmd.PersistentFlags().StringP("dsn-user", "u", "", "Player Database User Name")
 	viper.BindPFlag("dsn.user", rootCmd.PersistentFlags().Lookup("dsn-user"))
 
 	rootCmd.PersistentFlags().StringP("dsn-password", "p", "", "Player Database User password")
 	viper.BindPFlag("dsn.password", rootCmd.PersistentFlags().Lookup("dsn-password"))
-
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -91,12 +94,20 @@ func initConfig() {
 e.g. postgres://playeruser:playeruser@pgsql:5432/playerdb?sslmode=disable
 */
 func getDSN() string {
-	dsn := "postgres://"
-	dsn += viper.GetString("dsn.user") + ":"
-	dsn += viper.GetString("dsn.password") + "@"
-	dsn += viper.GetString("dsn.host") + ":"
-	dsn += fmt.Sprint(viper.GetInt("dsn.port")) + "/"
-	dsn += viper.GetString("dsn.dbname")
-	dsn += "?sslmode=disable"
+	dbtype := viper.GetString("dsn.type")
+
+	// by default use in mem db
+	dsn := "file::memory:?cache=shared"
+
+	if dbtype == "pgsql" {
+		dsn = "postgres://"
+		dsn += viper.GetString("dsn.user") + ":"
+		dsn += viper.GetString("dsn.password") + "@"
+		dsn += viper.GetString("dsn.host") + ":"
+		dsn += fmt.Sprint(viper.GetInt("dsn.port")) + "/"
+		dsn += viper.GetString("dsn.dbname")
+		dsn += "?sslmode=disable"
+	}
+
 	return dsn
 }

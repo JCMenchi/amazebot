@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"jc.org/playermgr/api"
 
 	"github.com/spf13/cobra"
@@ -15,13 +13,10 @@ var serveCmd = &cobra.Command{
 	Long:  `Player Manager REST API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dsn := getDSN()
-		fmt.Printf("serve called with DSN: %v\n", dsn)
-
 		api.Serve(dsn)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-
 }
