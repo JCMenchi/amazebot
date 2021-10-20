@@ -4,7 +4,7 @@ const location = window.location;
 
 // Setup Keycloak instance
 const keycloak = new Keycloak({
-    url: `${location.protocol}//${location.host}/auth/`,
+    url: `${location.protocol}//localhost/auth/`,
     realm: 'amazebot',
     clientId: 'amazeui',
     checkLoginIframe: false,

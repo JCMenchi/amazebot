@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
 
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import { DropzoneArea } from 'material-ui-dropzone'
 
 import { Formik, Form, Field } from 'formik';

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardHeader, CardContent, CardActions, IconButton, Grid } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import ReplayIcon from '@material-ui/icons/Replay';
+import { Card, CardHeader, CardContent, CardActions, IconButton, Grid } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ReplayIcon from '@mui/icons-material/Replay';
 import MazeViewer from '../maze/MazeViewer';
 
 import Maze from '../maze/maze';

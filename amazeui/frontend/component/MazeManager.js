@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { Fab, Grid, Paper } from '@material-ui/core';
+import { Fab, Grid, Paper } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 
 import MazeAddDialog from './MazeAddDialog';
 import MazeDetails from './MazeDetails';

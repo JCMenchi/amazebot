@@ -1,9 +1,7 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 
-import 'fontsource-roboto';
-// for async
-import "regenerator-runtime/runtime.js";
+import '@fontsource/roboto';
 
 // import i18n (needs to be bundled ;)) 
 import './i18n';

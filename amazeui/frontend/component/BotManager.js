@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Fab, Paper, Grid } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Fab, Paper, Grid } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useParams } from 'react-router-dom';
 
 import BotAddDialog from './BotAddDialog';
