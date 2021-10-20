@@ -99,6 +99,7 @@ func GetBot(db *gorm.DB, pid int64, bid int64) *BotWithPlayer {
 		return nil
 	}
 
+	// check if player exists
 	var player *Player
 	result := db.First(&player, pid)
 	if result.Error != nil {
@@ -107,7 +108,7 @@ func GetBot(db *gorm.DB, pid int64, bid int64) *BotWithPlayer {
 	}
 
 	var bot *Bot
-	result = db.First(&bot, bid)
+	result = db.Where("player_id = ?", pid).First(&bot, bid)
 	if result.Error != nil {
 		fmt.Printf("Error GetBot(%v): %v\n", bid, result.Error)
 		return nil
@@ -162,14 +163,23 @@ func DeletePlayer(db *gorm.DB, pid int64) *Player {
 	return player
 }
 
-func DeleteBot(db *gorm.DB, bid int64) *BotBase {
+func DeleteBot(db *gorm.DB, pid int64, bid int64) *BotBase {
 	if db == nil {
 		return nil
 	}
 
+	// check if player exists
+	var player *Player
+	result := db.First(&player, pid)
+	if result.Error != nil {
+		fmt.Printf("Error DeleteBot(%v) cannot find player: %v\n", pid, result.Error)
+		return nil
+	}
+
+	// delete bot
 	bot := &BotBase{Bid: bid}
 
-	result := db.Delete(bot)
+	result = db.Where("player_id = ?", pid).Delete(bot)
 
 	// notest
 	if result.Error != nil {
@@ -218,6 +228,15 @@ func GetPlayerBots(db *gorm.DB, pid int64) []Bot {
 	if db == nil {
 		return nil
 	}
+
+	// check if player exists
+	p := GetPlayer(db, pid)
+	if p == nil {
+		fmt.Printf("Error GetPlayerBots(%v): cannot get bot of non existing player\n", pid)
+		return nil
+	}
+
+	// get bot
 	var bots []Bot
 	result := db.Where("player_id = ?", pid).Find(&bots)
 	if result.Error != nil {
@@ -260,12 +279,21 @@ func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code st
 	return &BotBase{Bid: bot.Bid, Name: bot.Name}
 }
 
-func GetBotCode(db *gorm.DB, bid int64) *BotCode {
+func GetBotCode(db *gorm.DB, pid int64, bid int64) *BotCode {
 	if db == nil {
 		return nil
 	}
+
+	// check if player exists
+	var player *Player
+	result := db.First(&player, pid)
+	if result.Error != nil {
+		fmt.Printf("Error GetBotCode(%v) cannot find player: %v\n", pid, result.Error)
+		return nil
+	}
+
 	var bot *BotCode
-	result := db.First(&bot, bid)
+	result = db.Where("player_id = ?", pid).First(&bot, bid)
 	if result.Error != nil {
 		fmt.Printf("Error GetBotCode(%v): %v\n", bid, result.Error)
 		return nil

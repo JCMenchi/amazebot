@@ -103,12 +103,12 @@ func TestQuery(t *testing.T) {
 		t.Error("Return bot for non existing player")
 	}
 
-	botcode := model.GetBotCode(db, 1)
+	botcode := model.GetBotCode(db, 1, 1)
 	if botcode == nil {
 		t.Error("Cannot get bot code")
 	}
 
-	botcode = model.GetBotCode(db, 1234)
+	botcode = model.GetBotCode(db, 1, 1234)
 	if botcode != nil {
 		t.Error("Return bot code for non existing bot")
 	}
@@ -160,6 +160,17 @@ func TestAddBot(t *testing.T) {
 // test deletion
 func TestDelete(t *testing.T) {
 
+	// delete bot
+	bot := model.DeleteBot(db, 1, 1)
+	if bot == nil {
+		t.Error("Cannot delete existing bot")
+	}
+
+	bot = model.DeleteBot(db, 1, 1234)
+	if bot != nil {
+		t.Error("Return non existing bot")
+	}
+
 	// delete player
 	player := model.DeletePlayer(db, 1)
 	if player == nil {
@@ -171,16 +182,6 @@ func TestDelete(t *testing.T) {
 		t.Error("Return non existing player")
 	}
 
-	// delete bot
-	bot := model.DeleteBot(db, 1)
-	if bot == nil {
-		t.Error("Cannot delete existing bot")
-	}
-
-	bot = model.DeleteBot(db, 1234)
-	if bot != nil {
-		t.Error("Return non existing bot")
-	}
 }
 
 // test defensive prog
@@ -217,7 +218,7 @@ func TestErrorCase(t *testing.T) {
 		t.Error("Do something with not existing DB")
 	}
 
-	bc := model.GetBotCode(badDB, 1)
+	bc := model.GetBotCode(badDB, 1, 1)
 	if bc != nil {
 		t.Error("Do something with not existing DB")
 	}
@@ -237,7 +238,7 @@ func TestErrorCase(t *testing.T) {
 		t.Error("Do something with not existing DB")
 	}
 
-	bb := model.DeleteBot(badDB, 1)
+	bb := model.DeleteBot(badDB, 1, 1)
 	if bb != nil {
 		t.Error("Do something with not existing DB")
 	}
@@ -297,7 +298,7 @@ func TestBadSchema(t *testing.T) {
 		t.Error("Do something with bad schema")
 	}
 
-	bc := model.GetBotCode(dbWithBadSchema, 1)
+	bc := model.GetBotCode(dbWithBadSchema, 1, 1)
 	if bc != nil {
 		t.Error("Do something with bad schema")
 	}
@@ -321,7 +322,7 @@ func TestBadSchema(t *testing.T) {
 		t.Error("Do something with bad schema")
 	}
 
-	bb := model.DeleteBot(dbWithBadSchema, 1)
+	bb := model.DeleteBot(dbWithBadSchema, 1, 1)
 	if bb != nil {
 		t.Error("Do something with bad schema")
 	}

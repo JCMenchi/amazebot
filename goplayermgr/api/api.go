@@ -20,11 +20,19 @@ var playerDSN string
 
 // Start HTTP server
 func Serve(dsn string) {
-	router := gin.Default()
+	router := BuildRouter(dsn)
+
+	router.Run(":8081") // listen and serve on 0.0.0.0:8081
+}
+
+func BuildRouter(dsn string) *gin.Engine {
+	engine := gin.New()
+	engine.Use(gin.Logger())
+	engine.Use(gin.Recovery())
 
 	// add prometheus exporter to gin router
-	p := ginprometheus.NewPrometheus("gin")
-	p.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
+	prom := ginprometheus.NewPrometheus("gin")
+	prom.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
 		url := c.Request.URL.Path
 		for _, p := range c.Params {
 			if p.Key == "playerid" {
@@ -35,20 +43,20 @@ func Serve(dsn string) {
 		}
 		return url
 	}
-	p.Use(router)
+	prom.Use(engine)
 
 	// connect to Database
 	playerDSN = dsn
 	playerDB = model.ConnectToDB(playerDSN)
 
-	apigroup := router.Group("/api")
+	apigroup := engine.Group("/api")
 	addRoutes(apigroup)
 
-	router.GET("/info", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "UP,"})
+	engine.GET("/info", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "UP"})
 	})
 
-	router.Run(":8081") // listen and serve on 0.0.0.0:8081
+	return engine
 }
 
 type AddPlayerBody struct {
@@ -237,6 +245,13 @@ func addRoutes(rg *gin.RouterGroup) {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
 
+		pid, err := strconv.ParseInt(c.Param("playerid"), 10, 0)
+		if err != nil {
+			log.Printf("Error in GET /players/:playerid/bot/:botid/code: %v\n", err)
+			c.JSON(500, "")
+			return
+		}
+
 		bid, err := strconv.ParseInt(c.Param("botid"), 10, 0)
 		if err != nil {
 			log.Printf("Error in GET /players/:playerid/bot/:botid/code: %v\n", err)
@@ -244,7 +259,7 @@ func addRoutes(rg *gin.RouterGroup) {
 			return
 		}
 
-		bot := model.GetBotCode(playerDB, bid)
+		bot := model.GetBotCode(playerDB, pid, bid)
 		if bot == nil {
 			c.JSON(500, "")
 			return
@@ -257,6 +272,13 @@ func addRoutes(rg *gin.RouterGroup) {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
 
+		pid, err := strconv.ParseInt(c.Param("playerid"), 10, 0)
+		if err != nil {
+			log.Printf("Error in DELETE /players/:playerid/bot/:botid/code: %v\n", err)
+			c.JSON(500, "")
+			return
+		}
+
 		bid, err := strconv.ParseInt(c.Param("botid"), 10, 0)
 		if err != nil {
 			log.Printf("Error in DELETE /players/:playerid/bot/:botid: %v\n", err)
@@ -264,7 +286,7 @@ func addRoutes(rg *gin.RouterGroup) {
 			return
 		}
 
-		bot := model.DeleteBot(playerDB, bid)
+		bot := model.DeleteBot(playerDB, pid, bid)
 		if bot == nil {
 			c.JSON(500, "")
 			return

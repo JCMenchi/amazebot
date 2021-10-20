@@ -32,7 +32,7 @@ When deleting a player its bot are deleted.`,
 		}
 
 		if botId != -1 {
-			bot := model.DeleteBot(db, botId)
+			bot := model.DeleteBot(db, playerId, botId)
 			prettyJSON, err := json.MarshalIndent(bot, "", "    ")
 			if err != nil {
 				log.Fatal("Failed to generate json", err)
@@ -43,7 +43,7 @@ When deleting a player its bot are deleted.`,
 }
 
 func init() {
-	deleteCmd.Flags().Int64VarP(&playerId, "playerid", "P", -1, "ID of player to delete")
-	deleteCmd.Flags().Int64VarP(&botId, "botid", "B", -1, "ID of bot to delete")
+	deleteCmd.Flags().Int64Var(&playerId, "playerid", -1, "ID of player to delete")
+	deleteCmd.Flags().Int64Var(&botId, "botid", -1, "ID of bot to delete")
 	rootCmd.AddCommand(deleteCmd)
 }
