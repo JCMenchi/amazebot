@@ -72,6 +72,11 @@ type AddBotBody struct {
 func addRoutes(rg *gin.RouterGroup) {
 
 	rg.GET("/players", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -86,6 +91,13 @@ func addRoutes(rg *gin.RouterGroup) {
 	rg.GET("/players/my/info", func(c *gin.Context) {
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
+		}
+
+		authorized := CheckRole(c.Request, "ui.player")
+		if !authorized {
+			fmt.Println("Not authorized")
+		} else {
+			fmt.Println("Authorized")
 		}
 
 		playername := ""
@@ -113,6 +125,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.POST("/players", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.admin")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -169,6 +186,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/players/:playerid/bot", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}

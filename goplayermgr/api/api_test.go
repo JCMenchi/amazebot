@@ -2,11 +2,14 @@ package api_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"jc.org/playermgr/api"
 	"jc.org/playermgr/model"
@@ -14,6 +17,35 @@ import (
 
 var InMemoryDSN = "file::memory:?cache=shared"
 var router *gin.Engine
+var bearerFullRight string
+
+func createToken(user string) string {
+
+	t := jwt.New(jwt.SigningMethodHS256)
+
+	t.Claims = &api.KeycloakClaim{
+		&jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Second * 60).Unix(),
+		},
+		[]string{""},
+		user,
+		api.KCRoles{Roles: []string{
+			"ui.admin",
+		}},
+		map[string]api.KCRoles{
+			"playermgr": {Roles: []string{
+				"player.admin",
+				"player.view",
+				"player.edit",
+			},
+			},
+		},
+	}
+
+	token, _ := t.SignedString(api.TokenSigningKey)
+
+	return fmt.Sprintf("Bearer %v", token)
+}
 
 func init() {
 	db := model.ConnectToDB(InMemoryDSN)
@@ -23,6 +55,9 @@ func init() {
 	model.AddBot(db, p.Pid, "TheBot", "botfile.js", "// some code")
 	model.AddBot(db, p.Pid, "TheBot2", "botfile2.js", "// some code")
 	model.AddPlayer(db, "William")
+
+	// create Bearer token
+	bearerFullRight = createToken("joe")
 
 	// force debug during unit test
 	gin.SetMode(gin.DebugMode)
@@ -100,11 +135,13 @@ type BotCode struct {
 func TestRead(t *testing.T) {
 	// get all player
 	req, _ := http.NewRequest("GET", "/api/players", nil)
+	req.Header.Add("Authorization", bearerFullRight)
+
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
 	httpStatus := resp.Code
-	assert.Equal(t, httpStatus, 200)
+	assert.Equal(t, 200, httpStatus)
 
 	var objs []Player
 	json.Unmarshal(resp.Body.Bytes(), &objs)
@@ -115,11 +152,12 @@ func TestRead(t *testing.T) {
 
 	// get one player
 	req, _ = http.NewRequest("GET", "/api/players/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
 	httpStatus = resp.Code
-	assert.Equal(t, httpStatus, 200)
+	assert.Equal(t, 200, httpStatus)
 
 	var obj Player
 	json.Unmarshal(resp.Body.Bytes(), &obj)
@@ -130,11 +168,12 @@ func TestRead(t *testing.T) {
 
 	// get bots for player 1
 	req, _ = http.NewRequest("GET", "/api/players/1/bot", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
 	httpStatus = resp.Code
-	assert.Equal(t, httpStatus, 200)
+	assert.Equal(t, 200, httpStatus)
 
 	var bots []Bot
 	json.Unmarshal(resp.Body.Bytes(), &bots)
@@ -145,6 +184,7 @@ func TestRead(t *testing.T) {
 
 	// get bot 1
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -160,6 +200,7 @@ func TestRead(t *testing.T) {
 
 	// get bot 1 code
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/1/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -179,6 +220,7 @@ func TestReadError(t *testing.T) {
 
 	// get one non existing player
 	req, _ := http.NewRequest("GET", "/api/players/1234", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -186,6 +228,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/foo", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -194,6 +237,7 @@ func TestReadError(t *testing.T) {
 
 	// get bots for non existing player
 	req, _ = http.NewRequest("GET", "/api/players/1234/bot", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -201,6 +245,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/foo/bot", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -209,6 +254,7 @@ func TestReadError(t *testing.T) {
 
 	// get non existing bot
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/1234", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -216,6 +262,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/foo", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -223,6 +270,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/2/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -230,6 +278,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/1234/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -237,6 +286,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/foo/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -245,6 +295,7 @@ func TestReadError(t *testing.T) {
 
 	// get code for non existing bot
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/1234/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -252,6 +303,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/1/bot/foo/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -259,6 +311,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/1234/bot/1/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -266,6 +319,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/foo/bot/1/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -273,6 +327,7 @@ func TestReadError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("GET", "/api/players/2/bot/1/code", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -323,6 +378,7 @@ func TestDelete(t *testing.T) {
 func TestDeleteError(t *testing.T) {
 	// delete non existing player
 	req, _ := http.NewRequest("DELETE", "/api/players/1234", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -331,6 +387,7 @@ func TestDeleteError(t *testing.T) {
 
 	// delete non existing player
 	req, _ = http.NewRequest("DELETE", "/api/players/foo", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -339,6 +396,7 @@ func TestDeleteError(t *testing.T) {
 
 	// delete non existing bot
 	req, _ = http.NewRequest("DELETE", "/api/players/1/bot/1234", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -346,6 +404,7 @@ func TestDeleteError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("DELETE", "/api/players/1/bot/foo", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -353,6 +412,7 @@ func TestDeleteError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("DELETE", "/api/players/1234/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -360,6 +420,7 @@ func TestDeleteError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("DELETE", "/api/players/foo/bot/1", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -367,6 +428,7 @@ func TestDeleteError(t *testing.T) {
 	assert.Equal(t, httpStatus, 500)
 
 	req, _ = http.NewRequest("DELETE", "/api/players/2/bot/2", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -375,6 +437,7 @@ func TestDeleteError(t *testing.T) {
 
 	// check double delete
 	req, _ = http.NewRequest("GET", "/api/players/1/bot", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 

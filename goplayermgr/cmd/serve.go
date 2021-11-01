@@ -4,8 +4,6 @@ import (
 	"jc.org/playermgr/api"
 
 	"github.com/spf13/cobra"
-
-	"jc.org/immotep/api"
 )
 
 // serveCmd represents the serve command
