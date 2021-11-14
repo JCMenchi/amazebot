@@ -45,12 +45,12 @@ module.exports = {
     },
   },
   devServer: {
-    contentBase: path.join(__dirname, "frontend/"),
+    static: path.join(__dirname, "frontend/"),
     historyApiFallback: {
       index: '/amazeui/index.html'
     },
     port: 3000,
-    publicPath: "http://localhost:3000/amazeui",
+    liveReload: true,
     hot: true,
     proxy: {
       '/api/players': 'http://localhost/',

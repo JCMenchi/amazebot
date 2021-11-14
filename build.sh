@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_REGISTRY=localhost:5000/
+export DOCKER_REGISTRY=localhost:5000/
 
 SUBDIR="mazemgr playermgr gamemgr ui amazeui"
 
@@ -29,15 +29,20 @@ for d in ${SUBDIR}; do
         cd "$d" || exit
         echo "====================================================================="
         echo "== BUILD $d"
-        npm install
-        npm run test
-        npm run coverage
-        # npm build install only needed dependencies to limit container size
-        npm run build
-        container_label=$(node -p "require('./package.json').version")
-        docker build -t ${DOCKER_REGISTRY}"${d}":"${container_label}" .
-        docker push ${DOCKER_REGISTRY}"${d}":"${container_label}"
-        npm install
+        if [ -e build.sh ]; then
+            # shellcheck disable=SC1091
+            source build.sh
+        else
+            npm install
+            npm run test
+            npm run coverage
+            # npm build install only needed dependencies to limit container size
+            npm run build
+            container_label=$(node -p "require('./package.json').version")
+            docker build -t ${DOCKER_REGISTRY}"${d}":"${container_label}" .
+            docker push ${DOCKER_REGISTRY}"${d}":"${container_label}"
+            npm install
+        fi
     )
 done
 

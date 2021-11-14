@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useKeycloak } from '@react-keycloak/web';
-import { AppBar, Button, ButtonGroup, Toolbar } from '@material-ui/core';
+import { AppBar, Button, ButtonGroup, Toolbar } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { grey } from '@material-ui/core/colors';
-import { IconFlagUS, IconFlagFR } from 'material-ui-flags';
-import { Brightness7, Brightness4 } from '@material-ui/icons';
+import { grey } from '@mui/material/colors';
+import ReactCountryFlag from "react-country-flag";
+import { Brightness7, Brightness4 } from '@mui/icons-material';
 import { NavLink, Switch } from 'react-router-dom';
 import PrivateRoute from '../utils/PrivateRoute';
 
@@ -96,10 +96,10 @@ export default function Home(props) {
 
                     <ButtonGroup style={{marginLeft:10}}>
                         <Button style={lang.startsWith('fr') ? { backgroundColor: grey[400] } : {}} onClick={() => changeLanguage('fr')}>
-                            <IconFlagFR style={{ height: 12, width: 12 }} />
+                            <ReactCountryFlag countryCode="FR" />
                         </Button>
                         <Button style={lang.startsWith('en') ? { backgroundColor: grey[400] } : {}} onClick={() => changeLanguage('en')}>
-                            <IconFlagUS style={{ height: 12, width: 12 }} />
+                            <ReactCountryFlag countryCode="US" />
                         </Button>
                     </ButtonGroup>
                 </Toolbar>

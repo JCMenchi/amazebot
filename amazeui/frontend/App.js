@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import { useTranslation } from 'react-i18next';
 
-import { CssBaseline, Snackbar, ThemeProvider, createMuiTheme } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import CssBaseline from '@mui/material/CssBaseline';
+import Snackbar from '@mui/material/Snackbar';
 
 import PrivateRoute from './utils/PrivateRoute';
 
@@ -17,15 +18,27 @@ import './App.css';
 import keycloak from './keycloak';
 
 /* Style info to use for theming */
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
+    primary: {
+      main: '#2196f3',
+    },
+    secondary: {
+      main: '#f50057',
+    },
   }
 });
 
-const lightTheme = createMuiTheme({
+const lightTheme = createTheme({
   palette: {
-    type: 'light',
+    mode: 'light',
+    primary: {
+      main: '#2196f3',
+    },
+    secondary: {
+      main: '#f50057',
+    },
   }
 });
 

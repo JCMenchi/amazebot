@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Paper, Grid } from '@material-ui/core';
+import { Paper, Grid } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import GameDetails from './GameDetails';

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, CardHeader, CardContent, CardActions, IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import { Card, CardHeader, CardContent, CardActions, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import GameCreateDialog from './GameCreateDialog';
 
 import Maze from '../maze/maze';
