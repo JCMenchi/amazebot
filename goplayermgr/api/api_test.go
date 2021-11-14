@@ -346,6 +346,7 @@ func TestDelete(t *testing.T) {
 
 	// delete one bot
 	req, _ := http.NewRequest("DELETE", "/api/players/3/bot/3", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -361,6 +362,7 @@ func TestDelete(t *testing.T) {
 
 	// delete one player
 	req, _ = http.NewRequest("DELETE", "/api/players/3", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -452,6 +454,7 @@ func TestDeleteError(t *testing.T) {
 	}
 
 	req, _ = http.NewRequest("DELETE", "/api/players/1/bot/2", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 
@@ -459,6 +462,7 @@ func TestDeleteError(t *testing.T) {
 	assert.Equal(t, httpStatus, 200)
 
 	req, _ = http.NewRequest("DELETE", "/api/players/1/bot/2", nil)
+	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
 

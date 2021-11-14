@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"jc.org/playermgr/api"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -61,6 +62,13 @@ func init() {
 
 	rootCmd.PersistentFlags().StringP("dsn-password", "p", "", "Player Database User password")
 	viper.BindPFlag("dsn.password", rootCmd.PersistentFlags().Lookup("dsn-password"))
+
+	// define security parameters
+	rootCmd.PersistentFlags().StringP("security-mode", "s", "secured", "Security mode")
+	viper.BindPFlag("security.mode", rootCmd.PersistentFlags().Lookup("security-mode"))
+
+	rootCmd.PersistentFlags().StringP("security-auth-url", "a", "", "Keycloack base url")
+	viper.BindPFlag("security.authurl", rootCmd.PersistentFlags().Lookup("security-auth-url"))
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -88,6 +96,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+
+	// init global
+	authurl := viper.GetString("security.authurl")
+	api.KeycloakAuthURL = authurl
 }
 
 /* Build database connection string

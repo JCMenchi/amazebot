@@ -1,14 +1,12 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"gorm.io/gorm"
 	"jc.org/playermgr/model"
@@ -89,32 +87,17 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/players/my/info", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
+
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
 
-		authorized := CheckRole(c.Request, "ui.player")
-		if !authorized {
-			fmt.Println("Not authorized")
-		} else {
-			fmt.Println("Authorized")
-		}
-
-		playername := ""
-		tokens := c.Request.Header["Authorization"]
-		if strings.HasPrefix(tokens[0], "Bearer") {
-			tokenString := tokens[0][7:]
-
-			parser := jwt.Parser{}
-			claims := jwt.MapClaims{}
-			parser.ParseUnverified(tokenString, claims)
-			fmt.Printf("Get token: %v\n", claims["preferred_username"])
-			var ok bool
-			playername, ok = claims["preferred_username"].(string)
-			if !ok {
-				fmt.Println("cannot get preferred_username")
-			}
-		}
+		playername := GetUserName(c.Request)
 
 		player := model.GetPlayerByName(playerDB, playername)
 		if player == nil {
@@ -150,6 +133,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/players/:playerid", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -168,6 +156,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.DELETE("/players/:playerid", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.admin")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -209,6 +202,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.POST("/players/:playerid/bot", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.admin")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -236,6 +234,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/players/:playerid/bot/:botid", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -263,6 +266,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.GET("/players/:playerid/bot/:botid/code", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.view")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
@@ -290,6 +298,11 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.DELETE("/players/:playerid/bot/:botid", func(c *gin.Context) {
+		authorized := CheckRole(c.Request, "player.admin")
+		if !authorized {
+			c.String(401, "unauthorized")
+			return
+		}
 		if playerDB == nil {
 			playerDB = model.ConnectToDB(playerDSN)
 		}
