@@ -12,13 +12,25 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('metrics');
 
 // initialize metrics exporter
-const { MeterProvider } = require('@opentelemetry/metrics');
+const { MeterProvider } = require('@opentelemetry/sdk-metrics-base');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
 const prometheusPort = 9465;
 const prometheusEndpoint = PrometheusExporter.DEFAULT_OPTIONS.endpoint;
 
-const exporter = new PrometheusExporter(
+/** 
+ * Configure Metrics for Prometheus.
+ * 
+ * Endpoint is http://localhost:9465/metrics
+ * 
+ * **Meters:**
+ *   - mazebot_requests_total{route="__relative URL__",method="__GET|POST|...__"}: counter of HTTP requests
+ * 
+ * This endpoint is not created when running in unit test context.
+ * 
+ * @namespace Monitoring
+ */
+const prometheusExporter = new PrometheusExporter(
   {
     startServer: true,
     port: prometheusPort,
@@ -32,16 +44,21 @@ const exporter = new PrometheusExporter(
 );
 
 const meter = new MeterProvider({
-  exporter: exporter,
-  interval: 1000
+  exporter: prometheusExporter,
+  interval: 1000,
 }).getMeter('maze-manager');
 
-const requestCount = meter.createCounter('requests', {
+const requestCount = meter.createCounter('mazemgr_requests_requests', {
   description: 'Count all incoming requests'
 });
 
 const boundInstruments = new Map();
 
+/**
+ * Count All HTTP requests received.
+ * 
+ * @memberof Monitoring
+ */
 function countAllRequests() {
   return (req, res, next) => {
     /* istanbul ignore else */

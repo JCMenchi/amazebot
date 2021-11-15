@@ -1,11 +1,18 @@
 "use strict";
 
+/** 
+ * Configure Metrics for Prometheus.
+ * 
+ * Default endpoint is http://localhost:9466/metrics
+ * 
+ */
+
 // initialize logger
 const log4js = require('log4js');
 const logger = log4js.getLogger('metrics');
 
 // initialize metrics exporter
-const { MeterProvider } = require('@opentelemetry/metrics');
+const { MeterProvider } = require('@opentelemetry/sdk-metrics-base');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
 const prometheusPort = 9466;
@@ -38,11 +45,11 @@ const prometheusExporter = new PrometheusExporter(
 
 const meter = new MeterProvider({
   exporter: prometheusExporter,
-  interval: 1000
+  interval: 1000,
 }).getMeter('game-manager');
 
-const requestCount = meter.createCounter("mazebot_requests_total", {
-  description: "Count all incoming requests"
+const requestCount = meter.createCounter('gamemgr_requests_requests', {
+  description: 'Count all incoming requests'
 });
 
 const boundInstruments = new Map();
@@ -53,7 +60,7 @@ const boundInstruments = new Map();
  * @memberof Monitoring
  */
 function countAllRequests() {
-  return (req, _res, next) => {
+  return (req, res, next) => {
     /* istanbul ignore else */
     if (!boundInstruments.has(req.path)) {
       const labels = { route: req.path, method: req.method };

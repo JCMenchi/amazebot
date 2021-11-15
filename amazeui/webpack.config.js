@@ -56,6 +56,7 @@ module.exports = {
       '/api/players': 'http://localhost/',
       '/api/mazes': 'http://localhost/',
       '/api/games': 'http://localhost/',
+      '/auth': 'http://localhost/',
     }
   },
   plugins: [

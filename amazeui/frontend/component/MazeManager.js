@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Fab, Grid, Paper } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -15,7 +15,7 @@ import LOGGER from '../utils/uilogger';
  * 
  */
 export default function MazeManager(props) {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     // for I18N
     const { t } = useTranslation();
@@ -42,7 +42,7 @@ export default function MazeManager(props) {
                 setMazes(response.data);
                 // if id is -1, it is the useEffect loading do not modify history
                 if (!init) {
-                    history.push(`/players/${playerId}/mazes`);
+                    navigate(`/players/${playerId}/mazes`);
                 }
             })
             .catch((error) => {

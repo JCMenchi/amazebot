@@ -10,15 +10,13 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('tracing');
 
 // initialize tracing
-const { NodeTracerProvider } = require('@opentelemetry/node');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { SimpleSpanProcessor, ConsoleSpanExporter } = require('@opentelemetry/tracing');
-const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
-
-const provider = new NodeTracerProvider();
-
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
 const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express');
+
+const provider = new NodeTracerProvider();
+provider.register();
 
 // register and load instrumentation and old plugins - old plugins will be loaded automatically as previously
 // but instrumentations needs to be added
@@ -34,7 +32,8 @@ registerInstrumentations({
   ],
 });
 
-provider.register();
+const { SimpleSpanProcessor, ConsoleSpanExporter } = require("@opentelemetry/sdk-trace-base");
+const { JaegerExporter } = require("@opentelemetry/exporter-jaeger");
 
 provider.addSpanProcessor(
   new SimpleSpanProcessor(

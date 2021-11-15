@@ -11,7 +11,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { DropzoneArea } from 'material-ui-dropzone'
 
 import { Formik, Form, Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 
 import playerService from '../utils/player_service';
 

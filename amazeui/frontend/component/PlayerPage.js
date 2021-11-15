@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import ReactCountryFlag from "react-country-flag";
 import { Brightness7, Brightness4 } from '@mui/icons-material';
-import { NavLink, Switch } from 'react-router-dom';
+import { NavLink, Route, Routes } from 'react-router-dom';
 import PrivateRoute from '../utils/PrivateRoute';
 
 import playerService from '../utils/player_service';
@@ -15,11 +15,11 @@ const MazeManager = React.lazy(() => import(/* webpackChunkName: "MazeManager" *
 const GameManager = React.lazy(() => import(/* webpackChunkName: "GameManager" */'./GameManager.js'));
 
 /**
- * Home Component
+ * PlayerPage Component
  * 
  * @param {Object} props 
  */
-export default function Home(props) {
+export default function PlayerPage(props) {
     const { keycloak, initialized } = useKeycloak()
 
     // for I18N
@@ -88,9 +88,9 @@ export default function Home(props) {
                     <h2 style={{ marginRight: 20, marginLeft: 20, flexGrow: 1 }}>MazeBot {profile.username} ({playerId})</h2>
                     <ButtonGroup color="primary" aria-label="outlined primary button group">
 
-                        <Button component={NavLink} to={"/players/" + playerId + "/bot" } activeClassName='activePage' variant="contained" >{t("bot")}</Button>
-                        <Button component={NavLink} to={"/players/" + playerId + "/mazes" } activeClassName='activePage' variant="contained" >{t("maze")}</Button>
-                        <Button component={NavLink} to={"/players/" + playerId + "/games" } activeClassName='activePage' variant="contained" >{t("game")}</Button>
+                        <Button component={NavLink} to={"/players/" + playerId + "/bot" } variant="contained" >{t("bot")}</Button>
+                        <Button component={NavLink} to={"/players/" + playerId + "/mazes" } variant="contained" >{t("maze")}</Button>
+                        <Button component={NavLink} to={"/players/" + playerId + "/games" } variant="contained" >{t("game")}</Button>
                         <Button variant="contained" onClick={() => keycloak.logout()}>{t("Logout")}</Button>
                     </ButtonGroup>
 
@@ -106,11 +106,23 @@ export default function Home(props) {
             </AppBar>
 
             <div style={{ display: 'flex', flexGrow: 1 }}>
-                <Switch>
-                    <PrivateRoute roles={['ui.player']} path="/players/:playerId/mazes" component={MazeManager} />
-                    <PrivateRoute roles={['ui.player']} path="/players/:playerId/games" component={GameManager} />
-                    <PrivateRoute roles={['ui.player']} path={'/players/:playerId/bot'} component={BotManager} />
-                </Switch>
+                <Routes>
+                    <Route path="players/:playerId/mazes" element={
+                        <PrivateRoute roles={['ui.player']}>
+                            <MazeManager/>
+                        </PrivateRoute>
+                    }/>
+                    <Route path="players/:playerId/games" element={
+                        <PrivateRoute roles={['ui.player']}>
+                            <GameManager/>
+                        </PrivateRoute>
+                    }/>
+                    <Route path="players/:playerId/bot" element={
+                        <PrivateRoute roles={['ui.player']}>
+                            <BotManager/>
+                        </PrivateRoute>
+                    }/>
+                </Routes>
             </div>
 
         </div>
