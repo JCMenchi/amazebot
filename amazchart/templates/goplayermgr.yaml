@@ -49,6 +49,10 @@ spec:
               value: {{.Values.auth.external_url}}
             - name: GIN_MODE
               value: debug
+            - name: PLAYER_SECURITY_AUTHURL
+              value: http://keycloak:8080/auth/realms/amazebot
+            - name: PLAYER_SECURITY_MODE
+              value: secured
             - name: PLAYER_DSN_USER
               valueFrom:
                 secretKeyRef:

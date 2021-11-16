@@ -43,6 +43,8 @@ var TokenSigningKey []byte
 // URL to get keycloak public key to check JWT
 var KeycloakAuthURL string
 
+var SecurityMode string
+
 // map with already decoded and validated token
 var validTokenMap map[string]*KeycloakClaim
 
@@ -50,6 +52,7 @@ var validTokenMap map[string]*KeycloakClaim
 func init() {
 	TokenSigningKey = []byte("abcdefghijklmnopqrst")
 	validTokenMap = make(map[string]*KeycloakClaim)
+	SecurityMode = "secured"
 }
 
 /*
@@ -57,6 +60,11 @@ func init() {
 */
 func CheckRole(req *http.Request, role string) bool {
 
+	if SecurityMode == "open" {
+		return true
+	}
+
+	log.Debugf("Checking role %v", role)
 	claim := getClaim(req, KeycloakAuthURL)
 
 	if claim != nil {
@@ -68,12 +76,18 @@ func CheckRole(req *http.Request, role string) bool {
 				}
 			}
 		}
+	} else {
+		log.Errorf("Cannot get claim from token.")
 	}
 
 	return false
 }
 
 func GetUserName(req *http.Request) string {
+
+	if SecurityMode == "open" {
+		return getUserFromClaim(req)
+	}
 
 	claim := getClaim(req, KeycloakAuthURL)
 
@@ -97,8 +111,10 @@ func getClaim(req *http.Request, authurl string) *KeycloakClaim {
 		// first search in cache
 		claim, ok := validTokenMap[tokenString]
 		if ok {
+			log.Debugf("Use parsed token from cache.")
 			v := checkClaimValidity(claim)
 			if !v {
+				log.Debugf("Remove expired token from cache.")
 				// clean cache
 				delete(validTokenMap, tokenString)
 				return nil
@@ -108,9 +124,38 @@ func getClaim(req *http.Request, authurl string) *KeycloakClaim {
 		}
 
 		return claim
+	} else {
+		log.Errorf("Cannot find token in request.")
 	}
 
 	return nil
+}
+
+func getUserFromClaim(req *http.Request) string {
+
+	// get authorization header
+	tokens := req.Header["Authorization"]
+	if len(tokens) > 0 && strings.HasPrefix(tokens[0], "Bearer") {
+		tokenString := tokens[0][7:]
+
+		parser := jwt.Parser{}
+		token, _, err := parser.ParseUnverified(tokenString, &KeycloakClaim{})
+		if err != nil {
+			log.Errorf("Error cannot parse token: %v\n", err)
+			return ""
+		}
+
+		claims, ok := token.Claims.(*KeycloakClaim)
+
+		if !ok {
+			log.Errorf("Cannot get claim from token.")
+			return ""
+		}
+
+		return claims.PreferredUsername
+	}
+
+	return ""
 }
 
 func convertToClaim(tokenAsString string, authurl string) *KeycloakClaim {
@@ -119,10 +164,12 @@ func convertToClaim(tokenAsString string, authurl string) *KeycloakClaim {
 
 	token, err := parser.ParseWithClaims(tokenAsString, &KeycloakClaim{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); ok {
+			log.Debugf("Parse token using HMAC signing key.")
 			return TokenSigningKey, nil
 		}
 
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); ok {
+			log.Debugf("Parse token using keycloak signing key.")
 			return getKeycloakSigningKey(authurl), nil
 		}
 
@@ -157,6 +204,7 @@ func convertToClaim(tokenAsString string, authurl string) *KeycloakClaim {
 func getKeycloakSigningKey(authurl string) *rsa.PublicKey {
 
 	if KeycloakTokenSigningKey == nil {
+		log.Debugf("Retrieve keycloak signing key: %v", authurl)
 		resp, err := http.Get(authurl)
 		if err != nil {
 			return nil
