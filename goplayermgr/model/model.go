@@ -13,7 +13,7 @@ import (
 )
 
 type Player struct {
-	Pid  int64  `gorm:"primaryKey" json:"id"`
+	Pid  int32  `gorm:"primaryKey" json:"id"`
 	Name string `gorm:"unique" json:"name"`
 	Bots []Bot  `gorm:"foreignKey:PlayerId" json:"bots,omitempty"`
 }
@@ -23,9 +23,9 @@ func (Player) TableName() string {
 }
 
 type BotBase struct {
-	Bid      int64  `gorm:"primaryKey" json:"id"`
+	Bid      int32  `gorm:"primaryKey" json:"id"`
 	Name     string `json:"name"`
-	PlayerId int64  `json:"-"`
+	PlayerId int32  `json:"-"`
 }
 
 func (BotBase) TableName() string {
@@ -33,11 +33,11 @@ func (BotBase) TableName() string {
 }
 
 type Bot struct {
-	Bid      int64  `gorm:"primaryKey" json:"id"`
+	Bid      int32  `gorm:"primaryKey" json:"id"`
 	Name     string `json:"name"`
 	URL      string `json:"url,omitempty"`
 	Filename string `json:"filename,omitempty"`
-	PlayerId int64  `json:"-"`
+	PlayerId int32  `json:"-"`
 }
 
 func (Bot) TableName() string {
@@ -45,12 +45,12 @@ func (Bot) TableName() string {
 }
 
 type BotCode struct {
-	Bid      int64  `gorm:"primaryKey" json:"id"`
+	Bid      int32  `gorm:"primaryKey" json:"id"`
 	Name     string `json:"name"`
 	URL      string `json:"url,omitempty"`
 	Filename string `json:"filename,omitempty"`
 	Botcode  string `json:"botcode,omitempty"`
-	PlayerId int64  `json:"-"`
+	PlayerId int32  `json:"-"`
 }
 
 func (BotCode) TableName() string {
@@ -58,7 +58,7 @@ func (BotCode) TableName() string {
 }
 
 type BotWithPlayer struct {
-	Bid        int64  `gorm:"primaryKey" json:"id"`
+	Bid        int32  `gorm:"primaryKey" json:"id"`
 	Name       string `json:"name"`
 	URL        string `json:"url,omitempty"`
 	Filename   string `json:"filename,omitempty"`
@@ -80,7 +80,7 @@ func GetPlayers(db *gorm.DB) []Player {
 	return players
 }
 
-func GetPlayer(db *gorm.DB, pid int64) *Player {
+func GetPlayer(db *gorm.DB, pid int32) *Player {
 	if db == nil {
 		return nil
 	}
@@ -94,7 +94,7 @@ func GetPlayer(db *gorm.DB, pid int64) *Player {
 	return player
 }
 
-func GetBot(db *gorm.DB, pid int64, bid int64) *BotWithPlayer {
+func GetBot(db *gorm.DB, pid int32, bid int32) *BotWithPlayer {
 	if db == nil {
 		return nil
 	}
@@ -140,7 +140,7 @@ func AddPlayer(db *gorm.DB, name string) *Player {
 	return player
 }
 
-func DeletePlayer(db *gorm.DB, pid int64) *Player {
+func DeletePlayer(db *gorm.DB, pid int32) *Player {
 	if db == nil {
 		return nil
 	}
@@ -163,7 +163,7 @@ func DeletePlayer(db *gorm.DB, pid int64) *Player {
 	return player
 }
 
-func DeleteBot(db *gorm.DB, pid int64, bid int64) *BotBase {
+func DeleteBot(db *gorm.DB, pid int32, bid int32) *BotBase {
 	if db == nil {
 		return nil
 	}
@@ -224,7 +224,7 @@ func GetPlayersWithBots(db *gorm.DB) []Player {
 	return players
 }
 
-func GetPlayerBots(db *gorm.DB, pid int64) []Bot {
+func GetPlayerBots(db *gorm.DB, pid int32) []Bot {
 	if db == nil {
 		return nil
 	}
@@ -246,7 +246,7 @@ func GetPlayerBots(db *gorm.DB, pid int64) []Bot {
 	return bots
 }
 
-func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code string) *BotBase {
+func AddBot(db *gorm.DB, pid int32, botname string, codefilename string, code string) *BotBase {
 	if db == nil {
 		return nil
 	}
@@ -279,7 +279,7 @@ func AddBot(db *gorm.DB, pid int64, botname string, codefilename string, code st
 	return &BotBase{Bid: bot.Bid, Name: bot.Name}
 }
 
-func GetBotCode(db *gorm.DB, pid int64, bid int64) *BotCode {
+func GetBotCode(db *gorm.DB, pid int32, bid int32) *BotCode {
 	if db == nil {
 		return nil
 	}

@@ -9,8 +9,8 @@ import (
 	"jc.org/playermgr/model"
 )
 
-var playerId int64
-var botId int64
+var playerId int32
+var botId int32
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
@@ -43,7 +43,7 @@ When deleting a player its bot are deleted.`,
 }
 
 func init() {
-	deleteCmd.Flags().Int64Var(&playerId, "playerid", -1, "ID of player to delete")
-	deleteCmd.Flags().Int64Var(&botId, "botid", -1, "ID of bot to delete")
+	deleteCmd.Flags().Int32Var(&playerId, "playerid", -1, "ID of player to delete")
+	deleteCmd.Flags().Int32Var(&botId, "botid", -1, "ID of bot to delete")
 	rootCmd.AddCommand(deleteCmd)
 }

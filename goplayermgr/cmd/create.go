@@ -54,11 +54,11 @@ var createBotCmd = &cobra.Command{
 			fmt.Printf("get called with DSN: %v\n", dsn)
 
 			db := model.ConnectToDB(dsn)
-			pid, err := strconv.ParseInt(args[0], 10, 0)
+			pid, err := strconv.ParseInt(args[0], 10, 32)
 			if err != nil {
 				fmt.Printf("create bot cannot read playerid: %v\n", err)
 			} else {
-				bot := model.AddBot(db, pid, args[1], args[2], "")
+				bot := model.AddBot(db, int32(pid), args[1], args[2], "")
 				if bot != nil {
 					prettyJSON, err := json.MarshalIndent(bot, "", "    ")
 					if err != nil {

@@ -31,7 +31,7 @@ var getCmd = &cobra.Command{
 			}
 			fmt.Printf("%s\n", string(prettyJSON))
 		} else {
-			pid, err := strconv.ParseInt(args[0], 10, 0)
+			pid, err := strconv.ParseInt(args[0], 10, 32)
 			if err != nil {
 				// not a number it is a player name
 				player := model.GetPlayerByName(db, args[0])
@@ -41,7 +41,7 @@ var getCmd = &cobra.Command{
 				}
 				fmt.Printf("%s\n", string(prettyJSON))
 			} else {
-				player := model.GetPlayer(db, pid)
+				player := model.GetPlayer(db, int32(pid))
 				prettyJSON, err := json.MarshalIndent(player, "", "    ")
 				if err != nil {
 					log.Fatal("Failed to generate json", err)
