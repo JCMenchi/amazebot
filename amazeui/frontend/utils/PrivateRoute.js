@@ -1,9 +1,9 @@
 import { useKeycloak } from '@react-keycloak/web';
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 
-export default function PrivateRoute({ component: Component, roles, toggleUITheme, ...rest }) {
+export default function PrivateRoute({ children, roles }) {
     const {keycloak} = useKeycloak();
 
     const isAuthorized = (roles) => {
@@ -17,14 +17,7 @@ export default function PrivateRoute({ component: Component, roles, toggleUIThem
         return false;
     }
 
-    return (
-        <Route
-            {...rest}
-            render={props => {
-                return isAuthorized(roles)
-                    ? <Component toggleUITheme={toggleUITheme} {...props} />
-                    : <Redirect to={{ pathname: '/login', }} />
-            }}
-        />
-    )
+    return isAuthorized(roles)
+                ? children
+                : <Navigate to={{ pathname: '/login', }} />
 }

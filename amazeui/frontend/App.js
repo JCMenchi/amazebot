@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -11,7 +11,7 @@ import PrivateRoute from './utils/PrivateRoute';
 
 import axiosInstance from './utils/player_service';
 
-const PlayerPage = React.lazy(() => import(/* webpackChunkName: "Home" */'./component/PlayerPage.js'));
+const PlayerPage = React.lazy(() => import(/* webpackChunkName: "PlayerPage" */'./component/PlayerPage.js'));
 const LoginPage = React.lazy(() => import(/* webpackChunkName: "LoginPage" */'./component/LoginPage.js'));
 
 import './App.css';
@@ -97,11 +97,14 @@ export default function App(props) {
         </Snackbar>
 
         <BrowserRouter basename="/amazeui/">
-            <Switch>
-              <Route exact path="/login" render={(props) => (<LoginPage {...props} toggleUITheme={toggleUITheme} />)} />
-              <PrivateRoute roles={['ui.player', 'ui.admin']} path="/" component={PlayerPage} toggleUITheme={toggleUITheme} />
-          
-            </Switch>
+            <Routes>
+              <Route path="/login" element={<LoginPage {...props} toggleUITheme={toggleUITheme} />} />
+              <Route path="/*" element={
+                <PrivateRoute roles={['ui.player', 'ui.admin']}>
+                  <PlayerPage toggleUITheme={toggleUITheme} />
+                </PrivateRoute>
+              }/>
+            </Routes>
         </BrowserRouter>
       </ReactKeycloakProvider>
     </ThemeProvider>

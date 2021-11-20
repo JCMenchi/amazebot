@@ -14,7 +14,7 @@ FROM node:14-alpine
 # Install packages
 #
 #
-RUN apk add --no-cache bash=5.0.11-r1 curl=7.67.0-r4 && rm -rf /var/cache/apk/*
+RUN apk add --no-cache bash=5.1.4-r0 curl=7.79.1-r0 && rm -rf /var/cache/apk/*
 #
 
 #=================================================================================================================

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Fab, Paper, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useParams } from 'react-router-dom';
@@ -15,7 +15,7 @@ import LOGGER from '../utils/uilogger';
  */
 export default function BotManager(props) {
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const { playerId } = useParams();
 
@@ -38,7 +38,7 @@ export default function BotManager(props) {
             .then((response) => {
                 setBots(response.data);
                 if (!init) {
-                    history.push(`/players/${playerId}/bot`);
+                    navigate(`/players/${playerId}/bot`);
                 }
             })
             .catch((error) => {

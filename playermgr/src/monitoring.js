@@ -12,7 +12,7 @@ const log4js = require('log4js');
 const logger = log4js.getLogger('metrics');
 
 // initialize metrics exporter
-const { MeterProvider } = require('@opentelemetry/metrics');
+const { MeterProvider } = require('@opentelemetry/sdk-metrics-base');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
 const prometheusPort = 9464;
@@ -48,8 +48,8 @@ const meter = new MeterProvider({
   interval: 1000,
 }).getMeter('player-manager');
 
-const requestCount = meter.createCounter("mazebot_requests_total", {
-  description: "Count all incoming requests"
+const requestCount = meter.createCounter('jsplayermgr_requests_total', {
+  description: 'Count all incoming requests'
 });
 
 const boundInstruments = new Map();

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import ReactCountryFlag from "react-country-flag";
 import { Brightness7, Brightness4 } from '@mui/icons-material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import playerService from '../utils/player_service';
 
@@ -17,7 +17,7 @@ import playerService from '../utils/player_service';
 export default function LoginPage(props) {
     const { keycloak, initialized } = useKeycloak()
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     // for I18N
     const { t, i18n } = useTranslation();
@@ -60,9 +60,9 @@ export default function LoginPage(props) {
                 });
 
                 if (keycloak.hasRealmRole('ui.player')) {
-                    history.push('/');
+                    navigate('/');
                 } else if (keycloak.hasRealmRole('ui.admin')) {
-                    history.push('/admin');
+                    navigate('/admin');
                 }
 
         }

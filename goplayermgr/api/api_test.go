@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -48,6 +51,10 @@ func createToken(user string) string {
 }
 
 func init() {
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
+	log.SetLevel(log.DebugLevel)
+	log.SetOutput(os.Stdout)
+
 	db := model.ConnectToDB(InMemoryDSN)
 
 	// add some data
@@ -57,7 +64,7 @@ func init() {
 	model.AddPlayer(db, "William")
 
 	// create Bearer token
-	bearerFullRight = createToken("joe")
+	bearerFullRight = createToken("Joe")
 
 	// force debug during unit test
 	gin.SetMode(gin.DebugMode)
@@ -165,6 +172,24 @@ func TestRead(t *testing.T) {
 		ans := resp.Body.String()
 		t.Errorf("expected a list of 2 players got \"%s\"", ans)
 	}
+
+	// get my info - first time will create user
+	req, _ = http.NewRequest("GET", "/api/players/my/info", nil)
+	req.Header.Add("Authorization", bearerFullRight)
+	resp = httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+
+	httpStatus = resp.Code
+	assert.Equal(t, 200, httpStatus)
+
+	// get my info - second time find user
+	req, _ = http.NewRequest("GET", "/api/players/my/info", nil)
+	req.Header.Add("Authorization", bearerFullRight)
+	resp = httptest.NewRecorder()
+	router.ServeHTTP(resp, req)
+
+	httpStatus = resp.Code
+	assert.Equal(t, 200, httpStatus)
 
 	// get bots for player 1
 	req, _ = http.NewRequest("GET", "/api/players/1/bot", nil)
@@ -345,7 +370,7 @@ func TestDelete(t *testing.T) {
 	model.AddBot(db, p.Pid, "JohnBot2", "botfile2.js", "// some code")
 
 	// delete one bot
-	req, _ := http.NewRequest("DELETE", "/api/players/3/bot/3", nil)
+	req, _ := http.NewRequest("DELETE", fmt.Sprintf("/api/players/%v/bot/3", p.Pid), nil)
 	req.Header.Add("Authorization", bearerFullRight)
 	resp := httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
@@ -357,11 +382,11 @@ func TestDelete(t *testing.T) {
 	json.Unmarshal(resp.Body.Bytes(), &bot)
 	if bot.Bid != 3 {
 		ans := resp.Body.String()
-		t.Errorf("delete did not return deleted player \"%s\"", ans)
+		t.Errorf("delete did not return deleted bot \"%s\"", ans)
 	}
 
 	// delete one player
-	req, _ = http.NewRequest("DELETE", "/api/players/3", nil)
+	req, _ = http.NewRequest("DELETE", fmt.Sprintf("/api/players/%v", p.Pid), nil)
 	req.Header.Add("Authorization", bearerFullRight)
 	resp = httptest.NewRecorder()
 	router.ServeHTTP(resp, req)
@@ -371,7 +396,7 @@ func TestDelete(t *testing.T) {
 
 	var obj Player
 	json.Unmarshal(resp.Body.Bytes(), &obj)
-	if obj.Id != 3 {
+	if obj.Id != float64(p.Pid) {
 		ans := resp.Body.String()
 		t.Errorf("delete did not return deleted player \"%s\"", ans)
 	}

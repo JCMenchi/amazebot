@@ -100,6 +100,7 @@ func initConfig() {
 	// init global
 	authurl := viper.GetString("security.authurl")
 	api.KeycloakAuthURL = authurl
+	api.SecurityMode = viper.GetString("security.mode")
 }
 
 /* Build database connection string
