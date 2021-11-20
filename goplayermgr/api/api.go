@@ -203,7 +203,7 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.POST("/players/:playerid/bot", func(c *gin.Context) {
-		authorized := CheckRole(c.Request, "player.admin")
+		authorized := CheckRole(c.Request, "player.edit")
 		if !authorized {
 			c.String(401, "unauthorized")
 			return
@@ -299,7 +299,7 @@ func addRoutes(rg *gin.RouterGroup) {
 	})
 
 	rg.DELETE("/players/:playerid/bot/:botid", func(c *gin.Context) {
-		authorized := CheckRole(c.Request, "player.admin")
+		authorized := CheckRole(c.Request, "player.edit")
 		if !authorized {
 			c.String(401, "unauthorized")
 			return
